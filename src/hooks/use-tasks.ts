@@ -172,6 +172,18 @@ export function useTasks() {
     return tasks.filter(task => task.status !== 'completed');
   }, [tasks]);
 
+  const createTask = useCallback((taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">) => {
+    const newTask: Task = {
+      ...taskData,
+      id: String(Date.now()),
+      createdDate: new Date(),
+      status: "open",
+      type: "task",
+      order: tasks.length + 1,
+    };
+    setTasks(prev => [...prev, newTask]);
+  }, [tasks.length]);
+
   return {
     tasks,
     products,
@@ -179,6 +191,7 @@ export function useTasks() {
     themes,
     toggleTaskStatus,
     reopenTask,
+    createTask,
     getTodaysTasks,
     getCompletedTasks,
     getAllActiveTasks,

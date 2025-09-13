@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Navigation } from "@/components/navigation";
 import { TaskList } from "@/components/task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
+import { TaskFormDialog } from "@/components/task-form-dialog";
 import { useTasks } from "@/hooks/use-tasks";
 import { Button } from "@/components/ui/button";
 import { Plus, CheckSquare2 } from "lucide-react";
@@ -17,6 +18,7 @@ const Index = () => {
     themes,
     toggleTaskStatus,
     reopenTask,
+    createTask,
     getTodaysTasks,
     getCompletedTasks,
     getAllActiveTasks,
@@ -95,10 +97,12 @@ const Index = () => {
               </p>
             </div>
             
-            <Button className="gap-2 shadow-lg hover:shadow-xl transition-shadow">
-              <Plus className="w-4 h-4" />
-              New Task
-            </Button>
+            <TaskFormDialog themes={themes} onTaskCreate={createTask}>
+              <Button className="gap-2 shadow-lg hover:shadow-xl transition-shadow">
+                <Plus className="w-4 h-4" />
+                New Task
+              </Button>
+            </TaskFormDialog>
           </div>
 
           <Navigation
