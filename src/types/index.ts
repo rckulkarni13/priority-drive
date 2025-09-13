@@ -34,6 +34,7 @@ export interface Task {
   createdDate: Date;
   dueDate: Date;
   prioritizedDate?: Date;
+  prioritizedEndDate?: Date;
   status: Status;
   priority: Priority;
   type: TaskType;

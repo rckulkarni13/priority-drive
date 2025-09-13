@@ -151,11 +151,17 @@ export function useTasks() {
     return tasks.filter(task => {
       if (!task.prioritizedDate) return false;
       
-      const taskDate = new Date(task.prioritizedDate);
+      const startDate = new Date(task.prioritizedDate);
+      const endDate = task.prioritizedEndDate ? new Date(task.prioritizedEndDate) : startDate;
+      
+      // Check if today falls within the priority period
+      const todayTime = today.getTime();
+      const startTime = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).getTime();
+      const endTime = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime();
+      
       return (
-        taskDate.getDate() === today.getDate() &&
-        taskDate.getMonth() === today.getMonth() &&
-        taskDate.getFullYear() === today.getFullYear() &&
+        todayTime >= startTime &&
+        todayTime <= endTime &&
         task.status !== 'completed'
       );
     }).sort((a, b) => {

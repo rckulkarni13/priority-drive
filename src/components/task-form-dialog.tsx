@@ -40,6 +40,7 @@ const taskSchema = z.object({
   description: z.string().optional(),
   dueDate: z.date().optional(),
   prioritizedDate: z.date().optional(),
+  prioritizedEndDate: z.date().optional(),
   priority: z.enum(["critical", "high", "medium", "low"]),
   themeIds: z.array(z.string()).min(1, "Please select at least one theme"),
 });
@@ -71,6 +72,7 @@ export function TaskFormDialog({ children, themes, onTaskCreate }: TaskFormDialo
       description: data.description || "",
       dueDate: data.dueDate,
       prioritizedDate: data.prioritizedDate,
+      prioritizedEndDate: data.prioritizedEndDate,
       priority: data.priority,
       themeIds: data.themeIds,
     });
@@ -222,12 +224,13 @@ export function TaskFormDialog({ children, themes, onTaskCreate }: TaskFormDialo
                 )}
               />
 
+            <div className="grid grid-cols-1 gap-4">
               <FormField
                 control={form.control}
                 name="prioritizedDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Prioritized Date</FormLabel>
+                    <FormLabel>Priority Period - Start Date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -241,7 +244,7 @@ export function TaskFormDialog({ children, themes, onTaskCreate }: TaskFormDialo
                             {field.value ? (
                               format(field.value, "PPP")
                             ) : (
-                              <span>Pick priority date</span>
+                              <span>Pick start date</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -253,6 +256,7 @@ export function TaskFormDialog({ children, themes, onTaskCreate }: TaskFormDialo
                           selected={field.value}
                           onSelect={field.onChange}
                           initialFocus
+                          className="p-3 pointer-events-auto"
                         />
                       </PopoverContent>
                     </Popover>
@@ -260,6 +264,51 @@ export function TaskFormDialog({ children, themes, onTaskCreate }: TaskFormDialo
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="prioritizedEndDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Priority Period - End Date (Optional)</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick end date (single day if empty)</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) => {
+                            const startDate = form.getValues("prioritizedDate");
+                            return startDate ? date < startDate : false;
+                          }}
+                          initialFocus
+                          className="p-3 pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             </div>
 
             <div className="flex justify-end gap-3">
