@@ -1,125 +1,14 @@
 import { useState, useCallback } from "react";
 import { Task, Product, StrategicPillar, Theme, Priority, Status } from "@/types";
 
-// Mock data for demonstration
-const mockProducts: Product[] = [
-  {
-    id: "1",
-    title: "Task Management App",
-    description: "A comprehensive task management application for productivity",
-    createdDate: new Date("2024-01-01"),
-  },
-];
+// Empty data arrays - ready for your custom data
+const mockProducts: Product[] = [];
 
-const mockPillars: StrategicPillar[] = [
-  {
-    id: "1",
-    title: "Core Features",
-    description: "Essential functionality for task management",
-    createdDate: new Date("2024-01-02"),
-    targetTimeFrame: "Q1 2024",
-    productIds: ["1"],
-  },
-  {
-    id: "2",
-    title: "User Experience",
-    description: "Optimizing user interface and interactions",
-    createdDate: new Date("2024-01-03"),
-    targetTimeFrame: "Q2 2024",
-    productIds: ["1"],
-  },
-];
+const mockPillars: StrategicPillar[] = [];
 
-const mockThemes: Theme[] = [
-  {
-    id: "1",
-    title: "Task Creation & Management",
-    description: "Core task CRUD operations",
-    createdDate: new Date("2024-01-04"),
-    strategicPillarIds: ["1"],
-  },
-  {
-    id: "2",
-    title: "Hierarchy & Organization",
-    description: "Product-pillar-theme-task structure",
-    createdDate: new Date("2024-01-05"),
-    strategicPillarIds: ["1"],
-  },
-  {
-    id: "3",
-    title: "Visual Design",
-    description: "Beautiful and intuitive user interface",
-    createdDate: new Date("2024-01-06"),
-    strategicPillarIds: ["2"],
-  },
-];
+const mockThemes: Theme[] = [];
 
-const mockTasks: Task[] = [
-  {
-    id: "1",
-    title: "Implement task creation form",
-    description: "Build a comprehensive form for creating new tasks with all required fields",
-    createdDate: new Date("2024-01-10"),
-    dueDate: new Date("2024-01-20"),
-    prioritizedDate: new Date(),
-    status: "open",
-    priority: "high",
-    type: "task",
-    themeIds: ["1"],
-    order: 1,
-  },
-  {
-    id: "2",
-    title: "Design task card component",
-    description: "Create reusable task card with priority indicators and status badges",
-    createdDate: new Date("2024-01-11"),
-    dueDate: new Date("2024-01-18"),
-    prioritizedDate: new Date(),
-    status: "completed",
-    priority: "medium",
-    type: "task",
-    themeIds: ["3"],
-    order: 2,
-  },
-  {
-    id: "3",
-    title: "Add drag and drop functionality",
-    description: "Implement drag and drop for task reordering",
-    createdDate: new Date("2024-01-12"),
-    dueDate: new Date("2024-01-25"),
-    prioritizedDate: new Date(Date.now() + 86400000), // Tomorrow
-    status: "open",
-    priority: "critical",
-    type: "task",
-    themeIds: ["2"],
-    order: 3,
-  },
-  {
-    id: "4",
-    title: "Add form validation",
-    description: "Validate all form inputs before submission",
-    createdDate: new Date("2024-01-13"),
-    dueDate: new Date("2024-01-22"),
-    status: "open",
-    priority: "low",
-    type: "subtask",
-    parentTaskId: "1",
-    themeIds: ["1"],
-    order: 4,
-  },
-  {
-    id: "5",
-    title: "Implement hierarchy view",
-    description: "Build collapsible hierarchy view for products, pillars, themes, and tasks",
-    createdDate: new Date("2024-01-14"),
-    dueDate: new Date("2024-01-30"),
-    status: "hold",
-    priority: "medium",
-    type: "task",
-    themeIds: ["2"],
-    order: 5,
-  },
-];
+const mockTasks: Task[] = [];
 
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
