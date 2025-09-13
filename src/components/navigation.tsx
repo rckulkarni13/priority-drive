@@ -7,16 +7,21 @@ import {
   CheckSquare, 
   Plus,
   Target,
-  CalendarDays
+  CalendarDays,
+  CalendarRange,
+  CalendarX2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type View = 'today' | 'hierarchy' | 'completed' | 'all-tasks';
+type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'completed' | 'all-tasks';
 
 interface NavigationProps {
   currentView: View;
   onViewChange: (view: View) => void;
   todayTasksCount: number;
+  thisWeekTasksCount: number;
+  nextWeekTasksCount: number;
+  monthlyTasksCount: number;
   completedTasksCount: number;
   allTasksCount: number;
 }
@@ -25,6 +30,9 @@ export function Navigation({
   currentView, 
   onViewChange, 
   todayTasksCount,
+  thisWeekTasksCount,
+  nextWeekTasksCount,
+  monthlyTasksCount,
   completedTasksCount,
   allTasksCount
 }: NavigationProps) {
@@ -35,6 +43,27 @@ export function Navigation({
       icon: CalendarDays,
       count: todayTasksCount,
       color: 'text-blue-600',
+    },
+    {
+      id: 'this-week' as View,
+      label: 'This Week',
+      icon: CalendarRange,
+      count: thisWeekTasksCount,
+      color: 'text-indigo-600',
+    },
+    {
+      id: 'next-week' as View,
+      label: 'Next Week',
+      icon: Calendar,
+      count: nextWeekTasksCount,
+      color: 'text-violet-600',
+    },
+    {
+      id: 'monthly' as View,
+      label: 'Monthly View',
+      icon: CalendarX2,
+      count: monthlyTasksCount,
+      color: 'text-pink-600',
     },
     {
       id: 'hierarchy' as View,

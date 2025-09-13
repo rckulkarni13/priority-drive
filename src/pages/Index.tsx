@@ -7,7 +7,7 @@ import { useTasks } from "@/hooks/use-tasks";
 import { Button } from "@/components/ui/button";
 import { Plus, CheckSquare2 } from "lucide-react";
 
-type View = 'today' | 'hierarchy' | 'completed' | 'all-tasks';
+type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'completed' | 'all-tasks';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('today');
@@ -20,11 +20,17 @@ const Index = () => {
     reopenTask,
     createTask,
     getTodaysTasks,
+    getThisWeekTasks,
+    getNextWeekTasks,
+    getMonthlyTasks,
     getCompletedTasks,
     getAllActiveTasks,
   } = useTasks();
 
   const todaysTasks = getTodaysTasks();
+  const thisWeekTasks = getThisWeekTasks();
+  const nextWeekTasks = getNextWeekTasks();
+  const monthlyTasks = getMonthlyTasks();
   const completedTasks = getCompletedTasks();
   const allActiveTasks = getAllActiveTasks();
 
@@ -39,6 +45,42 @@ const Index = () => {
             onTaskReopen={reopenTask}
             showDateGroups={false}
             emptyMessage="No tasks prioritized for today. Add some priorities to get started!"
+          />
+        );
+
+      case 'this-week':
+        return (
+          <TaskList
+            title="This Week's Priorities"
+            tasks={thisWeekTasks}
+            onTaskToggleStatus={toggleTaskStatus}
+            onTaskReopen={reopenTask}
+            showDateGroups={true}
+            emptyMessage="No tasks prioritized for this week."
+          />
+        );
+
+      case 'next-week':
+        return (
+          <TaskList
+            title="Next Week's Priorities"
+            tasks={nextWeekTasks}
+            onTaskToggleStatus={toggleTaskStatus}
+            onTaskReopen={reopenTask}
+            showDateGroups={true}
+            emptyMessage="No tasks prioritized for next week."
+          />
+        );
+
+      case 'monthly':
+        return (
+          <TaskList
+            title="This Month's Priorities"
+            tasks={monthlyTasks}
+            onTaskToggleStatus={toggleTaskStatus}
+            onTaskReopen={reopenTask}
+            showDateGroups={true}
+            emptyMessage="No tasks prioritized for this month."
           />
         );
       
@@ -109,6 +151,9 @@ const Index = () => {
             currentView={currentView}
             onViewChange={setCurrentView}
             todayTasksCount={todaysTasks.length}
+            thisWeekTasksCount={thisWeekTasks.length}
+            nextWeekTasksCount={nextWeekTasks.length}
+            monthlyTasksCount={monthlyTasks.length}
             completedTasksCount={completedTasks.length}
             allTasksCount={allActiveTasks.length}
           />

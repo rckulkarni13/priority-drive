@@ -178,6 +178,73 @@ export function useTasks() {
     return tasks.filter(task => task.status !== 'completed');
   }, [tasks]);
 
+  const getThisWeekTasks = useCallback(() => {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay()); // Start of current week (Sunday)
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // End of current week (Saturday)
+
+    return tasks.filter(task => {
+      if (!task.prioritizedDate || task.status === 'completed') return false;
+      
+      const startDate = new Date(task.prioritizedDate);
+      const endDate = task.prioritizedEndDate ? new Date(task.prioritizedEndDate) : startDate;
+      
+      // Check if any part of the task's priority period overlaps with this week
+      return (
+        (startDate <= endOfWeek && endDate >= startOfWeek)
+      );
+    }).sort((a, b) => {
+      const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
+  }, [tasks]);
+
+  const getNextWeekTasks = useCallback(() => {
+    const today = new Date();
+    const startOfNextWeek = new Date(today);
+    startOfNextWeek.setDate(today.getDate() - today.getDay() + 7); // Start of next week (Sunday)
+    const endOfNextWeek = new Date(startOfNextWeek);
+    endOfNextWeek.setDate(startOfNextWeek.getDate() + 6); // End of next week (Saturday)
+
+    return tasks.filter(task => {
+      if (!task.prioritizedDate || task.status === 'completed') return false;
+      
+      const startDate = new Date(task.prioritizedDate);
+      const endDate = task.prioritizedEndDate ? new Date(task.prioritizedEndDate) : startDate;
+      
+      // Check if any part of the task's priority period overlaps with next week
+      return (
+        (startDate <= endOfNextWeek && endDate >= startOfNextWeek)
+      );
+    }).sort((a, b) => {
+      const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
+  }, [tasks]);
+
+  const getMonthlyTasks = useCallback(() => {
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    return tasks.filter(task => {
+      if (!task.prioritizedDate || task.status === 'completed') return false;
+      
+      const startDate = new Date(task.prioritizedDate);
+      const endDate = task.prioritizedEndDate ? new Date(task.prioritizedEndDate) : startDate;
+      
+      // Check if any part of the task's priority period overlaps with this month
+      return (
+        (startDate <= endOfMonth && endDate >= startOfMonth)
+      );
+    }).sort((a, b) => {
+      const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
+  }, [tasks]);
+
   const createTask = useCallback((taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">) => {
     const newTask: Task = {
       ...taskData,
@@ -199,6 +266,9 @@ export function useTasks() {
     reopenTask,
     createTask,
     getTodaysTasks,
+    getThisWeekTasks,
+    getNextWeekTasks,
+    getMonthlyTasks,
     getCompletedTasks,
     getAllActiveTasks,
   };
