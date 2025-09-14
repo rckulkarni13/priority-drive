@@ -12,7 +12,7 @@ import {
   AlertTriangle,
   RotateCcw
 } from "lucide-react";
-import { format, isAfter, isBefore, startOfDay } from "date-fns";
+import { format, isBefore, startOfDay } from "date-fns";
 
 interface PriorityTaskRowProps {
   task: Task;
@@ -78,6 +78,10 @@ export function PriorityTaskRow({
   };
 
   const isCompleted = task.status === 'completed';
+  const handleOpen = () => {
+    if (onTaskView) return onTaskView(task);
+    onTaskEdit?.(task);
+  };
 
   return (
     <Card className={`p-4 ${isCompleted ? 'opacity-60' : ''}`}>
@@ -94,9 +98,9 @@ export function PriorityTaskRow({
         {/* Task Content */}
         <div 
           className="flex-1 min-w-0 cursor-pointer hover:bg-muted/30 rounded p-2 -m-2 transition-colors"
-          onClick={() => onTaskView?.(task)}
+          onClick={handleOpen}
         >
-          <div className="flex items-start justify-between gap-3" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               {/* Parent Task Chip */}
               {parentTask && (
@@ -121,6 +125,9 @@ export function PriorityTaskRow({
               
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mt-2">
+                <Badge variant="secondary" className="text-xs">
+                  {task.type === 'task' ? 'Task' : 'Subtask'}
+                </Badge>
                 {getBadges()}
                 <Badge variant="outline" className="capitalize">
                   {task.priority}
@@ -129,7 +136,7 @@ export function PriorityTaskRow({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
               {isCompleted ? (
                 <Button
                   variant="ghost"
