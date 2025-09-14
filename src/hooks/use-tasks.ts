@@ -533,17 +533,22 @@ export function useTasks() {
       return (startDate <= endOfWeek && endDate >= startOfWeek);
     });
 
-    // Include parent tasks when their subtasks are prioritized
+    // For parent tasks, only include them if they are prioritized OR if they have prioritized subtasks
     const parentTaskIds = new Set<string>();
+    const prioritizedTaskIds = new Set(prioritizedTasks.map(t => t.id));
+    
     prioritizedTasks.forEach(task => {
       if (task.type === 'subtask' && task.parentTaskId) {
         parentTaskIds.add(task.parentTaskId);
       }
     });
 
-    const parentTasks = tasks.filter(task => 
-      parentTaskIds.has(task.id) && task.status !== 'completed'
-    );
+    const parentTasks = tasks.filter(task => {
+      // Only include parent if it's prioritized OR has prioritized subtasks
+      return parentTaskIds.has(task.id) && 
+             task.status !== 'completed' && 
+             !prioritizedTaskIds.has(task.id); // Don't duplicate if parent is already prioritized
+    });
 
     const allRelevantTasks = [...prioritizedTasks, ...parentTasks]
       .filter((task, index, array) => array.findIndex(t => t.id === task.id) === index) // Remove duplicates
@@ -572,17 +577,21 @@ export function useTasks() {
       return (startDate <= endOfNextWeek && endDate >= startOfNextWeek);
     });
 
-    // Include parent tasks when their subtasks are prioritized
+    // For parent tasks, only include them if they have prioritized subtasks
     const parentTaskIds = new Set<string>();
+    const prioritizedTaskIds = new Set(prioritizedTasks.map(t => t.id));
+    
     prioritizedTasks.forEach(task => {
       if (task.type === 'subtask' && task.parentTaskId) {
         parentTaskIds.add(task.parentTaskId);
       }
     });
 
-    const parentTasks = tasks.filter(task => 
-      parentTaskIds.has(task.id) && task.status !== 'completed'
-    );
+    const parentTasks = tasks.filter(task => {
+      return parentTaskIds.has(task.id) && 
+             task.status !== 'completed' && 
+             !prioritizedTaskIds.has(task.id);
+    });
 
     const allRelevantTasks = [...prioritizedTasks, ...parentTasks]
       .filter((task, index, array) => array.findIndex(t => t.id === task.id) === index) // Remove duplicates
@@ -609,17 +618,21 @@ export function useTasks() {
       return (startDate <= endOfMonth && endDate >= startOfMonth);
     });
 
-    // Include parent tasks when their subtasks are prioritized
+    // For parent tasks, only include them if they have prioritized subtasks
     const parentTaskIds = new Set<string>();
+    const prioritizedTaskIds = new Set(prioritizedTasks.map(t => t.id));
+    
     prioritizedTasks.forEach(task => {
       if (task.type === 'subtask' && task.parentTaskId) {
         parentTaskIds.add(task.parentTaskId);
       }
     });
 
-    const parentTasks = tasks.filter(task => 
-      parentTaskIds.has(task.id) && task.status !== 'completed'
-    );
+    const parentTasks = tasks.filter(task => {
+      return parentTaskIds.has(task.id) && 
+             task.status !== 'completed' && 
+             !prioritizedTaskIds.has(task.id);
+    });
 
     const allRelevantTasks = [...prioritizedTasks, ...parentTasks]
       .filter((task, index, array) => array.findIndex(t => t.id === task.id) === index) // Remove duplicates

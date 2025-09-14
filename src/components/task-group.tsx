@@ -89,7 +89,15 @@ export function TaskGroup({
               {subtasks.map(subtask => {
                 const isSubtaskPrioritized = prioritizedTaskIds.has(subtask.id);
                 return (
-                  <div key={subtask.id} className={cn("relative", !isSubtaskPrioritized && "opacity-50")}>
+                  <div 
+                    key={subtask.id} 
+                    className={cn(
+                      "relative transition-all duration-200",
+                      isSubtaskPrioritized 
+                        ? "ring-2 ring-primary/30 rounded-lg p-2 bg-primary/5 border-l-4 border-primary" 
+                        : "opacity-60"
+                    )}
+                  >
                     <TaskCard
                       task={subtask}
                       onEdit={onTaskEdit}
