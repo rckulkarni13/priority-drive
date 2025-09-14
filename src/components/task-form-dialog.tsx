@@ -78,7 +78,7 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate }: TaskFo
       prioritizedEndDate: data.prioritizedEndDate,
       priority: data.priority,
       themeIds: data.themeIds,
-      parentTaskId: data.parentTaskId,
+      parentTaskId: data.parentTaskId === "none" ? undefined : data.parentTaskId,
     });
     form.reset();
     setOpen(false);
@@ -192,14 +192,14 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate }: TaskFo
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Parent Task (Optional)</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                    <Select onValueChange={field.onChange} value={field.value || "none"}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select parent task" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">None (Main Task)</SelectItem>
+                        <SelectItem value="none">None (Main Task)</SelectItem>
                         {tasks.filter(task => task.type === 'task').map((task) => (
                           <SelectItem key={task.id} value={task.id}>
                             {task.title}
