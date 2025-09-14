@@ -9,11 +9,12 @@ import {
   Target,
   CalendarDays,
   CalendarRange,
-  CalendarX2
+  CalendarX2,
+  Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'completed' | 'all-tasks';
+type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
 interface NavigationProps {
   currentView: View;
@@ -24,6 +25,9 @@ interface NavigationProps {
   monthlyTasksCount: number;
   completedTasksCount: number;
   allTasksCount: number;
+  productsCount: number;
+  pillarsCount: number;
+  themesCount: number;
 }
 
 export function Navigation({ 
@@ -34,7 +38,10 @@ export function Navigation({
   nextWeekTasksCount,
   monthlyTasksCount,
   completedTasksCount,
-  allTasksCount
+  allTasksCount,
+  productsCount,
+  pillarsCount,
+  themesCount
 }: NavigationProps) {
   const navItems = [
     {
@@ -78,6 +85,13 @@ export function Navigation({
       icon: Target,
       count: allTasksCount,
       color: 'text-green-600',
+    },
+    {
+      id: 'manage' as View,
+      label: 'Manage Items',
+      icon: Settings,
+      count: productsCount + pillarsCount + themesCount,
+      color: 'text-orange-600',
     },
     {
       id: 'completed' as View,

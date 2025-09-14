@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Navigation } from "@/components/navigation";
 import { TaskList } from "@/components/task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
+import { ManageView } from "@/components/manage-view";
 import { TaskFormDialog } from "@/components/task-form-dialog";
 import { ProductFormDialog } from "@/components/product-form-dialog";
 import { PillarFormDialog } from "@/components/pillar-form-dialog";
@@ -10,7 +11,7 @@ import { useTasks } from "@/hooks/use-tasks";
 import { Button } from "@/components/ui/button";
 import { Plus, CheckSquare2, Package, Target, Lightbulb } from "lucide-react";
 
-type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'completed' | 'all-tasks';
+type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('today');
@@ -130,6 +131,18 @@ const Index = () => {
           />
         );
       
+      case 'manage':
+        return (
+          <ManageView
+            products={products}
+            strategicPillars={strategicPillars}
+            themes={themes}
+            onProductDelete={deleteProduct}
+            onPillarDelete={deleteStrategicPillar}
+            onThemeDelete={deleteTheme}
+          />
+        );
+      
       default:
         return null;
     }
@@ -191,6 +204,9 @@ const Index = () => {
             monthlyTasksCount={monthlyTasks.length}
             completedTasksCount={completedTasks.length}
             allTasksCount={allActiveTasks.length}
+            productsCount={products.length}
+            pillarsCount={strategicPillars.length}
+            themesCount={themes.length}
           />
         </div>
 
