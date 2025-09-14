@@ -9,6 +9,7 @@ import { format, isSameDay } from "date-fns";
 interface TaskListProps {
   title: string;
   tasks: Task[];
+  allTasks: Task[];
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
@@ -19,7 +20,8 @@ interface TaskListProps {
 
 export function TaskList({ 
   title, 
-  tasks, 
+  tasks,
+  allTasks,
   onTaskEdit, 
   onTaskToggleStatus, 
   onTaskReopen,
@@ -103,6 +105,7 @@ export function TaskList({
                   <CardContent className="pt-0">
                     <OrganizedTaskList
                       tasks={dateTasks}
+                      allTasks={allTasks}
                       prioritizedTaskIds={prioritizedTaskIds}
                       onTaskEdit={onTaskEdit}
                       onTaskToggleStatus={onTaskToggleStatus}
@@ -137,6 +140,7 @@ export function TaskList({
       ) : (
         <OrganizedTaskList
           tasks={tasks}
+          allTasks={allTasks}
           prioritizedTaskIds={prioritizedTaskIds}
           onTaskEdit={onTaskEdit}
           onTaskToggleStatus={onTaskToggleStatus}

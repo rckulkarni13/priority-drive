@@ -145,6 +145,7 @@ const Index = () => {
             <TaskList
               title="Today's Priorities"
               tasks={todaysTasks}
+              allTasks={tasks}
               onTaskEdit={setViewingTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
@@ -159,6 +160,7 @@ const Index = () => {
             <TaskList
               title="This Week's Priorities"
               tasks={thisWeekTasks}
+              allTasks={tasks}
               onTaskEdit={setViewingTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
@@ -173,6 +175,7 @@ const Index = () => {
             <TaskList
               title="Next Week's Priorities"
               tasks={nextWeekTasks}
+              allTasks={tasks}
               onTaskEdit={setViewingTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
@@ -187,6 +190,7 @@ const Index = () => {
             <TaskList
               title="This Month's Priorities"
               tasks={monthlyTasks}
+              allTasks={tasks}
               onTaskEdit={setViewingTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
@@ -221,6 +225,7 @@ const Index = () => {
             <TaskList
               title="Completed Tasks"
               tasks={completedTasks}
+              allTasks={tasks}
               onTaskEdit={setViewingTask}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -233,6 +238,7 @@ const Index = () => {
             <TaskList
               title="All Active Tasks"
               tasks={allActiveTasks}
+              allTasks={tasks}
               onTaskEdit={setViewingTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}

@@ -145,6 +145,7 @@ export function TaskGroup({
 
 interface OrganizedTaskListProps {
   tasks: Task[];
+  allTasks: Task[];
   prioritizedTaskIds?: Set<string>; // Tasks that are actually prioritized for current view
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
@@ -154,6 +155,7 @@ interface OrganizedTaskListProps {
 
 export function OrganizedTaskList({
   tasks,
+  allTasks,
   prioritizedTaskIds = new Set(),
   onTaskEdit,
   onTaskToggleStatus,
@@ -224,7 +226,7 @@ export function OrganizedTaskList({
       {/* Orphaned subtasks - subtasks whose parents are not in current view */}
       {orphanedSubtasks.map(subtask => {
         const isSubtaskPrioritized = prioritizedTaskIds.has(subtask.id);
-        const parentTask = tasks.find(t => t.id === subtask.parentTaskId);
+        const parentTask = allTasks.find(t => t.id === subtask.parentTaskId);
         const parentTitle = parentTask?.title || "Unknown Parent";
         
         return (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -42,6 +42,13 @@ export function QuickCreateMenu({
   variant = "default"
 }: QuickCreateMenuProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (openDialog && triggerRef.current) {
+      triggerRef.current.click();
+    }
+  }, [openDialog]);
 
   const createOptions = [
     {
@@ -92,7 +99,7 @@ export function QuickCreateMenu({
               setOpenDialog(null);
             }}
           >
-            <div />
+            <button ref={triggerRef} style={{ display: 'none' }} />
           </TaskFormDialog>
         );
       case 'subtask':
@@ -106,7 +113,7 @@ export function QuickCreateMenu({
               setOpenDialog(null);
             }}
           >
-            <div />
+            <button onClick={() => {}} style={{ display: 'none' }} />
           </SubtaskFormDialog>
         ) : null;
       case 'theme':
@@ -118,7 +125,7 @@ export function QuickCreateMenu({
               setOpenDialog(null);
             }}
           >
-            <div />
+            <button onClick={() => {}} style={{ display: 'none' }} />
           </ThemeFormDialog>
         );
       case 'pillar':
@@ -130,7 +137,7 @@ export function QuickCreateMenu({
               setOpenDialog(null);
             }}
           >
-            <div />
+            <button onClick={() => {}} style={{ display: 'none' }} />
           </PillarFormDialog>
         );
       case 'domain':
@@ -141,7 +148,7 @@ export function QuickCreateMenu({
               setOpenDialog(null);
             }}
           >
-            <div />
+            <button onClick={() => {}} style={{ display: 'none' }} />
           </DomainFormDialog>
         );
       default:
