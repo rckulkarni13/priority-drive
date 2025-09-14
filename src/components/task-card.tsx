@@ -34,7 +34,7 @@ export function TaskCard({
   
   return (
     <Card className={cn(
-      "task-card group",
+      "task-card group cursor-pointer",
       isDragging && "opacity-50 rotate-2 scale-105",
       isCompleted && "opacity-75"
     )}>
@@ -43,14 +43,18 @@ export function TaskCard({
           <div
             {...dragHandleProps}
             className="drag-handle mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={(e) => e.stopPropagation()}
           >
             <GripVertical className="w-4 h-4" />
           </div>
           
-          <div className="flex-1 min-w-0">
+          <div 
+            className="flex-1 min-w-0"
+            onClick={() => onEdit?.(task)}
+          >
             <div className="flex items-start justify-between gap-2 mb-2">
               <h3 className={cn(
-                "font-medium text-sm leading-tight",
+                "font-medium text-sm leading-tight hover:text-primary transition-colors",
                 isCompleted && "line-through text-muted-foreground"
               )}>
                 {task.title}
@@ -84,17 +88,7 @@ export function TaskCard({
                 )}
               </div>
               
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEdit?.(task)}
-                  className="h-6 px-2 text-xs"
-                >
-                  <Edit className="w-3 h-3 mr-1" />
-                  Edit
-                </Button>
-                
+              <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                 {task.type === 'task' && (
                   <Button
                     variant="ghost"

@@ -7,6 +7,7 @@ import { TaskList } from "@/components/task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
 import { ManageView } from "@/components/manage-view";
 import { EditTaskDialog } from "@/components/edit-task-dialog";
+import { TaskDetailDialog } from "@/components/task-detail-dialog";
 import { ControlledSubtaskDialog } from "@/components/controlled-subtask-dialog";
 import { ControlledTaskDialog } from "@/components/controlled-task-dialog";
 import { ControlledThemeDialog } from "@/components/controlled-theme-dialog";
@@ -23,6 +24,7 @@ type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'com
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('today');
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [viewingTask, setViewingTask] = useState<Task | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCreateSubtask, setShowCreateSubtask] = useState<string>('');
@@ -142,7 +144,7 @@ const Index = () => {
             <TaskList
               title="Today's Priorities"
               tasks={todaysTasks}
-              onTaskEdit={handleEditTask}
+              onTaskEdit={setViewingTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -156,7 +158,7 @@ const Index = () => {
             <TaskList
               title="This Week's Priorities"
               tasks={thisWeekTasks}
-              onTaskEdit={handleEditTask}
+              onTaskEdit={setViewingTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -170,7 +172,7 @@ const Index = () => {
             <TaskList
               title="Next Week's Priorities"
               tasks={nextWeekTasks}
-              onTaskEdit={handleEditTask}
+              onTaskEdit={setViewingTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -184,7 +186,7 @@ const Index = () => {
             <TaskList
               title="This Month's Priorities"
               tasks={monthlyTasks}
-              onTaskEdit={handleEditTask}
+              onTaskEdit={setViewingTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -200,7 +202,7 @@ const Index = () => {
               strategicPillars={strategicPillars}
               themes={themes}
               tasks={tasks}
-              onTaskEdit={handleEditTask}
+              onTaskEdit={setViewingTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -218,7 +220,7 @@ const Index = () => {
             <TaskList
               title="Completed Tasks"
               tasks={completedTasks}
-              onTaskEdit={handleEditTask}
+              onTaskEdit={setViewingTask}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
               emptyMessage="No completed tasks yet. Complete some tasks to see them here!"
@@ -230,7 +232,7 @@ const Index = () => {
             <TaskList
               title="All Active Tasks"
               tasks={allActiveTasks}
-              onTaskEdit={handleEditTask}
+              onTaskEdit={setViewingTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -316,6 +318,15 @@ const Index = () => {
           {renderContent()}
         </div>
         </div>
+
+        {/* Task Detail Dialog */}
+        <TaskDetailDialog
+          task={viewingTask}
+          themes={themes}
+          tasks={allActiveTasks}
+          onTaskUpdate={updateTask}
+          onClose={() => setViewingTask(null)}
+        />
 
         {/* Edit Task Dialog */}
         <EditTaskDialog
