@@ -1,0 +1,41 @@
+import { useEffect, useRef } from "react";
+import { ThemeFormDialog } from "./theme-form-dialog";
+import { Theme, StrategicPillar } from "@/types";
+
+interface ControlledThemeDialogProps {
+  isOpen: boolean;
+  pillarId?: string;
+  strategicPillars: StrategicPillar[];
+  onThemeCreate: (themeData: Omit<Theme, "id" | "createdDate">) => void;
+  onClose: () => void;
+}
+
+export function ControlledThemeDialog({
+  isOpen,
+  pillarId,
+  strategicPillars,
+  onThemeCreate,
+  onClose
+}: ControlledThemeDialogProps) {
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (isOpen && triggerRef.current) {
+      triggerRef.current.click();
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <ThemeFormDialog
+      strategicPillars={strategicPillars}
+      onThemeCreate={(themeData) => {
+        onThemeCreate(themeData);
+        onClose();
+      }}
+    >
+      <button ref={triggerRef} style={{ display: 'none' }} />
+    </ThemeFormDialog>
+  );
+}

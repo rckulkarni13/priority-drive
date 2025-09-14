@@ -6,14 +6,14 @@ import { Navigation } from "@/components/navigation";
 import { TaskList } from "@/components/task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
 import { ManageView } from "@/components/manage-view";
-import { TaskFormDialog } from "@/components/task-form-dialog";
-import { SubtaskFormDialog } from "@/components/subtask-form-dialog";
 import { EditTaskDialog } from "@/components/edit-task-dialog";
-import { DomainFormDialog } from "@/components/domain-form-dialog";
-import { PillarFormDialog } from "@/components/pillar-form-dialog";
-import { ThemeFormDialog } from "@/components/theme-form-dialog";
+import { ControlledSubtaskDialog } from "@/components/controlled-subtask-dialog";
+import { ControlledTaskDialog } from "@/components/controlled-task-dialog";
+import { ControlledThemeDialog } from "@/components/controlled-theme-dialog";
+import { ControlledPillarDialog } from "@/components/controlled-pillar-dialog";
 import { useTasks } from "@/hooks/use-tasks";
 import { Button } from "@/components/ui/button";
+import { QuickCreateMenu } from "@/components/quick-create-menu";
 import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
@@ -25,6 +25,10 @@ const Index = () => {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showCreateSubtask, setShowCreateSubtask] = useState<string>('');
+  const [showCreateTask, setShowCreateTask] = useState<string>('');
+  const [showCreateTheme, setShowCreateTheme] = useState<string>('');
+  const [showCreatePillar, setShowCreatePillar] = useState<string>('');
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -103,11 +107,11 @@ const Index = () => {
   const allActiveTasks = getAllActiveTasks();
 
   const handleCreateSubtask = (parentTaskId: string) => {
-    // This will be handled by the TaskFormDialog with defaultParentTaskId
+    setShowCreateSubtask(parentTaskId);
   };
 
   const handleCreateTask = (themeId?: string) => {
-    // This will be handled by the TaskFormDialog with pre-selected theme
+    setShowCreateTask(themeId || 'new-task');
   };
 
   const handleEditTask = (task: Task) => {
@@ -119,11 +123,11 @@ const Index = () => {
   };
 
   const handleCreateTheme = (pillarId?: string) => {
-    // This will be handled by the ThemeFormDialog - could pass pillarId as default
+    setShowCreateTheme(pillarId || 'new-theme');
   };
 
   const handleCreatePillar = (domainId?: string) => {
-    // This will be handled by the PillarFormDialog - could pass domainId as default
+    setShowCreatePillar(domainId || 'new-pillar');
   };
 
   const renderContent = () => {
@@ -258,43 +262,16 @@ const Index = () => {
             </div>
             
             <div className="flex gap-2">
-              <DomainFormDialog onDomainCreate={createDomain}>
-                <Button variant="outline" size="sm" className="gap-1">
-                  <Package className="w-4 h-4" />
-                  Domain
-                </Button>
-              </DomainFormDialog>
-              
-              <PillarFormDialog domains={domains} onPillarCreate={createStrategicPillar}>
-                <Button variant="outline" size="sm" className="gap-1">
-                  <Target className="w-4 h-4" />
-                  Pillar
-                </Button>
-              </PillarFormDialog>
-              
-              <ThemeFormDialog strategicPillars={strategicPillars} onThemeCreate={createTheme}>
-                <Button variant="outline" size="sm" className="gap-1">
-                  <Lightbulb className="w-4 h-4" />
-                  Theme
-                </Button>
-              </ThemeFormDialog>
-              
-              <TaskFormDialog themes={themes} tasks={tasks} onTaskCreate={createTask}>
-                <Button className="gap-2 shadow-lg hover:shadow-xl transition-shadow">
-                  <Plus className="w-4 h-4" />
-                  New Task
-                </Button>
-              </TaskFormDialog>
-
-              {/* Hidden SubtaskFormDialog for programmatic triggering */}
-              <SubtaskFormDialog 
-                themes={themes} 
-                tasks={tasks} 
-                parentTaskId="" 
+              <QuickCreateMenu
+                themes={themes}
+                tasks={tasks}
+                strategicPillars={strategicPillars}
+                domains={domains}
                 onTaskCreate={createTask}
-              >
-                <div style={{ display: 'none' }} />
-              </SubtaskFormDialog>
+                onThemeCreate={createTheme}
+                onPillarCreate={createStrategicPillar}
+                onDomainCreate={createDomain}
+              />
 
               <Button
                 onClick={handleSignOut}
@@ -336,6 +313,44 @@ const Index = () => {
           tasks={tasks}
           onTaskUpdate={updateTask}
           onClose={handleCloseEditDialog}
+        />
+
+        {/* Create Subtask Dialog */}
+        <ControlledSubtaskDialog
+          isOpen={!!showCreateSubtask && showCreateSubtask !== ''}
+          parentTaskId={showCreateSubtask}
+          themes={themes}
+          tasks={tasks}
+          onTaskCreate={createTask}
+          onClose={() => setShowCreateSubtask('')}
+        />
+
+        {/* Create Task Dialog */}
+        <ControlledTaskDialog
+          isOpen={!!showCreateTask && showCreateTask !== ''}
+          themeId={showCreateTask !== 'new-task' ? showCreateTask : undefined}
+          themes={themes}
+          tasks={tasks}
+          onTaskCreate={createTask}
+          onClose={() => setShowCreateTask('')}
+        />
+
+        {/* Create Theme Dialog */}
+        <ControlledThemeDialog
+          isOpen={!!showCreateTheme && showCreateTheme !== ''}
+          pillarId={showCreateTheme !== 'new-theme' ? showCreateTheme : undefined}
+          strategicPillars={strategicPillars}
+          onThemeCreate={createTheme}
+          onClose={() => setShowCreateTheme('')}
+        />
+
+        {/* Create Pillar Dialog */}
+        <ControlledPillarDialog
+          isOpen={!!showCreatePillar && showCreatePillar !== ''}
+          domainId={showCreatePillar !== 'new-pillar' ? showCreatePillar : undefined}
+          domains={domains}
+          onPillarCreate={createStrategicPillar}
+          onClose={() => setShowCreatePillar('')}
         />
       </div>
   );
