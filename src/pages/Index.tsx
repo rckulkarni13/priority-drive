@@ -140,6 +140,7 @@ const Index = () => {
               onTaskEdit={handleEditTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
+              onCreateSubtask={handleCreateSubtask}
               showDateGroups={false}
               emptyMessage="No tasks prioritized for today. Add some priorities to get started!"
             />
@@ -153,6 +154,7 @@ const Index = () => {
               onTaskEdit={handleEditTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
+              onCreateSubtask={handleCreateSubtask}
               showDateGroups={true}
               emptyMessage="No tasks prioritized for this week."
             />
@@ -166,6 +168,7 @@ const Index = () => {
               onTaskEdit={handleEditTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
+              onCreateSubtask={handleCreateSubtask}
               showDateGroups={true}
               emptyMessage="No tasks prioritized for next week."
             />
@@ -179,6 +182,7 @@ const Index = () => {
               onTaskEdit={handleEditTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
+              onCreateSubtask={handleCreateSubtask}
               showDateGroups={true}
               emptyMessage="No tasks prioritized for this month."
             />
@@ -211,6 +215,7 @@ const Index = () => {
               tasks={completedTasks}
               onTaskEdit={handleEditTask}
               onTaskReopen={reopenTask}
+              onCreateSubtask={handleCreateSubtask}
               emptyMessage="No completed tasks yet. Complete some tasks to see them here!"
             />
         );
@@ -223,6 +228,7 @@ const Index = () => {
               onTaskEdit={handleEditTask}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
+              onCreateSubtask={handleCreateSubtask}
               showDateGroups={true}
               emptyMessage="No active tasks found."
             />
