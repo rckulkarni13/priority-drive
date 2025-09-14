@@ -46,15 +46,28 @@ export function TaskList({
   const prioritizedTaskIds = getPrioritizedTaskIds();
 
   if (showDateGroups) {
-    // Group tasks by prioritized date
-    const groupedTasks = tasks.reduce((groups, task) => {
-      const dateKey = task.prioritizedDate 
-        ? format(task.prioritizedDate, 'yyyy-MM-dd')
-        : 'no-date';
-      
-      if (!groups[dateKey]) {
-        groups[dateKey] = [];
+    // Group tasks by effective grouping date:
+    // - Use prioritizedDate when present
+    // - For parent tasks without prioritizedDate, use the earliest effective date of its visible subtasks
+    // - Otherwise, fall back to dueDate
+    const getGroupingDate = (task: Task): Date | null => {
+      if (task.prioritizedDate) return task.prioritizedDate;
+      if (task.type === 'task') {
+        const children = tasks.filter(t => t.parentTaskId === task.id);
+        const childDates = children
+          .map(c => c.prioritizedDate || c.dueDate)
+          .filter(Boolean) as Date[];
+        if (childDates.length) {
+          return new Date(Math.min(...childDates.map(d => d.getTime())));
+        }
       }
+      return task.dueDate || null;
+    };
+
+    const groupedTasks = tasks.reduce((groups, task) => {
+      const date = getGroupingDate(task);
+      const dateKey = date ? format(date, 'yyyy-MM-dd') : 'no-date';
+      if (!groups[dateKey]) groups[dateKey] = [];
       groups[dateKey].push(task);
       return groups;
     }, {} as Record<string, Task[]>);
