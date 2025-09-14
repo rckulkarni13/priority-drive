@@ -17,6 +17,7 @@ import { format, isAfter, isBefore, startOfDay } from "date-fns";
 interface PriorityTaskRowProps {
   task: Task;
   allTasks: Task[];
+  onTaskView?: (task: Task) => void;
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
@@ -26,6 +27,7 @@ interface PriorityTaskRowProps {
 export function PriorityTaskRow({
   task,
   allTasks,
+  onTaskView,
   onTaskEdit,
   onTaskToggleStatus,
   onTaskReopen,
@@ -90,8 +92,11 @@ export function PriorityTaskRow({
         </div>
 
         {/* Task Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-3">
+        <div 
+          className="flex-1 min-w-0 cursor-pointer hover:bg-muted/30 rounded p-2 -m-2 transition-colors"
+          onClick={() => onTaskView?.(task)}
+        >
+          <div className="flex items-start justify-between gap-3" onClick={(e) => e.stopPropagation()}>
             <div className="flex-1 min-w-0">
               {/* Parent Task Chip */}
               {parentTask && (

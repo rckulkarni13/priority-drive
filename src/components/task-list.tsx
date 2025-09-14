@@ -11,6 +11,7 @@ interface TaskListProps {
   title: string;
   tasks: Task[];
   allTasks: Task[];
+  onTaskView?: (task: Task) => void;
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
@@ -23,6 +24,7 @@ export function TaskList({
   title, 
   tasks,
   allTasks,
+  onTaskView,
   onTaskEdit, 
   onTaskToggleStatus, 
   onTaskReopen,
@@ -137,6 +139,7 @@ export function TaskList({
                       key={task.id}
                       task={task}
                       allTasks={allTasks}
+                      onTaskView={onTaskView}
                       onTaskEdit={onTaskEdit}
                       onTaskToggleStatus={onTaskToggleStatus}
                       onTaskReopen={onTaskReopen}
@@ -175,6 +178,7 @@ export function TaskList({
               key={task.id}
               task={task}
               allTasks={allTasks}
+              onTaskView={onTaskView}
               onTaskEdit={onTaskEdit}
               onTaskToggleStatus={onTaskToggleStatus}
               onTaskReopen={onTaskReopen}
