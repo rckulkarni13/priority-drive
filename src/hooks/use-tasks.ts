@@ -481,6 +481,22 @@ export function useTasks() {
     return allRelevantTasks;
   }, [tasks]);
 
+  const getTodaysPrioritizedTaskIds = useCallback(() => {
+    const today = new Date();
+    return new Set(tasks.filter(task => {
+      if (!task.prioritizedDate || task.status === 'completed') return false;
+      
+      const startDate = new Date(task.prioritizedDate);
+      const endDate = task.prioritizedEndDate ? new Date(task.prioritizedEndDate) : startDate;
+      
+      const todayTime = today.getTime();
+      const startTime = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).getTime();
+      const endTime = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime();
+      
+      return todayTime >= startTime && todayTime <= endTime;
+    }).map(task => task.id));
+  }, [tasks]);
+
   const getCompletedTasks = useCallback(() => {
     return tasks.filter(task => task.status === 'completed');
   }, [tasks]);
@@ -691,6 +707,7 @@ export function useTasks() {
     createStrategicPillar,
     createTheme,
     getTodaysTasks,
+    getTodaysPrioritizedTaskIds,
     getThisWeekTasks,
     getNextWeekTasks,
     getMonthlyTasks,

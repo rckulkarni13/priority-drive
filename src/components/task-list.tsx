@@ -27,6 +27,22 @@ export function TaskList({
   showDateGroups = false,
   emptyMessage = "No tasks found"
 }: TaskListProps) {
+  // For time-based views, we need to know which tasks are actually prioritized for this period
+  // vs tasks included for context (like parent tasks)
+  const getPrioritizedTaskIds = () => {
+    if (!showDateGroups) {
+      // For non-time-based views like "All Tasks", all tasks are equally relevant
+      return new Set(tasks.map(task => task.id));
+    }
+    
+    // For time-based views, only show tasks with prioritized dates in the current period as "prioritized"
+    return new Set(
+      tasks.filter(task => task.prioritizedDate).map(task => task.id)
+    );
+  };
+
+  const prioritizedTaskIds = getPrioritizedTaskIds();
+
   if (showDateGroups) {
     // Group tasks by prioritized date
     const groupedTasks = tasks.reduce((groups, task) => {
@@ -87,6 +103,7 @@ export function TaskList({
                   <CardContent className="pt-0">
                     <OrganizedTaskList
                       tasks={dateTasks}
+                      prioritizedTaskIds={prioritizedTaskIds}
                       onTaskEdit={onTaskEdit}
                       onTaskToggleStatus={onTaskToggleStatus}
                       onTaskReopen={onTaskReopen}
@@ -120,6 +137,7 @@ export function TaskList({
       ) : (
         <OrganizedTaskList
           tasks={tasks}
+          prioritizedTaskIds={prioritizedTaskIds}
           onTaskEdit={onTaskEdit}
           onTaskToggleStatus={onTaskToggleStatus}
           onTaskReopen={onTaskReopen}

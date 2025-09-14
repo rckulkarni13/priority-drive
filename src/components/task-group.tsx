@@ -12,6 +12,7 @@ interface TaskGroupProps {
   parentTask: Task;
   subtasks: Task[];
   allTasks: Task[];
+  prioritizedTaskIds?: Set<string>; // Tasks that are actually prioritized for current view
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
@@ -23,6 +24,7 @@ export function TaskGroup({
   parentTask,
   subtasks,
   allTasks,
+  prioritizedTaskIds = new Set(),
   onTaskEdit,
   onTaskToggleStatus,
   onTaskReopen,
@@ -32,12 +34,14 @@ export function TaskGroup({
   const [isExpanded, setIsExpanded] = useState(true);
   const hasSubtasks = subtasks.length > 0;
   const completedSubtasks = subtasks.filter(task => task.status === 'completed').length;
+  const prioritizedSubtasks = subtasks.filter(task => prioritizedTaskIds.has(task.id)).length;
+  const isParentPrioritized = prioritizedTaskIds.has(parentTask.id);
 
   return (
     <div className={cn("space-y-2", showIndented && "ml-6 border-l-2 border-muted pl-4")}>
       {hasSubtasks ? (
         <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-          <div className="relative">
+          <div className={cn("relative", !isParentPrioritized && "opacity-60")}>
             <TaskCard
               task={parentTask}
               onEdit={onTaskEdit}
@@ -48,7 +52,7 @@ export function TaskGroup({
             
             {/* Task type and subtask indicator */}
             <div className="absolute top-2 left-2 flex items-center gap-1">
-              <Badge variant="outline" className="text-xs px-1 py-0">
+              <Badge variant="outline" className={cn("text-xs px-1 py-0", isParentPrioritized && "bg-primary/10 border-primary/30")}>
                 Parent Task
               </Badge>
               <CollapsibleTrigger asChild>
@@ -71,34 +75,48 @@ export function TaskGroup({
                     ({completedSubtasks} done)
                   </span>
                 )}
+                {prioritizedSubtasks > 0 && (
+                  <span className="ml-1 text-blue-600 font-medium">
+                    ({prioritizedSubtasks} prioritized)
+                  </span>
+                )}
               </Badge>
             </div>
           </div>
 
           <CollapsibleContent>
             <div className="ml-6 space-y-2 border-l-2 border-muted pl-4">
-              {subtasks.map(subtask => (
-                <div key={subtask.id} className="relative">
-                  <TaskCard
-                    task={subtask}
-                    onEdit={onTaskEdit}
-                    onToggleStatus={onTaskToggleStatus}
-                    onReopen={onTaskReopen}
-                    onCreateSubtask={onCreateSubtask}
-                  />
-                  {/* Subtask indicator */}
-                  <div className="absolute top-2 left-2">
-                    <Badge variant="outline" className="text-xs px-1 py-0 bg-muted/30">
-                      Subtask
-                    </Badge>
+              {subtasks.map(subtask => {
+                const isSubtaskPrioritized = prioritizedTaskIds.has(subtask.id);
+                return (
+                  <div key={subtask.id} className={cn("relative", !isSubtaskPrioritized && "opacity-50")}>
+                    <TaskCard
+                      task={subtask}
+                      onEdit={onTaskEdit}
+                      onToggleStatus={onTaskToggleStatus}
+                      onReopen={onTaskReopen}
+                      onCreateSubtask={onCreateSubtask}
+                    />
+                    {/* Subtask indicator */}
+                    <div className="absolute top-2 left-2">
+                      <Badge 
+                        variant="outline" 
+                        className={cn(
+                          "text-xs px-1 py-0 bg-muted/30",
+                          isSubtaskPrioritized && "bg-primary/10 border-primary/30 font-medium"
+                        )}
+                      >
+                        Subtask {isSubtaskPrioritized && "🎯"}
+                      </Badge>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CollapsibleContent>
         </Collapsible>
       ) : (
-        <div className="relative">
+        <div className={cn("relative", !isParentPrioritized && parentTask.type === 'task' && "opacity-60")}>
           <TaskCard
             task={parentTask}
             onEdit={onTaskEdit}
@@ -108,8 +126,15 @@ export function TaskGroup({
           />
           {/* Standalone task indicator */}
           <div className="absolute top-2 left-2">
-            <Badge variant="outline" className="text-xs px-1 py-0">
+            <Badge 
+              variant="outline" 
+              className={cn(
+                "text-xs px-1 py-0",
+                (isParentPrioritized || parentTask.type === 'subtask') && "bg-primary/10 border-primary/30"
+              )}
+            >
               {parentTask.type === 'subtask' ? 'Subtask' : 'Task'}
+              {(isParentPrioritized || parentTask.type === 'subtask') && " 🎯"}
             </Badge>
           </div>
         </div>
@@ -120,6 +145,7 @@ export function TaskGroup({
 
 interface OrganizedTaskListProps {
   tasks: Task[];
+  prioritizedTaskIds?: Set<string>; // Tasks that are actually prioritized for current view
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
@@ -128,6 +154,7 @@ interface OrganizedTaskListProps {
 
 export function OrganizedTaskList({
   tasks,
+  prioritizedTaskIds = new Set(),
   onTaskEdit,
   onTaskToggleStatus,
   onTaskReopen,
@@ -186,6 +213,7 @@ export function OrganizedTaskList({
           parentTask={parent}
           subtasks={children}
           allTasks={tasks}
+          prioritizedTaskIds={prioritizedTaskIds}
           onTaskEdit={onTaskEdit}
           onTaskToggleStatus={onTaskToggleStatus}
           onTaskReopen={onTaskReopen}
@@ -194,25 +222,34 @@ export function OrganizedTaskList({
       ))}
 
       {/* Orphaned subtasks - subtasks whose parents are not in current view */}
-      {orphanedSubtasks.map(subtask => (
-        <div key={subtask.id} className="relative opacity-75">
-          <TaskCard
-            task={subtask}
-            onEdit={onTaskEdit}
-            onToggleStatus={onTaskToggleStatus}
-            onReopen={onTaskReopen}
-            onCreateSubtask={onCreateSubtask}
-          />
-          <div className="absolute top-2 left-2 flex items-center gap-1">
-            <Badge variant="outline" className="text-xs px-1 py-0 bg-yellow-50 border-yellow-200">
-              Orphaned Subtask
-            </Badge>
-            <Badge variant="secondary" className="text-xs px-1 py-0">
-              Parent not in view
-            </Badge>
+      {orphanedSubtasks.map(subtask => {
+        const isSubtaskPrioritized = prioritizedTaskIds.has(subtask.id);
+        return (
+          <div key={subtask.id} className={cn("relative", !isSubtaskPrioritized && "opacity-50")}>
+            <TaskCard
+              task={subtask}
+              onEdit={onTaskEdit}
+              onToggleStatus={onTaskToggleStatus}
+              onReopen={onTaskReopen}
+              onCreateSubtask={onCreateSubtask}
+            />
+            <div className="absolute top-2 left-2 flex items-center gap-1">
+              <Badge 
+                variant="outline" 
+                className={cn(
+                  "text-xs px-1 py-0 bg-yellow-50 border-yellow-200",
+                  isSubtaskPrioritized && "bg-primary/10 border-primary/30"
+                )}
+              >
+                Orphaned Subtask {isSubtaskPrioritized && "🎯"}
+              </Badge>
+              <Badge variant="secondary" className="text-xs px-1 py-0">
+                Parent not in view
+              </Badge>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {/* Standalone tasks */}
       {standaloneTasks.map(task => (
@@ -221,6 +258,7 @@ export function OrganizedTaskList({
           parentTask={task}
           subtasks={[]}
           allTasks={tasks}
+          prioritizedTaskIds={prioritizedTaskIds}
           onTaskEdit={onTaskEdit}
           onTaskToggleStatus={onTaskToggleStatus}
           onTaskReopen={onTaskReopen}

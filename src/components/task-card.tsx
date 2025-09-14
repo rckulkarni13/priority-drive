@@ -34,7 +34,7 @@ export function TaskCard({
   
   return (
     <Card className={cn(
-      "task-card group cursor-pointer",
+      "task-card group transition-all duration-200 hover:shadow-md hover:scale-[1.02]",
       isDragging && "opacity-50 rotate-2 scale-105",
       isCompleted && "opacity-75"
     )}>
@@ -49,12 +49,12 @@ export function TaskCard({
           </div>
           
           <div 
-            className="flex-1 min-w-0"
+            className="flex-1 min-w-0 cursor-pointer hover:bg-muted/30 rounded p-2 -m-2 transition-colors"
             onClick={() => onEdit?.(task)}
           >
             <div className="flex items-start justify-between gap-2 mb-2 mt-6">
               <h3 className={cn(
-                "font-medium text-sm leading-tight hover:text-primary transition-colors",
+                "font-medium text-sm leading-tight transition-colors",
                 isCompleted && "line-through text-muted-foreground"
               )}>
                 {task.title}

@@ -50,6 +50,7 @@ const Index = () => {
     deleteStrategicPillar,
     deleteTheme,
     getTodaysTasks,
+    getTodaysPrioritizedTaskIds,
     getThisWeekTasks,
     getNextWeekTasks,
     getMonthlyTasks,
