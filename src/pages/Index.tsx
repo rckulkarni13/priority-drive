@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Task } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/navigation";
@@ -7,6 +8,7 @@ import { HierarchyView } from "@/components/hierarchy-view";
 import { ManageView } from "@/components/manage-view";
 import { TaskFormDialog } from "@/components/task-form-dialog";
 import { SubtaskFormDialog } from "@/components/subtask-form-dialog";
+import { EditTaskDialog } from "@/components/edit-task-dialog";
 import { DomainFormDialog } from "@/components/domain-form-dialog";
 import { PillarFormDialog } from "@/components/pillar-form-dialog";
 import { ThemeFormDialog } from "@/components/theme-form-dialog";
@@ -20,6 +22,7 @@ type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'com
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('today');
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -33,6 +36,7 @@ const Index = () => {
     toggleTaskStatus,
     reopenTask,
     createTask,
+    updateTask,
     createDomain,
     createStrategicPillar,
     createTheme,
@@ -106,6 +110,14 @@ const Index = () => {
     // This will be handled by the TaskFormDialog with pre-selected theme
   };
 
+  const handleEditTask = (task: Task) => {
+    setEditingTask(task);
+  };
+
+  const handleCloseEditDialog = () => {
+    setEditingTask(null);
+  };
+
   const handleCreateTheme = (pillarId?: string) => {
     // This will be handled by the ThemeFormDialog - could pass pillarId as default
   };
@@ -118,91 +130,98 @@ const Index = () => {
     switch (currentView) {
       case 'today':
         return (
-          <TaskList
-            title="Today's Priorities"
-            tasks={todaysTasks}
-            onTaskToggleStatus={toggleTaskStatus}
-            onTaskReopen={reopenTask}
-            showDateGroups={false}
-            emptyMessage="No tasks prioritized for today. Add some priorities to get started!"
-          />
+            <TaskList
+              title="Today's Priorities"
+              tasks={todaysTasks}
+              onTaskEdit={handleEditTask}
+              onTaskToggleStatus={toggleTaskStatus}
+              onTaskReopen={reopenTask}
+              showDateGroups={false}
+              emptyMessage="No tasks prioritized for today. Add some priorities to get started!"
+            />
         );
 
       case 'this-week':
         return (
-          <TaskList
-            title="This Week's Priorities"
-            tasks={thisWeekTasks}
-            onTaskToggleStatus={toggleTaskStatus}
-            onTaskReopen={reopenTask}
-            showDateGroups={true}
-            emptyMessage="No tasks prioritized for this week."
-          />
+            <TaskList
+              title="This Week's Priorities"
+              tasks={thisWeekTasks}
+              onTaskEdit={handleEditTask}
+              onTaskToggleStatus={toggleTaskStatus}
+              onTaskReopen={reopenTask}
+              showDateGroups={true}
+              emptyMessage="No tasks prioritized for this week."
+            />
         );
 
       case 'next-week':
         return (
-          <TaskList
-            title="Next Week's Priorities"
-            tasks={nextWeekTasks}
-            onTaskToggleStatus={toggleTaskStatus}
-            onTaskReopen={reopenTask}
-            showDateGroups={true}
-            emptyMessage="No tasks prioritized for next week."
-          />
+            <TaskList
+              title="Next Week's Priorities"
+              tasks={nextWeekTasks}
+              onTaskEdit={handleEditTask}
+              onTaskToggleStatus={toggleTaskStatus}
+              onTaskReopen={reopenTask}
+              showDateGroups={true}
+              emptyMessage="No tasks prioritized for next week."
+            />
         );
 
       case 'monthly':
         return (
-          <TaskList
-            title="This Month's Priorities"
-            tasks={monthlyTasks}
-            onTaskToggleStatus={toggleTaskStatus}
-            onTaskReopen={reopenTask}
-            showDateGroups={true}
-            emptyMessage="No tasks prioritized for this month."
-          />
+            <TaskList
+              title="This Month's Priorities"
+              tasks={monthlyTasks}
+              onTaskEdit={handleEditTask}
+              onTaskToggleStatus={toggleTaskStatus}
+              onTaskReopen={reopenTask}
+              showDateGroups={true}
+              emptyMessage="No tasks prioritized for this month."
+            />
         );
       
       case 'hierarchy':
         return (
-          <HierarchyView
-            domains={domains}
-            strategicPillars={strategicPillars}
-            themes={themes}
-            tasks={tasks}
-            onTaskToggleStatus={toggleTaskStatus}
-            onTaskReopen={reopenTask}
-            onCreateSubtask={handleCreateSubtask}
-            onCreateTask={handleCreateTask}
-            onCreateTheme={handleCreateTheme}
-            onCreatePillar={handleCreatePillar}
-            onDomainDelete={deleteDomain}
-            onPillarDelete={deleteStrategicPillar}
-            onThemeDelete={deleteTheme}
-          />
+            <HierarchyView
+              domains={domains}
+              strategicPillars={strategicPillars}
+              themes={themes}
+              tasks={tasks}
+              onTaskEdit={handleEditTask}
+              onTaskToggleStatus={toggleTaskStatus}
+              onTaskReopen={reopenTask}
+              onCreateSubtask={handleCreateSubtask}
+              onCreateTask={handleCreateTask}
+              onCreateTheme={handleCreateTheme}
+              onCreatePillar={handleCreatePillar}
+              onDomainDelete={deleteDomain}
+              onPillarDelete={deleteStrategicPillar}
+              onThemeDelete={deleteTheme}
+            />
         );
       
       case 'completed':
         return (
-          <TaskList
-            title="Completed Tasks"
-            tasks={completedTasks}
-            onTaskReopen={reopenTask}
-            emptyMessage="No completed tasks yet. Complete some tasks to see them here!"
-          />
+            <TaskList
+              title="Completed Tasks"
+              tasks={completedTasks}
+              onTaskEdit={handleEditTask}
+              onTaskReopen={reopenTask}
+              emptyMessage="No completed tasks yet. Complete some tasks to see them here!"
+            />
         );
       
       case 'all-tasks':
         return (
-          <TaskList
-            title="All Active Tasks"
-            tasks={allActiveTasks}
-            onTaskToggleStatus={toggleTaskStatus}
-            onTaskReopen={reopenTask}
-            showDateGroups={true}
-            emptyMessage="No active tasks found."
-          />
+            <TaskList
+              title="All Active Tasks"
+              tasks={allActiveTasks}
+              onTaskEdit={handleEditTask}
+              onTaskToggleStatus={toggleTaskStatus}
+              onTaskReopen={reopenTask}
+              showDateGroups={true}
+              emptyMessage="No active tasks found."
+            />
         );
       
       case 'manage':
@@ -308,8 +327,17 @@ const Index = () => {
         <div className="animate-fade-in">
           {renderContent()}
         </div>
+        </div>
+
+        {/* Edit Task Dialog */}
+        <EditTaskDialog
+          task={editingTask}
+          themes={themes}
+          tasks={tasks}
+          onTaskUpdate={updateTask}
+          onClose={handleCloseEditDialog}
+        />
       </div>
-    </div>
   );
 };
 

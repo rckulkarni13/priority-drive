@@ -249,6 +249,73 @@ export function useTasks() {
     }
   }, [tasks.length, toast]);
 
+  const updateTask = useCallback(async (taskId: string, updates: Partial<Task>) => {
+    try {
+      const updateData: any = {
+        title: updates.title,
+        description: updates.description,
+        due_date: updates.dueDate?.toISOString(),
+        prioritized_date: updates.prioritizedDate?.toISOString(),
+        prioritized_end_date: updates.prioritizedEndDate?.toISOString(),
+        priority: updates.priority,
+        status: updates.status,
+        type: updates.type,
+        parent_task_id: updates.parentTaskId,
+      };
+
+      // Remove undefined values
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key] === undefined) {
+          delete updateData[key];
+        }
+      });
+
+      const { error } = await supabase
+        .from('tasks')
+        .update(updateData)
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      // Update task-theme relationships if themeIds are provided
+      if (updates.themeIds !== undefined) {
+        // Delete existing relationships
+        await supabase
+          .from('task_themes')
+          .delete()
+          .eq('task_id', taskId);
+
+        // Create new relationships
+        if (updates.themeIds.length > 0) {
+          const taskThemes = updates.themeIds.map(themeId => ({
+            task_id: taskId,
+            theme_id: themeId
+          }));
+
+          const { error: themeError } = await supabase
+            .from('task_themes')
+            .insert(taskThemes);
+
+          if (themeError) throw themeError;
+        }
+      }
+
+      await fetchTasks();
+
+      toast({
+        title: "Success",
+        description: "Task updated successfully",
+      });
+    } catch (error) {
+      console.error('Error updating task:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update task",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
+
   const createDomain = useCallback(async (domainData: Omit<Domain, "id" | "createdDate">) => {
     try {
       const { data: user } = await supabase.auth.getUser();
@@ -547,6 +614,7 @@ export function useTasks() {
     toggleTaskStatus,
     reopenTask,
     createTask,
+    updateTask,
     createDomain,
     createStrategicPillar,
     createTheme,
