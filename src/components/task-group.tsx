@@ -105,16 +105,18 @@ export function TaskGroup({
                       onReopen={onTaskReopen}
                       onCreateSubtask={onCreateSubtask}
                     />
-                    {/* Subtask indicator */}
+                    {/* Enhanced subtask indicator with better highlighting */}
                     <div className="absolute top-2 left-2">
                       <Badge 
-                        variant="outline" 
+                        variant={isSubtaskPrioritized ? "default" : "outline"}
                         className={cn(
-                          "text-xs px-1 py-0 bg-muted/30",
-                          isSubtaskPrioritized && "bg-primary/10 border-primary/30 font-medium"
+                          "text-xs px-2 py-0",
+                          isSubtaskPrioritized 
+                            ? "bg-primary text-primary-foreground font-medium shadow-sm" 
+                            : "bg-muted/30"
                         )}
                       >
-                        Subtask {isSubtaskPrioritized && "🎯"}
+                        {isSubtaskPrioritized ? "🎯 Priority Subtask" : "Subtask"}
                       </Badge>
                     </div>
                   </div>
