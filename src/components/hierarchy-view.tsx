@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, FolderTree, Target, Lightbulb, CheckSquare, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, FolderTree, Target, Lightbulb, CheckSquare, Trash2, Plus } from "lucide-react";
 import { TaskCard } from "./task-card";
 
 interface HierarchyViewProps {
@@ -15,6 +15,9 @@ interface HierarchyViewProps {
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
+  onCreateSubtask?: (parentTaskId: string) => void;
+  onCreateTheme?: (pillarId?: string) => void;
+  onCreatePillar?: (domainId?: string) => void;
   onDomainDelete?: (domainId: string) => void;
   onPillarDelete?: (pillarId: string) => void;
   onThemeDelete?: (themeId: string) => void;
@@ -28,6 +31,9 @@ export function HierarchyView({
   onTaskEdit, 
   onTaskToggleStatus, 
   onTaskReopen,
+  onCreateSubtask,
+  onCreateTheme,
+  onCreatePillar,
   onDomainDelete,
   onPillarDelete,
   onThemeDelete,
@@ -117,20 +123,30 @@ export function HierarchyView({
                           <FolderTree className="w-4 h-4 text-primary" />
                           {domain.title}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline">{domainPillars.length} pillars</Badge>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onDomainDelete?.(domain.id);
-                            }}
-                            className="h-6 w-6 p-0"
-                          >
-                           <Trash2 className="w-3 h-3" />
-                         </Button>
-                       </div>
+                         <div className="flex items-center gap-2">
+                           <Badge 
+                             variant="outline" 
+                             className="cursor-pointer hover:bg-muted"
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               onCreatePillar?.(domain.id);
+                             }}
+                           >
+                             {domainPillars.length} pillars
+                             <Plus className="w-3 h-3 ml-1" />
+                           </Badge>
+                           <Button 
+                             variant="outline" 
+                             size="sm" 
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               onDomainDelete?.(domain.id);
+                             }}
+                             className="h-6 w-6 p-0"
+                           >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
                      </CardTitle>
                   </CardHeader>
                 </CollapsibleTrigger>
@@ -166,22 +182,30 @@ export function HierarchyView({
                                        <Target className="w-3 h-3 text-blue-600" />
                                        {pillar.title}
                                      </div>
-                                     <div className="flex items-center gap-2">
-                                       <Badge variant="outline" className="text-xs">
-                                         {pillarThemes.length} themes
-                                       </Badge>
-                                       <Button 
-                                         variant="outline" 
-                                         size="sm" 
-                                         onClick={(e) => {
-                                           e.stopPropagation();
-                                           onPillarDelete?.(pillar.id);
-                                         }}
-                                         className="h-5 w-5 p-0"
-                                       >
-                                         <Trash2 className="w-2.5 h-2.5" />
-                                       </Button>
-                                     </div>
+                                      <div className="flex items-center gap-2">
+                                        <Badge 
+                                          variant="outline" 
+                                          className="text-xs cursor-pointer hover:bg-muted"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            onCreateTheme?.(pillar.id);
+                                          }}
+                                        >
+                                          {pillarThemes.length} themes
+                                          <Plus className="w-2.5 h-2.5 ml-1" />
+                                        </Badge>
+                                        <Button 
+                                          variant="outline" 
+                                          size="sm" 
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            onPillarDelete?.(pillar.id);
+                                          }}
+                                          className="h-5 w-5 p-0"
+                                        >
+                                          <Trash2 className="w-2.5 h-2.5" />
+                                        </Button>
+                                      </div>
                                    </CardTitle>
                                 </CardHeader>
                               </CollapsibleTrigger>
@@ -251,23 +275,25 @@ export function HierarchyView({
                                                     
                                                     return (
                                                       <div key={task.id} className="space-y-1">
-                                                        <TaskCard
-                                                          task={task}
-                                                          onEdit={onTaskEdit}
-                                                          onToggleStatus={onTaskToggleStatus}
-                                                          onReopen={onTaskReopen}
-                                                        />
+                                                         <TaskCard
+                                                           task={task}
+                                                           onEdit={onTaskEdit}
+                                                           onToggleStatus={onTaskToggleStatus}
+                                                           onReopen={onTaskReopen}
+                                                           onCreateSubtask={onCreateSubtask}
+                                                         />
                                                         
                                                         {subtasks.length > 0 && (
                                                           <div className="ml-8 space-y-1">
                                                             {subtasks.map(subtask => (
-                                                              <TaskCard
-                                                                key={subtask.id}
-                                                                task={subtask}
-                                                                onEdit={onTaskEdit}
-                                                                onToggleStatus={onTaskToggleStatus}
-                                                                onReopen={onTaskReopen}
-                                                              />
+                                                               <TaskCard
+                                                                 key={subtask.id}
+                                                                 task={subtask}
+                                                                 onEdit={onTaskEdit}
+                                                                 onToggleStatus={onTaskToggleStatus}
+                                                                 onReopen={onTaskReopen}
+                                                                 onCreateSubtask={onCreateSubtask}
+                                                               />
                                                             ))}
                                                           </div>
                                                         )}

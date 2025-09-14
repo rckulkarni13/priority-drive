@@ -6,6 +6,7 @@ import { TaskList } from "@/components/task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
 import { ManageView } from "@/components/manage-view";
 import { TaskFormDialog } from "@/components/task-form-dialog";
+import { SubtaskFormDialog } from "@/components/subtask-form-dialog";
 import { DomainFormDialog } from "@/components/domain-form-dialog";
 import { PillarFormDialog } from "@/components/pillar-form-dialog";
 import { ThemeFormDialog } from "@/components/theme-form-dialog";
@@ -245,6 +246,16 @@ const Index = () => {
                   New Task
                 </Button>
               </TaskFormDialog>
+
+              {/* Hidden SubtaskFormDialog for programmatic triggering */}
+              <SubtaskFormDialog 
+                themes={themes} 
+                tasks={tasks} 
+                parentTaskId="" 
+                onTaskCreate={createTask}
+              >
+                <div style={{ display: 'none' }} />
+              </SubtaskFormDialog>
 
               <Button
                 onClick={handleSignOut}

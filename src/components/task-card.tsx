@@ -4,7 +4,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { GripVertical, Calendar, Clock, CheckCircle2, RotateCcw, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { GripVertical, Calendar, Clock, CheckCircle2, RotateCcw, MessageCircle, ChevronDown, ChevronUp, Plus, Edit } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { TaskComments } from "@/components/task-comments";
@@ -15,6 +15,7 @@ interface TaskCardProps {
   onEdit?: (task: Task) => void;
   onToggleStatus?: (taskId: string) => void;
   onReopen?: (taskId: string) => void;
+  onCreateSubtask?: (parentTaskId: string) => void;
   isDragging?: boolean;
   dragHandleProps?: any;
 }
@@ -23,7 +24,8 @@ export function TaskCard({
   task, 
   onEdit, 
   onToggleStatus, 
-  onReopen, 
+  onReopen,
+  onCreateSubtask,
   isDragging,
   dragHandleProps 
 }: TaskCardProps) {
@@ -83,6 +85,28 @@ export function TaskCard({
               </div>
               
               <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onEdit?.(task)}
+                  className="h-6 px-2 text-xs"
+                >
+                  <Edit className="w-3 h-3 mr-1" />
+                  Edit
+                </Button>
+                
+                {task.type === 'task' && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onCreateSubtask?.(task.id)}
+                    className="h-6 px-2 text-xs"
+                  >
+                    <Plus className="w-3 h-3 mr-1" />
+                    Subtask
+                  </Button>
+                )}
+                
                 <Collapsible open={showComments} onOpenChange={setShowComments}>
                   <CollapsibleTrigger asChild>
                     <Button

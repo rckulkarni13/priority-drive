@@ -53,9 +53,11 @@ interface TaskFormDialogProps {
   themes: Theme[];
   tasks: Task[];
   onTaskCreate: (taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">) => void;
+  defaultParentTaskId?: string;
+  defaultType?: 'task' | 'subtask';
 }
 
-export function TaskFormDialog({ children, themes, tasks, onTaskCreate }: TaskFormDialogProps) {
+export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultParentTaskId, defaultType = 'task' }: TaskFormDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<TaskFormData>({
@@ -65,7 +67,7 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate }: TaskFo
       description: "",
       priority: "medium",
       themeIds: [],
-      parentTaskId: undefined,
+      parentTaskId: defaultParentTaskId || undefined,
     },
   });
 
@@ -91,7 +93,9 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate }: TaskFo
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Create New Task</DialogTitle>
+        <DialogTitle>
+          Create New {defaultType === 'subtask' || form.watch('parentTaskId') ? 'Subtask' : 'Task'}
+        </DialogTitle>
           <DialogDescription>
             Add a new task to your workflow. Fill in the details below.
           </DialogDescription>
@@ -351,7 +355,9 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate }: TaskFo
               >
                 Cancel
               </Button>
-              <Button type="submit">Create Task</Button>
+            <Button type="submit">
+              Create {defaultType === 'subtask' || form.watch('parentTaskId') ? 'Subtask' : 'Task'}
+            </Button>
             </div>
           </form>
         </Form>
