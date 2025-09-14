@@ -152,6 +152,7 @@ export function TaskList({
     );
   }
 
+  // For non-date-grouped views (like Today's priorities), use flat priority list
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -168,15 +169,19 @@ export function TaskList({
           </CardContent>
         </Card>
       ) : (
-        <OrganizedTaskList
-          tasks={tasks}
-          allTasks={allTasks}
-          prioritizedTaskIds={prioritizedTaskIds}
-          onTaskEdit={onTaskEdit}
-          onTaskToggleStatus={onTaskToggleStatus}
-          onTaskReopen={onTaskReopen}
-          onCreateSubtask={onCreateSubtask}
-        />
+        <div className="space-y-2">
+          {tasks.map(task => (
+            <PriorityTaskRow
+              key={task.id}
+              task={task}
+              allTasks={allTasks}
+              onTaskEdit={onTaskEdit}
+              onTaskToggleStatus={onTaskToggleStatus}
+              onTaskReopen={onTaskReopen}
+              onCreateSubtask={onCreateSubtask}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
