@@ -1,10 +1,11 @@
 import { Task } from "@/types";
 import { TaskCard } from "./task-card";
 import { OrganizedTaskList } from "./task-group";
+import { PriorityTaskRow } from "./priority-task-row";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays } from "lucide-react";
-import { format, isSameDay } from "date-fns";
+import { format, isSameDay, startOfDay, isBefore } from "date-fns";
 
 interface TaskListProps {
   title: string;
@@ -46,33 +47,64 @@ export function TaskList({
   const prioritizedTaskIds = getPrioritizedTaskIds();
 
   if (showDateGroups) {
-    // Group tasks by effective grouping date:
-    // - Use prioritizedDate when present
-    // - For parent tasks without prioritizedDate, use the earliest effective date of its visible subtasks
-    // - Otherwise, fall back to dueDate
-    const getGroupingDate = (task: Task): Date | null => {
-      if (task.prioritizedDate) return task.prioritizedDate;
-      if (task.type === 'task') {
-        const children = tasks.filter(t => t.parentTaskId === task.id);
-        const childDates = children
-          .map(c => c.prioritizedDate || c.dueDate)
-          .filter(Boolean) as Date[];
-        if (childDates.length) {
-          return new Date(Math.min(...childDates.map(d => d.getTime())));
-        }
-      }
-      return task.dueDate || null;
+    // For time-based views, show a flat list of priorities
+    // Group tasks by their effective date but render as flat list
+    const getEffectiveDate = (task: Task): Date | null => {
+      return task.prioritizedDate || task.dueDate || null;
     };
 
-    const groupedTasks = tasks.reduce((groups, task) => {
-      const date = getGroupingDate(task);
-      const dateKey = date ? format(date, 'yyyy-MM-dd') : 'no-date';
-      if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push(task);
+    // Sort tasks by date and overdue status
+    const today = startOfDay(new Date());
+    const sortedTasks = [...tasks].sort((a, b) => {
+      const dateA = getEffectiveDate(a);
+      const dateB = getEffectiveDate(b);
+      
+      if (!dateA && !dateB) return 0;
+      if (!dateA) return 1;
+      if (!dateB) return -1;
+      
+      // Show overdue tasks first
+      const isOverdueA = isBefore(dateA, today);
+      const isOverdueB = isBefore(dateB, today);
+      
+      if (isOverdueA && !isOverdueB) return -1;
+      if (!isOverdueA && isOverdueB) return 1;
+      
+      return dateA.getTime() - dateB.getTime();
+    });
+
+    // Group by date sections for headers
+    const groupedTasks = sortedTasks.reduce((groups, task) => {
+      const date = getEffectiveDate(task);
+      let section = 'no-date';
+      
+      if (date) {
+        if (isBefore(date, today)) {
+          section = 'overdue';
+        } else if (isSameDay(date, today)) {
+          section = 'today';
+        } else {
+          section = 'upcoming';
+        }
+      }
+      
+      if (!groups[section]) groups[section] = [];
+      groups[section].push(task);
       return groups;
     }, {} as Record<string, Task[]>);
 
-    const sortedDateKeys = Object.keys(groupedTasks).sort();
+    const getSectionTitle = (section: string) => {
+      switch (section) {
+        case 'overdue': return 'Overdue';
+        case 'today': return 'Today';
+        case 'upcoming': return 'Upcoming';
+        case 'no-date': return 'No Due Date';
+        default: return section;
+      }
+    };
+
+    const sectionOrder = ['overdue', 'today', 'upcoming', 'no-date'];
+    const visibleSections = sectionOrder.filter(section => groupedTasks[section]?.length > 0);
 
     return (
       <div className="space-y-6">
@@ -83,52 +115,37 @@ export function TaskList({
           </Badge>
         </div>
 
-        {sortedDateKeys.length === 0 ? (
+        {visibleSections.length === 0 ? (
           <Card>
             <CardContent className="p-8 text-center text-muted-foreground">
               {emptyMessage}
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-4">
-            {sortedDateKeys.map(dateKey => {
-              const dateTasks = groupedTasks[dateKey];
-              const isToday = dateKey !== 'no-date' && isSameDay(new Date(dateKey), new Date());
-              
-              return (
-                <Card key={dateKey} className="overflow-hidden">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <CalendarDays className="w-4 h-4" />
-                      {dateKey === 'no-date' ? (
-                        'No Priority Date'
-                      ) : (
-                        <>
-                          {format(new Date(dateKey), 'EEEE, MMMM d, yyyy')}
-                          {isToday && (
-                            <Badge variant="default" className="ml-2">Today</Badge>
-                          )}
-                        </>
-                      )}
-                      <Badge variant="outline" className="ml-auto">
-                        {dateTasks.length}
-                      </Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <OrganizedTaskList
-                      tasks={dateTasks}
+          <div className="space-y-6">
+            {visibleSections.map(section => (
+              <div key={section} className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-medium">{getSectionTitle(section)}</h3>
+                  <Badge variant="outline" className="text-xs">
+                    {groupedTasks[section].length}
+                  </Badge>
+                </div>
+                <div className="space-y-2">
+                  {groupedTasks[section].map(task => (
+                    <PriorityTaskRow
+                      key={task.id}
+                      task={task}
                       allTasks={allTasks}
-                      prioritizedTaskIds={prioritizedTaskIds}
                       onTaskEdit={onTaskEdit}
                       onTaskToggleStatus={onTaskToggleStatus}
                       onTaskReopen={onTaskReopen}
                       onCreateSubtask={onCreateSubtask}
                     />
-                  </CardContent>
-                </Card>
-              );
-            })}
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
