@@ -107,7 +107,12 @@ const Index = () => {
   const allActiveTasks = getAllActiveTasks();
 
   const handleCreateSubtask = (parentTaskId: string) => {
-    setShowCreateSubtask(parentTaskId);
+    if (showCreateSubtask !== '') {
+      setShowCreateSubtask('');
+      setTimeout(() => setShowCreateSubtask(parentTaskId), 0);
+    } else {
+      setShowCreateSubtask(parentTaskId);
+    }
   };
 
   const handleCreateTask = (themeId?: string) => {

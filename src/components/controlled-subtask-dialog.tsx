@@ -25,7 +25,7 @@ export function ControlledSubtaskDialog({
     if (isOpen && triggerRef.current) {
       triggerRef.current.click();
     }
-  }, [isOpen]);
+  }, [isOpen, parentTaskId]);
 
   if (!isOpen) return null;
 
