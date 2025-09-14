@@ -44,6 +44,15 @@ export interface Task {
   prioritizedDays?: Date[];
 }
 
+export interface Comment {
+  id: string;
+  taskId: string;
+  userId: string;
+  content: string;
+  createdDate: Date;
+  updatedDate: Date;
+}
+
 export interface TaskGroup {
   date: string;
   tasks: Task[];

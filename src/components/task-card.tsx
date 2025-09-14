@@ -3,9 +3,12 @@ import { PriorityBadge } from "@/components/ui/priority-badge";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { GripVertical, Calendar, Clock, CheckCircle2, RotateCcw } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { GripVertical, Calendar, Clock, CheckCircle2, RotateCcw, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { TaskComments } from "@/components/task-comments";
+import { useState } from "react";
 
 interface TaskCardProps {
   task: Task;
@@ -25,6 +28,7 @@ export function TaskCard({
   dragHandleProps 
 }: TaskCardProps) {
   const isCompleted = task.status === 'completed';
+  const [showComments, setShowComments] = useState(false);
   
   return (
     <Card className={cn(
@@ -79,6 +83,24 @@ export function TaskCard({
               </div>
               
               <div className="flex items-center gap-1">
+                <Collapsible open={showComments} onOpenChange={setShowComments}>
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 px-2 text-xs"
+                    >
+                      <MessageCircle className="w-3 h-3 mr-1" />
+                      Comments
+                      {showComments ? (
+                        <ChevronUp className="w-3 h-3 ml-1" />
+                      ) : (
+                        <ChevronDown className="w-3 h-3 ml-1" />
+                      )}
+                    </Button>
+                  </CollapsibleTrigger>
+                </Collapsible>
+                
                 {isCompleted ? (
                   <Button
                     variant="ghost"
@@ -104,6 +126,12 @@ export function TaskCard({
             </div>
           </div>
         </div>
+        
+        <Collapsible open={showComments} onOpenChange={setShowComments}>
+          <CollapsibleContent className="pt-4 border-t mt-4">
+            <TaskComments taskId={task.id} />
+          </CollapsibleContent>
+        </Collapsible>
       </CardContent>
     </Card>
   );

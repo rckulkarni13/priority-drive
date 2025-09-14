@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      comments: {
+        Row: {
+          content: string
+          created_date: string
+          id: string
+          task_id: string
+          updated_date: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_date?: string
+          id?: string
+          task_id: string
+          updated_date?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_date?: string
+          id?: string
+          task_id?: string
+          updated_date?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_comments_task_id"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       domains: {
         Row: {
           created_date: string
