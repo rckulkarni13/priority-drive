@@ -135,24 +135,32 @@ export function PillarFormDialog({ children, products, onPillarCreate }: PillarF
               name="productIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Associated Product</FormLabel>
-                  <Select
-                    onValueChange={(value) => field.onChange([value])}
-                    value={field.value[0] || ""}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select product" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {products.map((product) => (
-                        <SelectItem key={product.id} value={product.id}>
+                  <FormLabel>Associated Products</FormLabel>
+                  <div className="space-y-2">
+                    {products.map((product) => (
+                      <div key={product.id} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`product-${product.id}`}
+                          checked={field.value.includes(product.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              field.onChange([...field.value, product.id]);
+                            } else {
+                              field.onChange(field.value.filter(id => id !== product.id));
+                            }
+                          }}
+                          className="rounded border-border"
+                        />
+                        <label
+                          htmlFor={`product-${product.id}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
                           {product.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
