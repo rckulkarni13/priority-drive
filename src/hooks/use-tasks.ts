@@ -452,10 +452,10 @@ export function useTasks() {
     return task.prioritizedEndDate || task.prioritizedDate || task.dueDate;
   }, []);
 
-  // Helper functions for task filtering with parent context
+  // Helper functions for task filtering - only return tasks that actually meet the criteria
   const getTodaysTasks = useCallback(() => {
     const today = new Date();
-    const prioritizedTasks = tasks.filter(task => {
+    return tasks.filter(task => {
       const effectiveDate = getEffectiveDate(task);
       if (!effectiveDate || task.status === 'completed') return false;
       
@@ -467,32 +467,10 @@ export function useTasks() {
       const endTime = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime();
       
       return todayTime >= startTime && todayTime <= endTime;
+    }).sort((a, b) => {
+      const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
-
-    // For parent tasks, only include them if they have prioritized subtasks
-    const parentTaskIds = new Set<string>();
-    const prioritizedTaskIds = new Set(prioritizedTasks.map(t => t.id));
-    
-    prioritizedTasks.forEach(task => {
-      if (task.type === 'subtask' && task.parentTaskId) {
-        parentTaskIds.add(task.parentTaskId);
-      }
-    });
-
-    const parentTasks = tasks.filter(task => {
-      return parentTaskIds.has(task.id) && 
-             task.status !== 'completed' && 
-             !prioritizedTaskIds.has(task.id);
-    });
-
-    const allRelevantTasks = [...prioritizedTasks, ...parentTasks]
-      .filter((task, index, array) => array.findIndex(t => t.id === task.id) === index) // Remove duplicates
-      .sort((a, b) => {
-        const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
-      });
-
-    return allRelevantTasks;
   }, [tasks, getEffectiveDate, getEffectiveEndDate]);
 
   const getTodaysPrioritizedTaskIds = useCallback(() => {
@@ -527,7 +505,7 @@ export function useTasks() {
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-    const prioritizedTasks = tasks.filter(task => {
+    return tasks.filter(task => {
       const effectiveDate = getEffectiveDate(task);
       if (!effectiveDate || task.status === 'completed') return false;
       
@@ -535,33 +513,10 @@ export function useTasks() {
       const endDate = getEffectiveEndDate(task) ? new Date(getEffectiveEndDate(task)!) : startDate;
       
       return (startDate <= endOfWeek && endDate >= startOfWeek);
+    }).sort((a, b) => {
+      const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
-
-    // For parent tasks, only include them if they are prioritized OR if they have prioritized subtasks
-    const parentTaskIds = new Set<string>();
-    const prioritizedTaskIds = new Set(prioritizedTasks.map(t => t.id));
-    
-    prioritizedTasks.forEach(task => {
-      if (task.type === 'subtask' && task.parentTaskId) {
-        parentTaskIds.add(task.parentTaskId);
-      }
-    });
-
-    const parentTasks = tasks.filter(task => {
-      // Only include parent if it's prioritized OR has prioritized subtasks
-      return parentTaskIds.has(task.id) && 
-             task.status !== 'completed' && 
-             !prioritizedTaskIds.has(task.id); // Don't duplicate if parent is already prioritized
-    });
-
-    const allRelevantTasks = [...prioritizedTasks, ...parentTasks]
-      .filter((task, index, array) => array.findIndex(t => t.id === task.id) === index) // Remove duplicates
-      .sort((a, b) => {
-        const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
-      });
-
-    return allRelevantTasks;
   }, [tasks, getEffectiveDate, getEffectiveEndDate]);
 
   const getNextWeekTasks = useCallback(() => {
@@ -571,7 +526,7 @@ export function useTasks() {
     const endOfNextWeek = new Date(startOfNextWeek);
     endOfNextWeek.setDate(startOfNextWeek.getDate() + 6);
 
-    const prioritizedTasks = tasks.filter(task => {
+    return tasks.filter(task => {
       const effectiveDate = getEffectiveDate(task);
       if (!effectiveDate || task.status === 'completed') return false;
       
@@ -579,32 +534,10 @@ export function useTasks() {
       const endDate = getEffectiveEndDate(task) ? new Date(getEffectiveEndDate(task)!) : startDate;
       
       return (startDate <= endOfNextWeek && endDate >= startOfNextWeek);
+    }).sort((a, b) => {
+      const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
-
-    // For parent tasks, only include them if they have prioritized subtasks
-    const parentTaskIds = new Set<string>();
-    const prioritizedTaskIds = new Set(prioritizedTasks.map(t => t.id));
-    
-    prioritizedTasks.forEach(task => {
-      if (task.type === 'subtask' && task.parentTaskId) {
-        parentTaskIds.add(task.parentTaskId);
-      }
-    });
-
-    const parentTasks = tasks.filter(task => {
-      return parentTaskIds.has(task.id) && 
-             task.status !== 'completed' && 
-             !prioritizedTaskIds.has(task.id);
-    });
-
-    const allRelevantTasks = [...prioritizedTasks, ...parentTasks]
-      .filter((task, index, array) => array.findIndex(t => t.id === task.id) === index) // Remove duplicates
-      .sort((a, b) => {
-        const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
-      });
-
-    return allRelevantTasks;
   }, [tasks, getEffectiveDate, getEffectiveEndDate]);
 
   const getMonthlyTasks = useCallback(() => {
@@ -612,7 +545,7 @@ export function useTasks() {
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
-    const prioritizedTasks = tasks.filter(task => {
+    return tasks.filter(task => {
       const effectiveDate = getEffectiveDate(task);
       if (!effectiveDate || task.status === 'completed') return false;
       
@@ -620,32 +553,10 @@ export function useTasks() {
       const endDate = getEffectiveEndDate(task) ? new Date(getEffectiveEndDate(task)!) : startDate;
       
       return (startDate <= endOfMonth && endDate >= startOfMonth);
+    }).sort((a, b) => {
+      const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
-
-    // For parent tasks, only include them if they have prioritized subtasks
-    const parentTaskIds = new Set<string>();
-    const prioritizedTaskIds = new Set(prioritizedTasks.map(t => t.id));
-    
-    prioritizedTasks.forEach(task => {
-      if (task.type === 'subtask' && task.parentTaskId) {
-        parentTaskIds.add(task.parentTaskId);
-      }
-    });
-
-    const parentTasks = tasks.filter(task => {
-      return parentTaskIds.has(task.id) && 
-             task.status !== 'completed' && 
-             !prioritizedTaskIds.has(task.id);
-    });
-
-    const allRelevantTasks = [...prioritizedTasks, ...parentTasks]
-      .filter((task, index, array) => array.findIndex(t => t.id === task.id) === index) // Remove duplicates
-      .sort((a, b) => {
-        const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
-      });
-
-    return allRelevantTasks;
   }, [tasks, getEffectiveDate, getEffectiveEndDate]);
 
   // Deletion functions

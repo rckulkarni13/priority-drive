@@ -105,8 +105,19 @@ export function PriorityTaskRow({
               {/* Parent Task Chip */}
               {parentTask && (
                 <div className="mb-2">
-                  <Badge variant="outline" className="text-xs">
-                    {parentTask.title}
+                  <Badge 
+                    variant="outline" 
+                    className="text-xs cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onTaskView) {
+                        onTaskView(parentTask);
+                      } else {
+                        onTaskEdit?.(parentTask);
+                      }
+                    }}
+                  >
+                    📋 {parentTask.title}
                   </Badge>
                 </div>
               )}
