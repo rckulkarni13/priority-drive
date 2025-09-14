@@ -224,6 +224,9 @@ export function OrganizedTaskList({
       {/* Orphaned subtasks - subtasks whose parents are not in current view */}
       {orphanedSubtasks.map(subtask => {
         const isSubtaskPrioritized = prioritizedTaskIds.has(subtask.id);
+        const parentTask = tasks.find(t => t.id === subtask.parentTaskId);
+        const parentTitle = parentTask?.title || "Unknown Parent";
+        
         return (
           <div key={subtask.id} className={cn("relative", !isSubtaskPrioritized && "opacity-50")}>
             <TaskCard
@@ -237,14 +240,14 @@ export function OrganizedTaskList({
               <Badge 
                 variant="outline" 
                 className={cn(
-                  "text-xs px-1 py-0 bg-yellow-50 border-yellow-200",
+                  "text-xs px-1 py-0 bg-blue-50 border-blue-200",
                   isSubtaskPrioritized && "bg-primary/10 border-primary/30"
                 )}
               >
-                Orphaned Subtask {isSubtaskPrioritized && "🎯"}
+                Subtask {isSubtaskPrioritized && "🎯"}
               </Badge>
               <Badge variant="secondary" className="text-xs px-1 py-0">
-                Parent not in view
+                of "{parentTitle}"
               </Badge>
             </div>
           </div>
