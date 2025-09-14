@@ -209,7 +209,7 @@ export function useTasks() {
           prioritized_date: taskData.prioritizedDate?.toISOString(),
           prioritized_end_date: taskData.prioritizedEndDate?.toISOString(),
           priority: taskData.priority,
-          type: 'task',
+          type: taskData.parentTaskId ? 'subtask' : 'task',
           parent_task_id: taskData.parentTaskId,
           task_order: tasks.length + 1,
           user_id: user.user.id
