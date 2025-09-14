@@ -43,6 +43,7 @@ const taskSchema = z.object({
   prioritizedEndDate: z.date().optional(),
   priority: z.enum(["critical", "high", "medium", "low"]),
   themeIds: z.array(z.string()).min(1, "Please select at least one theme"),
+  parentTaskId: z.string().optional(),
 });
 
 type TaskFormData = z.infer<typeof taskSchema>;
@@ -50,10 +51,11 @@ type TaskFormData = z.infer<typeof taskSchema>;
 interface TaskFormDialogProps {
   children: React.ReactNode;
   themes: Theme[];
+  tasks: Task[];
   onTaskCreate: (taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">) => void;
 }
 
-export function TaskFormDialog({ children, themes, onTaskCreate }: TaskFormDialogProps) {
+export function TaskFormDialog({ children, themes, tasks, onTaskCreate }: TaskFormDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<TaskFormData>({
@@ -63,6 +65,7 @@ export function TaskFormDialog({ children, themes, onTaskCreate }: TaskFormDialo
       description: "",
       priority: "medium",
       themeIds: [],
+      parentTaskId: undefined,
     },
   });
 
@@ -75,6 +78,7 @@ export function TaskFormDialog({ children, themes, onTaskCreate }: TaskFormDialo
       prioritizedEndDate: data.prioritizedEndDate,
       priority: data.priority,
       themeIds: data.themeIds,
+      parentTaskId: data.parentTaskId,
     });
     form.reset();
     setOpen(false);
@@ -171,6 +175,34 @@ export function TaskFormDialog({ children, themes, onTaskCreate }: TaskFormDialo
                         {themes.map((theme) => (
                           <SelectItem key={theme.id} value={theme.id}>
                             {theme.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="parentTaskId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Parent Task (Optional)</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select parent task" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="">None (Main Task)</SelectItem>
+                        {tasks.filter(task => task.type === 'task').map((task) => (
+                          <SelectItem key={task.id} value={task.id}>
+                            {task.title}
                           </SelectItem>
                         ))}
                       </SelectContent>

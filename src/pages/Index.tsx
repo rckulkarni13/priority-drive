@@ -3,9 +3,12 @@ import { Navigation } from "@/components/navigation";
 import { TaskList } from "@/components/task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
 import { TaskFormDialog } from "@/components/task-form-dialog";
+import { ProductFormDialog } from "@/components/product-form-dialog";
+import { PillarFormDialog } from "@/components/pillar-form-dialog";
+import { ThemeFormDialog } from "@/components/theme-form-dialog";
 import { useTasks } from "@/hooks/use-tasks";
 import { Button } from "@/components/ui/button";
-import { Plus, CheckSquare2 } from "lucide-react";
+import { Plus, CheckSquare2, Package, Target, Lightbulb } from "lucide-react";
 
 type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'completed' | 'all-tasks';
 
@@ -19,6 +22,9 @@ const Index = () => {
     toggleTaskStatus,
     reopenTask,
     createTask,
+    createProduct,
+    createStrategicPillar,
+    createTheme,
     getTodaysTasks,
     getThisWeekTasks,
     getNextWeekTasks,
@@ -139,12 +145,35 @@ const Index = () => {
               </p>
             </div>
             
-            <TaskFormDialog themes={themes} onTaskCreate={createTask}>
-              <Button className="gap-2 shadow-lg hover:shadow-xl transition-shadow">
-                <Plus className="w-4 h-4" />
-                New Task
-              </Button>
-            </TaskFormDialog>
+            <div className="flex gap-2">
+              <ProductFormDialog onProductCreate={createProduct}>
+                <Button variant="outline" size="sm" className="gap-1">
+                  <Package className="w-4 h-4" />
+                  Product
+                </Button>
+              </ProductFormDialog>
+              
+              <PillarFormDialog products={products} onPillarCreate={createStrategicPillar}>
+                <Button variant="outline" size="sm" className="gap-1">
+                  <Target className="w-4 h-4" />
+                  Pillar
+                </Button>
+              </PillarFormDialog>
+              
+              <ThemeFormDialog strategicPillars={strategicPillars} onThemeCreate={createTheme}>
+                <Button variant="outline" size="sm" className="gap-1">
+                  <Lightbulb className="w-4 h-4" />
+                  Theme
+                </Button>
+              </ThemeFormDialog>
+              
+              <TaskFormDialog themes={themes} tasks={tasks} onTaskCreate={createTask}>
+                <Button className="gap-2 shadow-lg hover:shadow-xl transition-shadow">
+                  <Plus className="w-4 h-4" />
+                  New Task
+                </Button>
+              </TaskFormDialog>
+            </div>
           </div>
 
           <Navigation

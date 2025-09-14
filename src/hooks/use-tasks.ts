@@ -12,9 +12,9 @@ const mockTasks: Task[] = [];
 
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
-  const [products] = useState<Product[]>(mockProducts);
-  const [strategicPillars] = useState<StrategicPillar[]>(mockPillars);
-  const [themes] = useState<Theme[]>(mockThemes);
+  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [strategicPillars, setStrategicPillars] = useState<StrategicPillar[]>(mockPillars);
+  const [themes, setThemes] = useState<Theme[]>(mockThemes);
 
   const toggleTaskStatus = useCallback((taskId: string) => {
     setTasks(prev => prev.map(task => {
@@ -146,6 +146,33 @@ export function useTasks() {
     setTasks(prev => [...prev, newTask]);
   }, [tasks.length]);
 
+  const createProduct = useCallback((productData: Omit<Product, "id" | "createdDate">) => {
+    const newProduct: Product = {
+      ...productData,
+      id: String(Date.now()),
+      createdDate: new Date(),
+    };
+    setProducts(prev => [...prev, newProduct]);
+  }, []);
+
+  const createStrategicPillar = useCallback((pillarData: Omit<StrategicPillar, "id" | "createdDate">) => {
+    const newPillar: StrategicPillar = {
+      ...pillarData,
+      id: String(Date.now()),
+      createdDate: new Date(),
+    };
+    setStrategicPillars(prev => [...prev, newPillar]);
+  }, []);
+
+  const createTheme = useCallback((themeData: Omit<Theme, "id" | "createdDate">) => {
+    const newTheme: Theme = {
+      ...themeData,
+      id: String(Date.now()),
+      createdDate: new Date(),
+    };
+    setThemes(prev => [...prev, newTheme]);
+  }, []);
+
   return {
     tasks,
     products,
@@ -154,6 +181,9 @@ export function useTasks() {
     toggleTaskStatus,
     reopenTask,
     createTask,
+    createProduct,
+    createStrategicPillar,
+    createTheme,
     getTodaysTasks,
     getThisWeekTasks,
     getNextWeekTasks,
