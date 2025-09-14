@@ -1,58 +1,395 @@
-import { useState, useCallback } from "react";
-import { Task, Domain, StrategicPillar, Theme, Priority, Status } from "@/types";
-
-// Empty data arrays - ready for your custom data
-const mockDomains: Domain[] = [];
-
-const mockPillars: StrategicPillar[] = [];
-
-const mockThemes: Theme[] = [];
-
-const mockTasks: Task[] = [];
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Task, Domain, StrategicPillar, Theme, Priority, Status, TaskType } from '@/types';
+import { useToast } from '@/hooks/use-toast';
 
 export function useTasks() {
-  const [tasks, setTasks] = useState<Task[]>(mockTasks);
-  const [domains, setDomains] = useState<Domain[]>(mockDomains);
-  const [strategicPillars, setStrategicPillars] = useState<StrategicPillar[]>(mockPillars);
-  const [themes, setThemes] = useState<Theme[]>(mockThemes);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [domains, setDomains] = useState<Domain[]>([]);
+  const [strategicPillars, setStrategicPillars] = useState<StrategicPillar[]>([]);
+  const [themes, setThemes] = useState<Theme[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
-  const toggleTaskStatus = useCallback((taskId: string) => {
-    setTasks(prev => prev.map(task => {
-      if (task.id === taskId) {
-        const newStatus: Status = task.status === 'completed' ? 'open' : 'completed';
-        return { ...task, status: newStatus };
-      }
-      return task;
-    }));
+  // Fetch all data on mount
+  useEffect(() => {
+    fetchAllData();
   }, []);
 
-  const reopenTask = useCallback((taskId: string) => {
-    setTasks(prev => prev.map(task => {
-      if (task.id === taskId) {
-        return { ...task, status: 'open' as Status };
-      }
-      return task;
-    }));
-  }, []);
+  const fetchAllData = async () => {
+    setIsLoading(true);
+    try {
+      await Promise.all([
+        fetchDomains(),
+        fetchStrategicPillars(),
+        fetchThemes(),
+        fetchTasks()
+      ]);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load data",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  const fetchDomains = async () => {
+    const { data, error } = await supabase
+      .from('domains')
+      .select('*')
+      .order('created_date', { ascending: false });
+
+    if (error) throw error;
+
+    const formattedDomains: Domain[] = data.map(domain => ({
+      id: domain.id,
+      title: domain.title,
+      description: domain.description || '',
+      createdDate: new Date(domain.created_date)
+    }));
+
+    setDomains(formattedDomains);
+  };
+
+  const fetchStrategicPillars = async () => {
+    const { data, error } = await supabase
+      .from('strategic_pillars')
+      .select(`
+        *,
+        pillar_domains(domain_id)
+      `)
+      .order('created_date', { ascending: false });
+
+    if (error) throw error;
+
+    const formattedPillars: StrategicPillar[] = data.map(pillar => ({
+      id: pillar.id,
+      title: pillar.title,
+      description: pillar.description || '',
+      createdDate: new Date(pillar.created_date),
+      targetTimeFrame: pillar.target_timeframe,
+      domainIds: pillar.pillar_domains?.map((pd: any) => pd.domain_id) || []
+    }));
+
+    setStrategicPillars(formattedPillars);
+  };
+
+  const fetchThemes = async () => {
+    const { data, error } = await supabase
+      .from('themes')
+      .select(`
+        *,
+        theme_pillars(pillar_id)
+      `)
+      .order('created_date', { ascending: false });
+
+    if (error) throw error;
+
+    const formattedThemes: Theme[] = data.map(theme => ({
+      id: theme.id,
+      title: theme.title,
+      description: theme.description || '',
+      createdDate: new Date(theme.created_date),
+      associatedProject: theme.associated_project || undefined,
+      strategicPillarIds: theme.theme_pillars?.map((tp: any) => tp.pillar_id) || []
+    }));
+
+    setThemes(formattedThemes);
+  };
+
+  const fetchTasks = async () => {
+    const { data, error } = await supabase
+      .from('tasks')
+      .select(`
+        *,
+        task_themes(theme_id)
+      `)
+      .order('created_date', { ascending: false });
+
+    if (error) throw error;
+
+    const formattedTasks: Task[] = data.map(task => ({
+      id: task.id,
+      title: task.title,
+      description: task.description || '',
+      createdDate: new Date(task.created_date),
+      dueDate: new Date(task.due_date),
+      prioritizedDate: task.prioritized_date ? new Date(task.prioritized_date) : undefined,
+      prioritizedEndDate: task.prioritized_end_date ? new Date(task.prioritized_end_date) : undefined,
+      status: task.status as Status,
+      priority: task.priority as Priority,
+      type: task.type as TaskType,
+      parentTaskId: task.parent_task_id || undefined,
+      themeIds: task.task_themes?.map((tt: any) => tt.theme_id) || [],
+      order: task.task_order,
+      prioritizedDays: []
+    }));
+
+    setTasks(formattedTasks);
+  };
+
+  const toggleTaskStatus = useCallback(async (taskId: string) => {
+    try {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const newStatus = task.status === 'completed' ? 'open' : 'completed';
+      
+      const { error } = await supabase
+        .from('tasks')
+        .update({ status: newStatus })
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.id === taskId ? { ...task, status: newStatus } : task
+        )
+      );
+
+      toast({
+        title: "Success",
+        description: `Task ${newStatus === 'completed' ? 'completed' : 'reopened'}`
+      });
+    } catch (error) {
+      console.error('Error updating task status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update task status",
+        variant: "destructive"
+      });
+    }
+  }, [tasks, toast]);
+
+  const reopenTask = useCallback(async (taskId: string) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ status: 'open' })
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.id === taskId ? { ...task, status: 'open' as Status } : task
+        )
+      );
+
+      toast({
+        title: "Success",
+        description: "Task reopened"
+      });
+    } catch (error) {
+      console.error('Error reopening task:', error);
+      toast({
+        title: "Error", 
+        description: "Failed to reopen task",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
+
+  const createTask = useCallback(async (taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">) => {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
+
+      const { data: task, error } = await supabase
+        .from('tasks')
+        .insert({
+          title: taskData.title,
+          description: taskData.description,
+          due_date: taskData.dueDate.toISOString(),
+          prioritized_date: taskData.prioritizedDate?.toISOString(),
+          prioritized_end_date: taskData.prioritizedEndDate?.toISOString(),
+          priority: taskData.priority,
+          type: 'task',
+          parent_task_id: taskData.parentTaskId,
+          task_order: tasks.length + 1,
+          user_id: user.user.id
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Insert theme relationships
+      if (taskData.themeIds.length > 0) {
+        const themeInserts = taskData.themeIds.map(themeId => ({
+          task_id: task.id,
+          theme_id: themeId
+        }));
+
+        const { error: themeError } = await supabase
+          .from('task_themes')
+          .insert(themeInserts);
+
+        if (themeError) throw themeError;
+      }
+
+      await fetchTasks();
+      
+      toast({
+        title: "Success",
+        description: "Task created successfully"
+      });
+    } catch (error) {
+      console.error('Error creating task:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create task",
+        variant: "destructive"
+      });
+    }
+  }, [tasks.length, toast]);
+
+  const createDomain = useCallback(async (domainData: Omit<Domain, "id" | "createdDate">) => {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('domains')
+        .insert({
+          title: domainData.title,
+          description: domainData.description,
+          user_id: user.user.id
+        });
+
+      if (error) throw error;
+
+      await fetchDomains();
+      
+      toast({
+        title: "Success",
+        description: "Domain created successfully"
+      });
+    } catch (error) {
+      console.error('Error creating domain:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create domain",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
+
+  const createStrategicPillar = useCallback(async (pillarData: Omit<StrategicPillar, "id" | "createdDate">) => {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
+
+      const { data: pillar, error } = await supabase
+        .from('strategic_pillars')
+        .insert({
+          title: pillarData.title,
+          description: pillarData.description,
+          target_timeframe: pillarData.targetTimeFrame,
+          user_id: user.user.id
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Insert domain relationships
+      if (pillarData.domainIds.length > 0) {
+        const domainInserts = pillarData.domainIds.map(domainId => ({
+          pillar_id: pillar.id,
+          domain_id: domainId
+        }));
+
+        const { error: domainError } = await supabase
+          .from('pillar_domains')
+          .insert(domainInserts);
+
+        if (domainError) throw domainError;
+      }
+
+      await fetchStrategicPillars();
+      
+      toast({
+        title: "Success",
+        description: "Strategic pillar created successfully"
+      });
+    } catch (error) {
+      console.error('Error creating strategic pillar:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create strategic pillar",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
+
+  const createTheme = useCallback(async (themeData: Omit<Theme, "id" | "createdDate">) => {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
+
+      const { data: theme, error } = await supabase
+        .from('themes')
+        .insert({
+          title: themeData.title,
+          description: themeData.description,
+          associated_project: themeData.associatedProject,
+          user_id: user.user.id
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Insert pillar relationships
+      if (themeData.strategicPillarIds.length > 0) {
+        const pillarInserts = themeData.strategicPillarIds.map(pillarId => ({
+          theme_id: theme.id,
+          pillar_id: pillarId
+        }));
+
+        const { error: pillarError } = await supabase
+          .from('theme_pillars')
+          .insert(pillarInserts);
+
+        if (pillarError) throw pillarError;
+      }
+
+      await fetchThemes();
+      
+      toast({
+        title: "Success",
+        description: "Theme created successfully"
+      });
+    } catch (error) {
+      console.error('Error creating theme:', error);
+      toast({
+        title: "Error", 
+        description: "Failed to create theme",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
+
+  // Helper functions for task filtering
   const getTodaysTasks = useCallback(() => {
     const today = new Date();
     return tasks.filter(task => {
-      if (!task.prioritizedDate) return false;
+      if (!task.prioritizedDate || task.status === 'completed') return false;
       
       const startDate = new Date(task.prioritizedDate);
       const endDate = task.prioritizedEndDate ? new Date(task.prioritizedEndDate) : startDate;
       
-      // Check if today falls within the priority period
       const todayTime = today.getTime();
       const startTime = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).getTime();
       const endTime = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime();
       
-      return (
-        todayTime >= startTime &&
-        todayTime <= endTime &&
-        task.status !== 'completed'
-      );
+      return todayTime >= startTime && todayTime <= endTime;
     }).sort((a, b) => {
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
@@ -70,9 +407,9 @@ export function useTasks() {
   const getThisWeekTasks = useCallback(() => {
     const today = new Date();
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay()); // Start of current week (Sunday)
+    startOfWeek.setDate(today.getDate() - today.getDay());
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // End of current week (Saturday)
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
 
     return tasks.filter(task => {
       if (!task.prioritizedDate || task.status === 'completed') return false;
@@ -80,10 +417,7 @@ export function useTasks() {
       const startDate = new Date(task.prioritizedDate);
       const endDate = task.prioritizedEndDate ? new Date(task.prioritizedEndDate) : startDate;
       
-      // Check if any part of the task's priority period overlaps with this week
-      return (
-        (startDate <= endOfWeek && endDate >= startOfWeek)
-      );
+      return (startDate <= endOfWeek && endDate >= startOfWeek);
     }).sort((a, b) => {
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
@@ -93,9 +427,9 @@ export function useTasks() {
   const getNextWeekTasks = useCallback(() => {
     const today = new Date();
     const startOfNextWeek = new Date(today);
-    startOfNextWeek.setDate(today.getDate() - today.getDay() + 7); // Start of next week (Sunday)
+    startOfNextWeek.setDate(today.getDate() - today.getDay() + 7);
     const endOfNextWeek = new Date(startOfNextWeek);
-    endOfNextWeek.setDate(startOfNextWeek.getDate() + 6); // End of next week (Saturday)
+    endOfNextWeek.setDate(startOfNextWeek.getDate() + 6);
 
     return tasks.filter(task => {
       if (!task.prioritizedDate || task.status === 'completed') return false;
@@ -103,10 +437,7 @@ export function useTasks() {
       const startDate = new Date(task.prioritizedDate);
       const endDate = task.prioritizedEndDate ? new Date(task.prioritizedEndDate) : startDate;
       
-      // Check if any part of the task's priority period overlaps with next week
-      return (
-        (startDate <= endOfNextWeek && endDate >= startOfNextWeek)
-      );
+      return (startDate <= endOfNextWeek && endDate >= startOfNextWeek);
     }).sort((a, b) => {
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
@@ -124,87 +455,95 @@ export function useTasks() {
       const startDate = new Date(task.prioritizedDate);
       const endDate = task.prioritizedEndDate ? new Date(task.prioritizedEndDate) : startDate;
       
-      // Check if any part of the task's priority period overlaps with this month
-      return (
-        (startDate <= endOfMonth && endDate >= startOfMonth)
-      );
+      return (startDate <= endOfMonth && endDate >= startOfMonth);
     }).sort((a, b) => {
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
   }, [tasks]);
 
-  const createTask = useCallback((taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">) => {
-    const newTask: Task = {
-      ...taskData,
-      id: String(Date.now()),
-      createdDate: new Date(),
-      status: "open",
-      type: "task",
-      order: tasks.length + 1,
-    };
-    setTasks(prev => [...prev, newTask]);
-  }, [tasks.length]);
+  // Deletion functions
+  const deleteDomain = useCallback(async (domainId: string) => {
+    try {
+      const { error } = await supabase
+        .from('domains')
+        .delete()
+        .eq('id', domainId);
 
-  const createDomain = useCallback((domainData: Omit<Domain, "id" | "createdDate">) => {
-    const newDomain: Domain = {
-      ...domainData,
-      id: String(Date.now()),
-      createdDate: new Date(),
-    };
-    setDomains(prev => [...prev, newDomain]);
-  }, []);
+      if (error) throw error;
 
-  const createStrategicPillar = useCallback((pillarData: Omit<StrategicPillar, "id" | "createdDate">) => {
-    const newPillar: StrategicPillar = {
-      ...pillarData,
-      id: String(Date.now()),
-      createdDate: new Date(),
-    };
-    setStrategicPillars(prev => [...prev, newPillar]);
-  }, []);
+      await fetchAllData();
+      
+      toast({
+        title: "Success",
+        description: "Domain deleted successfully"
+      });
+    } catch (error) {
+      console.error('Error deleting domain:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete domain",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
 
-  const createTheme = useCallback((themeData: Omit<Theme, "id" | "createdDate">) => {
-    const newTheme: Theme = {
-      ...themeData,
-      id: String(Date.now()),
-      createdDate: new Date(),
-    };
-    setThemes(prev => [...prev, newTheme]);
-  }, []);
+  const deleteStrategicPillar = useCallback(async (pillarId: string) => {
+    try {
+      const { error } = await supabase
+        .from('strategic_pillars')
+        .delete()
+        .eq('id', pillarId);
 
-  const deleteDomain = useCallback((domainId: string) => {
-    setDomains(prev => prev.filter(domain => domain.id !== domainId));
-    // Also remove this domain from all strategic pillars
-    setStrategicPillars(prev => prev.map(pillar => ({
-      ...pillar,
-      domainIds: pillar.domainIds.filter(id => id !== domainId)
-    })));
-  }, []);
+      if (error) throw error;
 
-  const deleteStrategicPillar = useCallback((pillarId: string) => {
-    setStrategicPillars(prev => prev.filter(pillar => pillar.id !== pillarId));
-    // Also remove this pillar from all themes
-    setThemes(prev => prev.map(theme => ({
-      ...theme,
-      strategicPillarIds: theme.strategicPillarIds.filter(id => id !== pillarId)
-    })));
-  }, []);
+      await fetchAllData();
+      
+      toast({
+        title: "Success",
+        description: "Strategic pillar deleted successfully"
+      });
+    } catch (error) {
+      console.error('Error deleting strategic pillar:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete strategic pillar",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
 
-  const deleteTheme = useCallback((themeId: string) => {
-    setThemes(prev => prev.filter(theme => theme.id !== themeId));
-    // Also remove this theme from all tasks
-    setTasks(prev => prev.map(task => ({
-      ...task,
-      themeIds: task.themeIds.filter(id => id !== themeId)
-    })));
-  }, []);
+  const deleteTheme = useCallback(async (themeId: string) => {
+    try {
+      const { error } = await supabase
+        .from('themes')
+        .delete()
+        .eq('id', themeId);
+
+      if (error) throw error;
+
+      await fetchAllData();
+      
+      toast({
+        title: "Success",
+        description: "Theme deleted successfully"
+      });
+    } catch (error) {
+      console.error('Error deleting theme:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete theme",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
 
   return {
     tasks,
     domains,
     strategicPillars,
     themes,
+    isLoading,
     toggleTaskStatus,
     reopenTask,
     createTask,
@@ -220,5 +559,6 @@ export function useTasks() {
     deleteDomain,
     deleteStrategicPillar,
     deleteTheme,
+    fetchAllData
   };
 }
