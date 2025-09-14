@@ -113,7 +113,7 @@ export function QuickCreateMenu({
               setOpenDialog(null);
             }}
           >
-            <button onClick={() => {}} style={{ display: 'none' }} />
+            <button ref={triggerRef} style={{ display: 'none' }} />
           </SubtaskFormDialog>
         ) : null;
       case 'theme':
@@ -125,7 +125,7 @@ export function QuickCreateMenu({
               setOpenDialog(null);
             }}
           >
-            <button onClick={() => {}} style={{ display: 'none' }} />
+            <button ref={triggerRef} style={{ display: 'none' }} />
           </ThemeFormDialog>
         );
       case 'pillar':
@@ -137,7 +137,7 @@ export function QuickCreateMenu({
               setOpenDialog(null);
             }}
           >
-            <button onClick={() => {}} style={{ display: 'none' }} />
+            <button ref={triggerRef} style={{ display: 'none' }} />
           </PillarFormDialog>
         );
       case 'domain':
@@ -148,7 +148,7 @@ export function QuickCreateMenu({
               setOpenDialog(null);
             }}
           >
-            <button onClick={() => {}} style={{ display: 'none' }} />
+            <button ref={triggerRef} style={{ display: 'none' }} />
           </DomainFormDialog>
         );
       default:
