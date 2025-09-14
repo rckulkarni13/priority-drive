@@ -52,7 +52,7 @@ export function TaskCard({
             className="flex-1 min-w-0"
             onClick={() => onEdit?.(task)}
           >
-            <div className="flex items-start justify-between gap-2 mb-2">
+            <div className="flex items-start justify-between gap-2 mb-2 mt-6">
               <h3 className={cn(
                 "font-medium text-sm leading-tight hover:text-primary transition-colors",
                 isCompleted && "line-through text-muted-foreground"

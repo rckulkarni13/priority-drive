@@ -1,5 +1,6 @@
 import { Task } from "@/types";
 import { TaskCard } from "./task-card";
+import { OrganizedTaskList } from "./task-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays } from "lucide-react";
@@ -84,18 +85,13 @@ export function TaskList({
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <div className="space-y-2">
-                      {dateTasks.map(task => (
-                        <TaskCard
-                          key={task.id}
-                          task={task}
-                          onEdit={onTaskEdit}
-                          onToggleStatus={onTaskToggleStatus}
-                          onReopen={onTaskReopen}
-                          onCreateSubtask={onCreateSubtask}
-                        />
-                      ))}
-                    </div>
+                    <OrganizedTaskList
+                      tasks={dateTasks}
+                      onTaskEdit={onTaskEdit}
+                      onTaskToggleStatus={onTaskToggleStatus}
+                      onTaskReopen={onTaskReopen}
+                      onCreateSubtask={onCreateSubtask}
+                    />
                   </CardContent>
                 </Card>
               );
@@ -122,18 +118,13 @@ export function TaskList({
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-2">
-          {tasks.map(task => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onEdit={onTaskEdit}
-              onToggleStatus={onTaskToggleStatus}
-              onReopen={onTaskReopen}
-              onCreateSubtask={onCreateSubtask}
-            />
-          ))}
-        </div>
+        <OrganizedTaskList
+          tasks={tasks}
+          onTaskEdit={onTaskEdit}
+          onTaskToggleStatus={onTaskToggleStatus}
+          onTaskReopen={onTaskReopen}
+          onCreateSubtask={onCreateSubtask}
+        />
       )}
     </div>
   );
