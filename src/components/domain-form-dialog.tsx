@@ -21,33 +21,33 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Product } from "@/types";
+import { Domain } from "@/types";
 
-const productSchema = z.object({
+const domainSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
 });
 
-type ProductFormData = z.infer<typeof productSchema>;
+type DomainFormData = z.infer<typeof domainSchema>;
 
-interface ProductFormDialogProps {
+interface DomainFormDialogProps {
   children: React.ReactNode;
-  onProductCreate: (productData: Omit<Product, "id" | "createdDate">) => void;
+  onDomainCreate: (domainData: Omit<Domain, "id" | "createdDate">) => void;
 }
 
-export function ProductFormDialog({ children, onProductCreate }: ProductFormDialogProps) {
+export function DomainFormDialog({ children, onDomainCreate }: DomainFormDialogProps) {
   const [open, setOpen] = useState(false);
 
-  const form = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema),
+  const form = useForm<DomainFormData>({
+    resolver: zodResolver(domainSchema),
     defaultValues: {
       title: "",
       description: "",
     },
   });
 
-  const onSubmit = (data: ProductFormData) => {
-    onProductCreate({
+  const onSubmit = (data: DomainFormData) => {
+    onDomainCreate({
       title: data.title,
       description: data.description,
     });
@@ -62,9 +62,9 @@ export function ProductFormDialog({ children, onProductCreate }: ProductFormDial
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Create New Product</DialogTitle>
+          <DialogTitle>Create New Domain</DialogTitle>
           <DialogDescription>
-            Add a new product to organize your strategic initiatives.
+            Add a new domain to organize your strategic initiatives.
           </DialogDescription>
         </DialogHeader>
         
@@ -75,9 +75,9 @@ export function ProductFormDialog({ children, onProductCreate }: ProductFormDial
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Product Name</FormLabel>
+                  <FormLabel>Domain Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter product name..." {...field} />
+                    <Input placeholder="Enter domain name..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -92,7 +92,7 @@ export function ProductFormDialog({ children, onProductCreate }: ProductFormDial
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe the product..."
+                      placeholder="Describe the domain..."
                       className="min-h-[80px]"
                       {...field}
                     />
@@ -110,7 +110,7 @@ export function ProductFormDialog({ children, onProductCreate }: ProductFormDial
               >
                 Cancel
               </Button>
-              <Button type="submit">Create Product</Button>
+              <Button type="submit">Create Domain</Button>
             </div>
           </form>
         </Form>

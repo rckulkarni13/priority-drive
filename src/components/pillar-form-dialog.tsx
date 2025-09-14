@@ -28,24 +28,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { StrategicPillar, Product } from "@/types";
+import { StrategicPillar, Domain } from "@/types";
 
 const pillarSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   targetTimeFrame: z.string().min(1, "Target timeframe is required"),
-  productIds: z.array(z.string()).min(1, "Please select at least one product"),
+  domainIds: z.array(z.string()).min(1, "Please select at least one domain"),
 });
 
 type PillarFormData = z.infer<typeof pillarSchema>;
 
 interface PillarFormDialogProps {
   children: React.ReactNode;
-  products: Product[];
+  domains: Domain[];
   onPillarCreate: (pillarData: Omit<StrategicPillar, "id" | "createdDate">) => void;
 }
 
-export function PillarFormDialog({ children, products, onPillarCreate }: PillarFormDialogProps) {
+export function PillarFormDialog({ children, domains, onPillarCreate }: PillarFormDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<PillarFormData>({
@@ -54,7 +54,7 @@ export function PillarFormDialog({ children, products, onPillarCreate }: PillarF
       title: "",
       description: "",
       targetTimeFrame: "",
-      productIds: [],
+      domainIds: [],
     },
   });
 
@@ -63,7 +63,7 @@ export function PillarFormDialog({ children, products, onPillarCreate }: PillarF
       title: data.title,
       description: data.description,
       targetTimeFrame: data.targetTimeFrame,
-      productIds: data.productIds,
+      domainIds: data.domainIds,
     });
     form.reset();
     setOpen(false);
@@ -132,31 +132,31 @@ export function PillarFormDialog({ children, products, onPillarCreate }: PillarF
 
             <FormField
               control={form.control}
-              name="productIds"
+              name="domainIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Associated Products</FormLabel>
+                  <FormLabel>Associated Domains</FormLabel>
                   <div className="space-y-2">
-                    {products.map((product) => (
-                      <div key={product.id} className="flex items-center space-x-2">
+                    {domains.map((domain) => (
+                      <div key={domain.id} className="flex items-center space-x-2">
                         <input
                           type="checkbox"
-                          id={`product-${product.id}`}
-                          checked={field.value.includes(product.id)}
+                          id={`domain-${domain.id}`}
+                          checked={field.value.includes(domain.id)}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              field.onChange([...field.value, product.id]);
+                              field.onChange([...field.value, domain.id]);
                             } else {
-                              field.onChange(field.value.filter(id => id !== product.id));
+                              field.onChange(field.value.filter(id => id !== domain.id));
                             }
                           }}
                           className="rounded border-border"
                         />
                         <label
-                          htmlFor={`product-${product.id}`}
+                          htmlFor={`domain-${domain.id}`}
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                          {product.title}
+                          {domain.title}
                         </label>
                       </div>
                     ))}

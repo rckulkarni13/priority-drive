@@ -1,23 +1,23 @@
-import { Product, StrategicPillar, Theme } from "@/types";
+import { Domain, StrategicPillar, Theme } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Package, Target, Lightbulb, Trash2, Settings } from "lucide-react";
 
 interface ManageViewProps {
-  products: Product[];
+  domains: Domain[];
   strategicPillars: StrategicPillar[];
   themes: Theme[];
-  onProductDelete?: (productId: string) => void;
+  onDomainDelete?: (domainId: string) => void;
   onPillarDelete?: (pillarId: string) => void;
   onThemeDelete?: (themeId: string) => void;
 }
 
 export function ManageView({ 
-  products, 
+  domains, 
   strategicPillars, 
   themes, 
-  onProductDelete, 
+  onDomainDelete, 
   onPillarDelete, 
   onThemeDelete 
 }: ManageViewProps) {
@@ -28,30 +28,30 @@ export function ManageView({
         Manage Items
       </h2>
 
-      {/* Products Section */}
+      {/* Domains Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Package className="w-5 h-5 text-primary" />
-            Products
-            <Badge variant="outline">{products.length}</Badge>
+            Domains
+            <Badge variant="outline">{domains.length}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {products.length === 0 ? (
-            <p className="text-muted-foreground">No products created yet.</p>
+          {domains.length === 0 ? (
+            <p className="text-muted-foreground">No domains created yet.</p>
           ) : (
             <div className="space-y-3">
-              {products.map((product) => (
-                <div key={product.id} className="flex items-center justify-between p-3 border rounded-lg">
+              {domains.map((domain) => (
+                <div key={domain.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
-                    <h4 className="font-medium">{product.title}</h4>
-                    <p className="text-sm text-muted-foreground">{product.description}</p>
+                    <h4 className="font-medium">{domain.title}</h4>
+                    <p className="text-sm text-muted-foreground">{domain.description}</p>
                   </div>
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    onClick={() => onProductDelete?.(product.id)}
+                    onClick={() => onDomainDelete?.(domain.id)}
                     className="h-8 w-8 p-0"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -87,7 +87,7 @@ export function ManageView({
                         {pillar.targetTimeFrame}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
-                        {pillar.productIds.length} products
+                        {pillar.domainIds.length} domains
                       </Badge>
                     </div>
                   </div>

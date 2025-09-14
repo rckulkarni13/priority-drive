@@ -2,7 +2,7 @@ export type Priority = 'critical' | 'high' | 'medium' | 'low';
 export type Status = 'open' | 'hold' | 'completed';
 export type TaskType = 'task' | 'subtask';
 
-export interface Product {
+export interface Domain {
   id: string;
   title: string;
   description: string;
@@ -15,7 +15,7 @@ export interface StrategicPillar {
   description: string;
   createdDate: Date;
   targetTimeFrame: string;
-  productIds: string[];
+  domainIds: string[];
 }
 
 export interface Theme {

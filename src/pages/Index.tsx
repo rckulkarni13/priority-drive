@@ -6,7 +6,7 @@ import { TaskList } from "@/components/task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
 import { ManageView } from "@/components/manage-view";
 import { TaskFormDialog } from "@/components/task-form-dialog";
-import { ProductFormDialog } from "@/components/product-form-dialog";
+import { DomainFormDialog } from "@/components/domain-form-dialog";
 import { PillarFormDialog } from "@/components/pillar-form-dialog";
 import { ThemeFormDialog } from "@/components/theme-form-dialog";
 import { useTasks } from "@/hooks/use-tasks";
@@ -26,16 +26,16 @@ const Index = () => {
 
   const {
     tasks,
-    products,
+    domains,
     strategicPillars,
     themes,
     toggleTaskStatus,
     reopenTask,
     createTask,
-    createProduct,
+    createDomain,
     createStrategicPillar,
     createTheme,
-    deleteProduct,
+    deleteDomain,
     deleteStrategicPillar,
     deleteTheme,
     getTodaysTasks,
@@ -150,13 +150,13 @@ const Index = () => {
       case 'hierarchy':
         return (
           <HierarchyView
-            products={products}
+            domains={domains}
             strategicPillars={strategicPillars}
             themes={themes}
             tasks={tasks}
             onTaskToggleStatus={toggleTaskStatus}
             onTaskReopen={reopenTask}
-            onProductDelete={deleteProduct}
+            onDomainDelete={deleteDomain}
             onPillarDelete={deleteStrategicPillar}
             onThemeDelete={deleteTheme}
           />
@@ -187,10 +187,10 @@ const Index = () => {
       case 'manage':
         return (
           <ManageView
-            products={products}
+            domains={domains}
             strategicPillars={strategicPillars}
             themes={themes}
-            onProductDelete={deleteProduct}
+            onDomainDelete={deleteDomain}
             onPillarDelete={deleteStrategicPillar}
             onThemeDelete={deleteTheme}
           />
@@ -218,14 +218,14 @@ const Index = () => {
             </div>
             
             <div className="flex gap-2">
-              <ProductFormDialog onProductCreate={createProduct}>
+              <DomainFormDialog onDomainCreate={createDomain}>
                 <Button variant="outline" size="sm" className="gap-1">
                   <Package className="w-4 h-4" />
-                  Product
+                  Domain
                 </Button>
-              </ProductFormDialog>
+              </DomainFormDialog>
               
-              <PillarFormDialog products={products} onPillarCreate={createStrategicPillar}>
+              <PillarFormDialog domains={domains} onPillarCreate={createStrategicPillar}>
                 <Button variant="outline" size="sm" className="gap-1">
                   <Target className="w-4 h-4" />
                   Pillar
@@ -267,7 +267,7 @@ const Index = () => {
             monthlyTasksCount={monthlyTasks.length}
             completedTasksCount={completedTasks.length}
             allTasksCount={allActiveTasks.length}
-            productsCount={products.length}
+            domainsCount={domains.length}
             pillarsCount={strategicPillars.length}
             themesCount={themes.length}
           />

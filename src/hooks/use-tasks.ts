@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
-import { Task, Product, StrategicPillar, Theme, Priority, Status } from "@/types";
+import { Task, Domain, StrategicPillar, Theme, Priority, Status } from "@/types";
 
 // Empty data arrays - ready for your custom data
-const mockProducts: Product[] = [];
+const mockDomains: Domain[] = [];
 
 const mockPillars: StrategicPillar[] = [];
 
@@ -12,7 +12,7 @@ const mockTasks: Task[] = [];
 
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
-  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [domains, setDomains] = useState<Domain[]>(mockDomains);
   const [strategicPillars, setStrategicPillars] = useState<StrategicPillar[]>(mockPillars);
   const [themes, setThemes] = useState<Theme[]>(mockThemes);
 
@@ -146,13 +146,13 @@ export function useTasks() {
     setTasks(prev => [...prev, newTask]);
   }, [tasks.length]);
 
-  const createProduct = useCallback((productData: Omit<Product, "id" | "createdDate">) => {
-    const newProduct: Product = {
-      ...productData,
+  const createDomain = useCallback((domainData: Omit<Domain, "id" | "createdDate">) => {
+    const newDomain: Domain = {
+      ...domainData,
       id: String(Date.now()),
       createdDate: new Date(),
     };
-    setProducts(prev => [...prev, newProduct]);
+    setDomains(prev => [...prev, newDomain]);
   }, []);
 
   const createStrategicPillar = useCallback((pillarData: Omit<StrategicPillar, "id" | "createdDate">) => {
@@ -173,12 +173,12 @@ export function useTasks() {
     setThemes(prev => [...prev, newTheme]);
   }, []);
 
-  const deleteProduct = useCallback((productId: string) => {
-    setProducts(prev => prev.filter(product => product.id !== productId));
-    // Also remove this product from all strategic pillars
+  const deleteDomain = useCallback((domainId: string) => {
+    setDomains(prev => prev.filter(domain => domain.id !== domainId));
+    // Also remove this domain from all strategic pillars
     setStrategicPillars(prev => prev.map(pillar => ({
       ...pillar,
-      productIds: pillar.productIds.filter(id => id !== productId)
+      domainIds: pillar.domainIds.filter(id => id !== domainId)
     })));
   }, []);
 
@@ -202,13 +202,13 @@ export function useTasks() {
 
   return {
     tasks,
-    products,
+    domains,
     strategicPillars,
     themes,
     toggleTaskStatus,
     reopenTask,
     createTask,
-    createProduct,
+    createDomain,
     createStrategicPillar,
     createTheme,
     getTodaysTasks,
@@ -217,7 +217,7 @@ export function useTasks() {
     getMonthlyTasks,
     getCompletedTasks,
     getAllActiveTasks,
-    deleteProduct,
+    deleteDomain,
     deleteStrategicPillar,
     deleteTheme,
   };

@@ -25,7 +25,7 @@ interface NavigationProps {
   monthlyTasksCount: number;
   completedTasksCount: number;
   allTasksCount: number;
-  productsCount: number;
+  domainsCount: number;
   pillarsCount: number;
   themesCount: number;
 }
@@ -39,7 +39,7 @@ export function Navigation({
   monthlyTasksCount,
   completedTasksCount,
   allTasksCount,
-  productsCount,
+  domainsCount,
   pillarsCount,
   themesCount
 }: NavigationProps) {
@@ -90,7 +90,7 @@ export function Navigation({
       id: 'manage' as View,
       label: 'Manage Items',
       icon: Settings,
-      count: productsCount + pillarsCount + themesCount,
+      count: domainsCount + pillarsCount + themesCount,
       color: 'text-orange-600',
     },
     {

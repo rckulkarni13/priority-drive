@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Product, StrategicPillar, Theme, Task } from "@/types";
+import { Domain, StrategicPillar, Theme, Task } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,37 +8,37 @@ import { ChevronDown, ChevronRight, FolderTree, Target, Lightbulb, CheckSquare, 
 import { TaskCard } from "./task-card";
 
 interface HierarchyViewProps {
-  products: Product[];
+  domains: Domain[];
   strategicPillars: StrategicPillar[];
   themes: Theme[];
   tasks: Task[];
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
-  onProductDelete?: (productId: string) => void;
+  onDomainDelete?: (domainId: string) => void;
   onPillarDelete?: (pillarId: string) => void;
   onThemeDelete?: (themeId: string) => void;
 }
 
 export function HierarchyView({ 
-  products, 
+  domains, 
   strategicPillars, 
   themes, 
   tasks, 
   onTaskEdit, 
   onTaskToggleStatus, 
   onTaskReopen,
-  onProductDelete,
+  onDomainDelete,
   onPillarDelete,
   onThemeDelete,
 }: HierarchyViewProps) {
-  const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
+  const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
   const [expandedPillars, setExpandedPillars] = useState<Set<string>>(new Set());
   const [expandedThemes, setExpandedThemes] = useState<Set<string>>(new Set());
 
-  const toggleExpanded = (id: string, type: 'product' | 'pillar' | 'theme') => {
+  const toggleExpanded = (id: string, type: 'domain' | 'pillar' | 'theme') => {
     const setters = {
-      product: setExpandedProducts,
+      domain: setExpandedDomains,
       pillar: setExpandedPillars,
       theme: setExpandedThemes
     };
@@ -72,16 +72,16 @@ export function HierarchyView({
     return themes.filter(theme => theme.strategicPillarIds.includes(pillarId));
   };
 
-  const getPillarsForProduct = (productId: string) => {
-    return strategicPillars.filter(pillar => pillar.productIds.includes(productId));
+  const getPillarsForDomain = (domainId: string) => {
+    return strategicPillars.filter(pillar => pillar.domainIds.includes(domainId));
   };
 
-  if (products.length === 0) {
+  if (domains.length === 0) {
     return (
       <Card>
         <CardContent className="p-8 text-center text-muted-foreground">
           <FolderTree className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No products found. Create your first product to get started!</p>
+          <p>No domains found. Create your first domain to get started!</p>
         </CardContent>
       </Card>
     );
@@ -95,39 +95,39 @@ export function HierarchyView({
       </h2>
 
       <div className="space-y-3">
-        {products.map(product => {
-          const productPillars = getPillarsForProduct(product.id);
-          const isProductExpanded = expandedProducts.has(product.id);
+        {domains.map(domain => {
+          const domainPillars = getPillarsForDomain(domain.id);
+          const isDomainExpanded = expandedDomains.has(domain.id);
 
           return (
-            <Card key={product.id} className="overflow-hidden">
+            <Card key={domain.id} className="overflow-hidden">
               <Collapsible
-                open={isProductExpanded}
-                onOpenChange={() => toggleExpanded(product.id, 'product')}
+                open={isDomainExpanded}
+                onOpenChange={() => toggleExpanded(domain.id, 'domain')}
               >
                 <CollapsibleTrigger asChild>
                   <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-                     <CardTitle className="flex items-center justify-between text-base">
-                       <div className="flex items-center gap-2">
-                         {isProductExpanded ? (
-                           <ChevronDown className="w-4 h-4" />
-                         ) : (
-                           <ChevronRight className="w-4 h-4" />
-                         )}
-                         <FolderTree className="w-4 h-4 text-primary" />
-                         {product.title}
-                       </div>
-                       <div className="flex items-center gap-2">
-                         <Badge variant="outline">{productPillars.length} pillars</Badge>
-                         <Button 
-                           variant="outline" 
-                           size="sm" 
-                           onClick={(e) => {
-                             e.stopPropagation();
-                             onProductDelete?.(product.id);
-                           }}
-                           className="h-6 w-6 p-0"
-                         >
+                      <CardTitle className="flex items-center justify-between text-base">
+                        <div className="flex items-center gap-2">
+                          {isDomainExpanded ? (
+                            <ChevronDown className="w-4 h-4" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4" />
+                          )}
+                          <FolderTree className="w-4 h-4 text-primary" />
+                          {domain.title}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{domainPillars.length} pillars</Badge>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDomainDelete?.(domain.id);
+                            }}
+                            className="h-6 w-6 p-0"
+                          >
                            <Trash2 className="w-3 h-3" />
                          </Button>
                        </div>
@@ -137,14 +137,14 @@ export function HierarchyView({
 
                 <CollapsibleContent>
                   <CardContent className="pt-0">
-                    {product.description && (
+                    {domain.description && (
                       <p className="text-sm text-muted-foreground mb-4">
-                        {product.description}
+                        {domain.description}
                       </p>
                     )}
 
                     <div className="space-y-3 pl-4">
-                      {productPillars.map(pillar => {
+                      {domainPillars.map(pillar => {
                         const pillarThemes = getThemesForPillar(pillar.id);
                         const isPillarExpanded = expandedPillars.has(pillar.id);
 
@@ -301,9 +301,9 @@ export function HierarchyView({
                         );
                       })}
                       
-                      {productPillars.length === 0 && (
+                      {domainPillars.length === 0 && (
                         <p className="text-sm text-muted-foreground italic">
-                          No strategic pillars in this product
+                          No strategic pillars in this domain
                         </p>
                       )}
                     </div>

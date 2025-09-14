@@ -14,7 +14,239 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      domains: {
+        Row: {
+          created_date: string
+          description: string | null
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_date?: string
+          description?: string | null
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_date?: string
+          description?: string | null
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pillar_domains: {
+        Row: {
+          domain_id: string
+          id: string
+          pillar_id: string
+        }
+        Insert: {
+          domain_id: string
+          id?: string
+          pillar_id: string
+        }
+        Update: {
+          domain_id?: string
+          id?: string
+          pillar_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pillar_products_pillar_id_fkey"
+            columns: ["pillar_id"]
+            isOneToOne: false
+            referencedRelation: "strategic_pillars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pillar_products_product_id_fkey"
+            columns: ["domain_id"]
+            isOneToOne: false
+            referencedRelation: "domains"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      strategic_pillars: {
+        Row: {
+          created_date: string
+          description: string | null
+          id: string
+          target_timeframe: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_date?: string
+          description?: string | null
+          id?: string
+          target_timeframe: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_date?: string
+          description?: string | null
+          id?: string
+          target_timeframe?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      task_themes: {
+        Row: {
+          id: string
+          task_id: string
+          theme_id: string
+        }
+        Insert: {
+          id?: string
+          task_id: string
+          theme_id: string
+        }
+        Update: {
+          id?: string
+          task_id?: string
+          theme_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_themes_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_themes_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          created_date: string
+          description: string | null
+          due_date: string
+          id: string
+          parent_task_id: string | null
+          prioritized_date: string | null
+          prioritized_end_date: string | null
+          priority: Database["public"]["Enums"]["priority"]
+          status: Database["public"]["Enums"]["status"]
+          task_order: number
+          title: string
+          type: Database["public"]["Enums"]["task_type"]
+          user_id: string
+        }
+        Insert: {
+          created_date?: string
+          description?: string | null
+          due_date: string
+          id?: string
+          parent_task_id?: string | null
+          prioritized_date?: string | null
+          prioritized_end_date?: string | null
+          priority: Database["public"]["Enums"]["priority"]
+          status?: Database["public"]["Enums"]["status"]
+          task_order?: number
+          title: string
+          type?: Database["public"]["Enums"]["task_type"]
+          user_id: string
+        }
+        Update: {
+          created_date?: string
+          description?: string | null
+          due_date?: string
+          id?: string
+          parent_task_id?: string | null
+          prioritized_date?: string | null
+          prioritized_end_date?: string | null
+          priority?: Database["public"]["Enums"]["priority"]
+          status?: Database["public"]["Enums"]["status"]
+          task_order?: number
+          title?: string
+          type?: Database["public"]["Enums"]["task_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_parent_task_id_fkey"
+            columns: ["parent_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      theme_pillars: {
+        Row: {
+          id: string
+          pillar_id: string
+          theme_id: string
+        }
+        Insert: {
+          id?: string
+          pillar_id: string
+          theme_id: string
+        }
+        Update: {
+          id?: string
+          pillar_id?: string
+          theme_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "theme_pillars_pillar_id_fkey"
+            columns: ["pillar_id"]
+            isOneToOne: false
+            referencedRelation: "strategic_pillars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "theme_pillars_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      themes: {
+        Row: {
+          associated_project: string | null
+          created_date: string
+          description: string | null
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          associated_project?: string | null
+          created_date?: string
+          description?: string | null
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          associated_project?: string | null
+          created_date?: string
+          description?: string | null
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +255,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      priority: "critical" | "high" | "medium" | "low"
+      status: "open" | "hold" | "completed"
+      task_type: "task" | "subtask"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +384,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      priority: ["critical", "high", "medium", "low"],
+      status: ["open", "hold", "completed"],
+      task_type: ["task", "subtask"],
+    },
   },
 } as const
