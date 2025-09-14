@@ -98,6 +98,22 @@ const Index = () => {
   const completedTasks = getCompletedTasks();
   const allActiveTasks = getAllActiveTasks();
 
+  const handleCreateSubtask = (parentTaskId: string) => {
+    // This will be handled by the TaskFormDialog with defaultParentTaskId
+  };
+
+  const handleCreateTask = (themeId?: string) => {
+    // This will be handled by the TaskFormDialog with pre-selected theme
+  };
+
+  const handleCreateTheme = (pillarId?: string) => {
+    // This will be handled by the ThemeFormDialog - could pass pillarId as default
+  };
+
+  const handleCreatePillar = (domainId?: string) => {
+    // This will be handled by the PillarFormDialog - could pass domainId as default
+  };
+
   const renderContent = () => {
     switch (currentView) {
       case 'today':
@@ -157,6 +173,10 @@ const Index = () => {
             tasks={tasks}
             onTaskToggleStatus={toggleTaskStatus}
             onTaskReopen={reopenTask}
+            onCreateSubtask={handleCreateSubtask}
+            onCreateTask={handleCreateTask}
+            onCreateTheme={handleCreateTheme}
+            onCreatePillar={handleCreatePillar}
             onDomainDelete={deleteDomain}
             onPillarDelete={deleteStrategicPillar}
             onThemeDelete={deleteTheme}

@@ -16,6 +16,7 @@ interface HierarchyViewProps {
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onCreateTask?: (themeId?: string) => void;
   onCreateTheme?: (pillarId?: string) => void;
   onCreatePillar?: (domainId?: string) => void;
   onDomainDelete?: (domainId: string) => void;
@@ -32,6 +33,7 @@ export function HierarchyView({
   onTaskToggleStatus, 
   onTaskReopen,
   onCreateSubtask,
+  onCreateTask,
   onCreateTheme,
   onCreatePillar,
   onDomainDelete,
@@ -241,22 +243,30 @@ export function HierarchyView({
                                                      <Lightbulb className="w-3 h-3 text-green-600" />
                                                      {theme.title}
                                                    </div>
-                                                   <div className="flex items-center gap-2">
-                                                     <Badge variant="outline" className="text-xs">
-                                                       {themeTasks.length} tasks
-                                                     </Badge>
-                                                     <Button 
-                                                       variant="outline" 
-                                                       size="sm" 
-                                                       onClick={(e) => {
-                                                         e.stopPropagation();
-                                                         onThemeDelete?.(theme.id);
-                                                       }}
-                                                       className="h-4 w-4 p-0"
-                                                     >
-                                                       <Trash2 className="w-2 h-2" />
-                                                     </Button>
-                                                   </div>
+                                                    <div className="flex items-center gap-2">
+                                                      <Badge 
+                                                        variant="outline" 
+                                                        className="text-xs cursor-pointer hover:bg-muted"
+                                                        onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          onCreateTask?.(theme.id);
+                                                        }}
+                                                      >
+                                                        {themeTasks.length} tasks
+                                                        <Plus className="w-2 h-2 ml-1" />
+                                                      </Badge>
+                                                      <Button 
+                                                        variant="outline" 
+                                                        size="sm" 
+                                                        onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          onThemeDelete?.(theme.id);
+                                                        }}
+                                                        className="h-4 w-4 p-0"
+                                                      >
+                                                        <Trash2 className="w-2 h-2" />
+                                                      </Button>
+                                                    </div>
                                                  </CardTitle>
                                               </CardHeader>
                                             </CollapsibleTrigger>
@@ -301,11 +311,23 @@ export function HierarchyView({
                                                     );
                                                   })}
                                                   
-                                                  {themeTasks.length === 0 && (
-                                                    <p className="text-xs text-muted-foreground italic">
-                                                      No tasks in this theme
-                                                    </p>
-                                                  )}
+                                                   {themeTasks.length === 0 && (
+                                                     <div className="text-xs text-muted-foreground italic flex items-center justify-between">
+                                                       <span>No tasks in this theme</span>
+                                                       <Button 
+                                                         variant="ghost" 
+                                                         size="sm"
+                                                         onClick={(e) => {
+                                                           e.stopPropagation();
+                                                           onCreateTask?.(theme.id);
+                                                         }}
+                                                         className="h-6 px-2 text-xs"
+                                                       >
+                                                         <Plus className="w-3 h-3 mr-1" />
+                                                         Add Task
+                                                       </Button>
+                                                     </div>
+                                                   )}
                                                 </div>
                                               </CardContent>
                                             </CollapsibleContent>
