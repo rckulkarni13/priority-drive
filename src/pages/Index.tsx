@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/navigation";
 import { TaskList } from "@/components/task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
@@ -9,12 +11,19 @@ import { PillarFormDialog } from "@/components/pillar-form-dialog";
 import { ThemeFormDialog } from "@/components/theme-form-dialog";
 import { useTasks } from "@/hooks/use-tasks";
 import { Button } from "@/components/ui/button";
-import { Plus, CheckSquare2, Package, Target, Lightbulb } from "lucide-react";
+import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut } from "lucide-react";
+import { User } from "@supabase/supabase-js";
+import { useToast } from "@/hooks/use-toast";
 
 type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('today');
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   const {
     tasks,
     products,
@@ -36,6 +45,50 @@ const Index = () => {
     getCompletedTasks,
     getAllActiveTasks,
   } = useTasks();
+
+  useEffect(() => {
+    // Check initial user state
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      setLoading(false);
+      if (!user) {
+        navigate("/auth");
+      }
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+      if (!session?.user) {
+        navigate("/auth");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Signed out",
+      description: "You have been signed out successfully.",
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your tasks...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to auth
+  }
 
   const todaysTasks = getTodaysTasks();
   const thisWeekTasks = getThisWeekTasks();
@@ -192,6 +245,16 @@ const Index = () => {
                   New Task
                 </Button>
               </TaskFormDialog>
+
+              <Button
+                onClick={handleSignOut}
+                variant="ghost"
+                size="sm"
+                className="gap-1"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </Button>
             </div>
           </div>
 
