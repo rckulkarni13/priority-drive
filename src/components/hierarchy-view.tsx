@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, FolderTree, Target, Lightbulb, CheckSquare } from "lucide-react";
+import { ChevronDown, ChevronRight, FolderTree, Target, Lightbulb, CheckSquare, Trash2 } from "lucide-react";
 import { TaskCard } from "./task-card";
 
 interface HierarchyViewProps {
@@ -15,16 +15,22 @@ interface HierarchyViewProps {
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
+  onProductDelete?: (productId: string) => void;
+  onPillarDelete?: (pillarId: string) => void;
+  onThemeDelete?: (themeId: string) => void;
 }
 
-export function HierarchyView({
-  products,
-  strategicPillars,
-  themes,
-  tasks,
-  onTaskEdit,
-  onTaskToggleStatus,
-  onTaskReopen
+export function HierarchyView({ 
+  products, 
+  strategicPillars, 
+  themes, 
+  tasks, 
+  onTaskEdit, 
+  onTaskToggleStatus, 
+  onTaskReopen,
+  onProductDelete,
+  onPillarDelete,
+  onThemeDelete,
 }: HierarchyViewProps) {
   const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
   const [expandedPillars, setExpandedPillars] = useState<Set<string>>(new Set());
@@ -101,18 +107,31 @@ export function HierarchyView({
               >
                 <CollapsibleTrigger asChild>
                   <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-                    <CardTitle className="flex items-center justify-between text-base">
-                      <div className="flex items-center gap-2">
-                        {isProductExpanded ? (
-                          <ChevronDown className="w-4 h-4" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4" />
-                        )}
-                        <FolderTree className="w-4 h-4 text-primary" />
-                        {product.title}
-                      </div>
-                      <Badge variant="outline">{productPillars.length} pillars</Badge>
-                    </CardTitle>
+                     <CardTitle className="flex items-center justify-between text-base">
+                       <div className="flex items-center gap-2">
+                         {isProductExpanded ? (
+                           <ChevronDown className="w-4 h-4" />
+                         ) : (
+                           <ChevronRight className="w-4 h-4" />
+                         )}
+                         <FolderTree className="w-4 h-4 text-primary" />
+                         {product.title}
+                       </div>
+                       <div className="flex items-center gap-2">
+                         <Badge variant="outline">{productPillars.length} pillars</Badge>
+                         <Button 
+                           variant="outline" 
+                           size="sm" 
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             onProductDelete?.(product.id);
+                           }}
+                           className="h-6 w-6 p-0"
+                         >
+                           <Trash2 className="w-3 h-3" />
+                         </Button>
+                       </div>
+                     </CardTitle>
                   </CardHeader>
                 </CollapsibleTrigger>
 
@@ -137,20 +156,33 @@ export function HierarchyView({
                             >
                               <CollapsibleTrigger asChild>
                                 <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors py-3">
-                                  <CardTitle className="flex items-center justify-between text-sm">
-                                    <div className="flex items-center gap-2">
-                                      {isPillarExpanded ? (
-                                        <ChevronDown className="w-3 h-3" />
-                                      ) : (
-                                        <ChevronRight className="w-3 h-3" />
-                                      )}
-                                      <Target className="w-3 h-3 text-blue-600" />
-                                      {pillar.title}
-                                    </div>
-                                    <Badge variant="outline" className="text-xs">
-                                      {pillarThemes.length} themes
-                                    </Badge>
-                                  </CardTitle>
+                                   <CardTitle className="flex items-center justify-between text-sm">
+                                     <div className="flex items-center gap-2">
+                                       {isPillarExpanded ? (
+                                         <ChevronDown className="w-3 h-3" />
+                                       ) : (
+                                         <ChevronRight className="w-3 h-3" />
+                                       )}
+                                       <Target className="w-3 h-3 text-blue-600" />
+                                       {pillar.title}
+                                     </div>
+                                     <div className="flex items-center gap-2">
+                                       <Badge variant="outline" className="text-xs">
+                                         {pillarThemes.length} themes
+                                       </Badge>
+                                       <Button 
+                                         variant="outline" 
+                                         size="sm" 
+                                         onClick={(e) => {
+                                           e.stopPropagation();
+                                           onPillarDelete?.(pillar.id);
+                                         }}
+                                         className="h-5 w-5 p-0"
+                                       >
+                                         <Trash2 className="w-2.5 h-2.5" />
+                                       </Button>
+                                     </div>
+                                   </CardTitle>
                                 </CardHeader>
                               </CollapsibleTrigger>
 
@@ -175,20 +207,33 @@ export function HierarchyView({
                                           >
                                             <CollapsibleTrigger asChild>
                                               <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors py-2">
-                                                <CardTitle className="flex items-center justify-between text-xs">
-                                                  <div className="flex items-center gap-2">
-                                                    {isThemeExpanded ? (
-                                                      <ChevronDown className="w-3 h-3" />
-                                                    ) : (
-                                                      <ChevronRight className="w-3 h-3" />
-                                                    )}
-                                                    <Lightbulb className="w-3 h-3 text-green-600" />
-                                                    {theme.title}
-                                                  </div>
-                                                  <Badge variant="outline" className="text-xs">
-                                                    {themeTasks.length} tasks
-                                                  </Badge>
-                                                </CardTitle>
+                                                 <CardTitle className="flex items-center justify-between text-xs">
+                                                   <div className="flex items-center gap-2">
+                                                     {isThemeExpanded ? (
+                                                       <ChevronDown className="w-3 h-3" />
+                                                     ) : (
+                                                       <ChevronRight className="w-3 h-3" />
+                                                     )}
+                                                     <Lightbulb className="w-3 h-3 text-green-600" />
+                                                     {theme.title}
+                                                   </div>
+                                                   <div className="flex items-center gap-2">
+                                                     <Badge variant="outline" className="text-xs">
+                                                       {themeTasks.length} tasks
+                                                     </Badge>
+                                                     <Button 
+                                                       variant="outline" 
+                                                       size="sm" 
+                                                       onClick={(e) => {
+                                                         e.stopPropagation();
+                                                         onThemeDelete?.(theme.id);
+                                                       }}
+                                                       className="h-4 w-4 p-0"
+                                                     >
+                                                       <Trash2 className="w-2 h-2" />
+                                                     </Button>
+                                                   </div>
+                                                 </CardTitle>
                                               </CardHeader>
                                             </CollapsibleTrigger>
 

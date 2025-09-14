@@ -118,24 +118,32 @@ export function ThemeFormDialog({ children, strategicPillars, onThemeCreate }: T
               name="strategicPillarIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Strategic Pillar</FormLabel>
-                  <Select
-                    onValueChange={(value) => field.onChange([value])}
-                    value={field.value[0] || ""}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select strategic pillar" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {strategicPillars.map((pillar) => (
-                        <SelectItem key={pillar.id} value={pillar.id}>
+                  <FormLabel>Strategic Pillars</FormLabel>
+                  <div className="space-y-2">
+                    {strategicPillars.map((pillar) => (
+                      <div key={pillar.id} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`pillar-${pillar.id}`}
+                          checked={field.value.includes(pillar.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              field.onChange([...field.value, pillar.id]);
+                            } else {
+                              field.onChange(field.value.filter(id => id !== pillar.id));
+                            }
+                          }}
+                          className="rounded border-border"
+                        />
+                        <label
+                          htmlFor={`pillar-${pillar.id}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
                           {pillar.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

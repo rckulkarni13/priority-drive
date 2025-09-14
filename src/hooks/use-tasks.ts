@@ -173,6 +173,33 @@ export function useTasks() {
     setThemes(prev => [...prev, newTheme]);
   }, []);
 
+  const deleteProduct = useCallback((productId: string) => {
+    setProducts(prev => prev.filter(product => product.id !== productId));
+    // Also remove this product from all strategic pillars
+    setStrategicPillars(prev => prev.map(pillar => ({
+      ...pillar,
+      productIds: pillar.productIds.filter(id => id !== productId)
+    })));
+  }, []);
+
+  const deleteStrategicPillar = useCallback((pillarId: string) => {
+    setStrategicPillars(prev => prev.filter(pillar => pillar.id !== pillarId));
+    // Also remove this pillar from all themes
+    setThemes(prev => prev.map(theme => ({
+      ...theme,
+      strategicPillarIds: theme.strategicPillarIds.filter(id => id !== pillarId)
+    })));
+  }, []);
+
+  const deleteTheme = useCallback((themeId: string) => {
+    setThemes(prev => prev.filter(theme => theme.id !== themeId));
+    // Also remove this theme from all tasks
+    setTasks(prev => prev.map(task => ({
+      ...task,
+      themeIds: task.themeIds.filter(id => id !== themeId)
+    })));
+  }, []);
+
   return {
     tasks,
     products,
@@ -190,5 +217,8 @@ export function useTasks() {
     getMonthlyTasks,
     getCompletedTasks,
     getAllActiveTasks,
+    deleteProduct,
+    deleteStrategicPillar,
+    deleteTheme,
   };
 }

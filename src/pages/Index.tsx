@@ -25,6 +25,9 @@ const Index = () => {
     createProduct,
     createStrategicPillar,
     createTheme,
+    deleteProduct,
+    deleteStrategicPillar,
+    deleteTheme,
     getTodaysTasks,
     getThisWeekTasks,
     getNextWeekTasks,
@@ -99,6 +102,9 @@ const Index = () => {
             tasks={tasks}
             onTaskToggleStatus={toggleTaskStatus}
             onTaskReopen={reopenTask}
+            onProductDelete={deleteProduct}
+            onPillarDelete={deleteStrategicPillar}
+            onThemeDelete={deleteTheme}
           />
         );
       
