@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/navigation";
 import { TaskList } from "@/components/task-list";
+import { SortableTaskList } from "@/components/sortable-task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
 import { ManageView } from "@/components/manage-view";
 import { EditTaskDialog } from "@/components/edit-task-dialog";
@@ -49,6 +50,7 @@ const Index = () => {
     reopenTask,
     createTask,
     updateTask,
+    updateTaskOrder,
     createDomain,
     createStrategicPillar,
     createTheme,
@@ -210,7 +212,7 @@ const Index = () => {
     switch (currentView) {
       case 'today':
         return (
-            <TaskList
+            <SortableTaskList
               title="Today's Priorities"
               tasks={todaysTasks}
               allTasks={tasks}
@@ -218,7 +220,7 @@ const Index = () => {
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
-              showDateGroups={false}
+              onTaskReorder={updateTaskOrder}
               emptyMessage="No tasks prioritized for today. Add some priorities to get started!"
             />
         );

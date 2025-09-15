@@ -211,7 +211,7 @@ export function useTasks() {
           priority: taskData.priority,
           type: taskData.parentTaskId ? 'subtask' : 'task',
           parent_task_id: taskData.parentTaskId,
-          task_order: tasks.length + 1,
+          task_order: Math.max(...tasks.map(t => t.order || 0), 0) + 1,
           user_id: user.user.id
         })
         .select()
@@ -469,6 +469,11 @@ export function useTasks() {
       
       return todayTime >= startTime && todayTime <= endTime;
     }).sort((a, b) => {
+      // First sort by custom order (if both have order), then by priority
+      if (a.order !== undefined && b.order !== undefined) {
+        return a.order - b.order;
+      }
+      // Fall back to priority sorting for tasks without custom order
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
@@ -636,6 +641,40 @@ export function useTasks() {
     }
   }, [toast]);
 
+  const updateTaskOrder = useCallback(async (taskOrders: { id: string; order: number }[]) => {
+    try {
+      // Update each task's order in the database
+      const updates = taskOrders.map(({ id, order }) => 
+        supabase
+          .from('tasks')
+          .update({ task_order: order })
+          .eq('id', id)
+      );
+
+      await Promise.all(updates);
+
+      // Update local state
+      setTasks(prevTasks =>
+        prevTasks.map(task => {
+          const orderUpdate = taskOrders.find(update => update.id === task.id);
+          return orderUpdate ? { ...task, order: orderUpdate.order } : task;
+        })
+      );
+
+      toast({
+        title: "Success",
+        description: "Task order updated"
+      });
+    } catch (error) {
+      console.error('Error updating task order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update task order",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
+
   return {
     tasks,
     domains,
@@ -646,6 +685,7 @@ export function useTasks() {
     reopenTask,
     createTask,
     updateTask,
+    updateTaskOrder,
     createDomain,
     createStrategicPillar,
     createTheme,
