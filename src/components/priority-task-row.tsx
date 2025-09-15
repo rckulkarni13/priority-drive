@@ -139,52 +139,40 @@ export function PriorityTaskRow({
                 </div>
               )}
               
-              {/* Task Title */}
-              <h3 className={`font-medium ${isCompleted ? 'line-through' : ''}`}>
-                {task.title}
-              </h3>
+              {/* Task Title with inline badges */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className={`font-medium ${isCompleted ? 'line-through' : ''}`}>
+                  {task.title}
+                </h3>
+                
+                {/* Related items badges inline */}
+                {relatedDomains.length > 0 && relatedDomains.map(domain => (
+                  <Badge key={domain.id} variant="outline" className="text-xs">
+                    <Package className="w-3 h-3 mr-1" />
+                    {domain.title}
+                  </Badge>
+                ))}
+                
+                {relatedPillars.length > 0 && relatedPillars.map(pillar => (
+                  <Badge key={pillar.id} variant="secondary" className="text-xs">
+                    <Target className="w-3 h-3 mr-1" />
+                    {pillar.title}
+                  </Badge>
+                ))}
+                
+                {taskThemes.length > 0 && taskThemes.map(theme => (
+                  <Badge key={theme.id} variant="default" className="text-xs">
+                    <Layers className="w-3 h-3 mr-1" />
+                    {theme.title}
+                  </Badge>
+                ))}
+              </div>
               
               {/* Task Description */}
               {task.description && (
                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                   {task.description}
                 </p>
-              )}
-              
-              {/* Related items */}
-              {(taskThemes.length > 0 || relatedPillars.length > 0 || relatedDomains.length > 0) && (
-                <div className="mt-2 space-y-1">
-                  {relatedDomains.length > 0 && (
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Package className="w-3 h-3 text-muted-foreground" />
-                      {relatedDomains.map(domain => (
-                        <Badge key={domain.id} variant="outline" className="text-xs">
-                          {domain.title}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                  {relatedPillars.length > 0 && (
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Target className="w-3 h-3 text-muted-foreground" />
-                      {relatedPillars.map(pillar => (
-                        <Badge key={pillar.id} variant="secondary" className="text-xs">
-                          {pillar.title}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                  {taskThemes.length > 0 && (
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Layers className="w-3 h-3 text-muted-foreground" />
-                      {taskThemes.map(theme => (
-                        <Badge key={theme.id} variant="default" className="text-xs">
-                          {theme.title}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
               )}
 
               {/* Badges */}
