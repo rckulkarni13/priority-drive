@@ -43,9 +43,10 @@ interface ThemeFormDialogProps {
   strategicPillars: StrategicPillar[];
   defaultPillarId?: string;
   onThemeCreate: (themeData: Omit<Theme, "id" | "createdDate">) => void;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, onThemeCreate }: ThemeFormDialogProps) {
+export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, onThemeCreate, onOpenChange }: ThemeFormDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<ThemeFormData>({
@@ -65,10 +66,11 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
     });
     form.reset();
     setOpen(false);
+    onOpenChange?.(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(o) => { setOpen(o); onOpenChange?.(o); }}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
@@ -154,10 +156,11 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={() => { setOpen(false); onOpenChange?.(false); }}
               >
                 Cancel
-              </Button>
+              </Button
+              >
               <Button type="submit">Create Theme</Button>
             </div>
           </form>

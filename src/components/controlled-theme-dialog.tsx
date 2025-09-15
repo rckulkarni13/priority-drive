@@ -23,17 +23,21 @@ export function ControlledThemeDialog({
     if (isOpen && triggerRef.current) {
       triggerRef.current.click();
     }
-  }, [isOpen]);
+  }, [isOpen, pillarId]);
 
   if (!isOpen) return null;
 
   return (
     <ThemeFormDialog
+      key={pillarId || 'new-theme'}
       strategicPillars={strategicPillars}
       defaultPillarId={pillarId}
       onThemeCreate={(themeData) => {
         onThemeCreate(themeData);
         onClose();
+      }}
+      onOpenChange={(open) => {
+        if (!open) onClose();
       }}
     >
       <button ref={triggerRef} style={{ display: 'none' }} />
