@@ -270,6 +270,7 @@ export function EditTaskDialog({
                               date < new Date(new Date().setHours(0, 0, 0, 0))
                             }
                             initialFocus
+                            className="p-3 pointer-events-auto"
                           />
                         </PopoverContent>
                       </Popover>

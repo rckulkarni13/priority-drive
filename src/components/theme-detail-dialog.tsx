@@ -360,7 +360,7 @@ export function ThemeDetailDialog({
                           <div className="flex-1">
                             <div className="font-medium text-sm">{task.title}</div>
                             <div className="text-xs text-muted-foreground">
-                              Due: {format(task.dueDate, 'MMM d, yyyy')}
+                              {task.dueDate ? `Due: ${format(task.dueDate, 'MMM d, yyyy')}` : 'No due date'}
                             </div>
                           </div>
                           <div className="flex items-center gap-2">

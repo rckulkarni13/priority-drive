@@ -32,7 +32,7 @@ export interface Task {
   title: string;
   description: string;
   createdDate: Date;
-  dueDate: Date;
+  dueDate?: Date;
   prioritizedDate?: Date;
   prioritizedEndDate?: Date;
   status: Status;

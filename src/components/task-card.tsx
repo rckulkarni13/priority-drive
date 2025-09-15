@@ -78,7 +78,7 @@ export function TaskCard({
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
-                  <span>Due {format(task.dueDate, 'MMM d')}</span>
+                  <span>{task.dueDate ? `Due ${format(task.dueDate, 'MMM d')}` : 'No due'}</span>
                 </div>
                 {task.prioritizedDate && (
                   <div className="flex items-center gap-1">

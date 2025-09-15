@@ -117,7 +117,7 @@ export function useTasks() {
       title: task.title,
       description: task.description || '',
       createdDate: new Date(task.created_date),
-      dueDate: new Date(task.due_date),
+      dueDate: task.due_date ? new Date(task.due_date) : undefined,
       prioritizedDate: task.prioritized_date ? new Date(task.prioritized_date) : undefined,
       prioritizedEndDate: task.prioritized_end_date ? new Date(task.prioritized_end_date) : undefined,
       status: task.status as Status,
@@ -254,13 +254,14 @@ export function useTasks() {
       const updateData: any = {
         title: updates.title,
         description: updates.description,
-        due_date: updates.dueDate?.toISOString(),
-        prioritized_date: updates.prioritizedDate?.toISOString(),
-        prioritized_end_date: updates.prioritizedEndDate?.toISOString(),
+        // Dates: send null to clear when undefined
+        due_date: updates.dueDate === undefined ? null : updates.dueDate?.toISOString(),
+        prioritized_date: updates.prioritizedDate === undefined ? null : updates.prioritizedDate?.toISOString(),
+        prioritized_end_date: updates.prioritizedEndDate === undefined ? null : updates.prioritizedEndDate?.toISOString(),
         priority: updates.priority,
         status: updates.status,
         type: updates.type,
-        parent_task_id: updates.parentTaskId,
+        parent_task_id: updates.parentTaskId === undefined ? null : updates.parentTaskId,
       };
 
       // Remove undefined values
