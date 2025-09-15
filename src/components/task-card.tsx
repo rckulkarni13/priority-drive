@@ -1,10 +1,11 @@
-import { Task } from "@/types";
+import { Task, Theme, StrategicPillar, Domain } from "@/types";
 import { PriorityBadge } from "@/components/ui/priority-badge";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { GripVertical, Calendar, Clock, CheckCircle2, RotateCcw, MessageCircle, ChevronDown, ChevronUp, Plus, Edit } from "lucide-react";
+import { GripVertical, Calendar, Clock, CheckCircle2, RotateCcw, MessageCircle, ChevronDown, ChevronUp, Plus, Edit, Target, Layers, Package } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { TaskComments } from "@/components/task-comments";
@@ -12,6 +13,9 @@ import { useState } from "react";
 
 interface TaskCardProps {
   task: Task;
+  themes?: Theme[];
+  strategicPillars?: StrategicPillar[];
+  domains?: Domain[];
   onEdit?: (task: Task) => void;
   onToggleStatus?: (taskId: string) => void;
   onReopen?: (taskId: string) => void;
@@ -22,6 +26,9 @@ interface TaskCardProps {
 
 export function TaskCard({ 
   task, 
+  themes = [],
+  strategicPillars = [],
+  domains = [],
   onEdit, 
   onToggleStatus, 
   onReopen,
@@ -31,6 +38,15 @@ export function TaskCard({
 }: TaskCardProps) {
   const isCompleted = task.status === 'completed';
   const [showComments, setShowComments] = useState(false);
+  
+  // Get related data for this task
+  const taskThemes = themes.filter(theme => task.themeIds.includes(theme.id));
+  const relatedPillars = strategicPillars.filter(pillar => 
+    taskThemes.some(theme => theme.strategicPillarIds.includes(pillar.id))
+  );
+  const relatedDomains = domains.filter(domain =>
+    relatedPillars.some(pillar => pillar.domainIds.includes(domain.id))
+  );
   
   return (
     <Card className={cn(
@@ -72,6 +88,42 @@ export function TaskCard({
               )}>
                 {task.description}
               </p>
+            )}
+            
+            {/* Related items */}
+            {(taskThemes.length > 0 || relatedPillars.length > 0 || relatedDomains.length > 0) && (
+              <div className="mb-3 space-y-2">
+                {relatedDomains.length > 0 && (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Package className="w-3 h-3 text-muted-foreground" />
+                    {relatedDomains.map(domain => (
+                      <Badge key={domain.id} variant="outline" className="text-xs">
+                        {domain.title}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                {relatedPillars.length > 0 && (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Target className="w-3 h-3 text-muted-foreground" />
+                    {relatedPillars.map(pillar => (
+                      <Badge key={pillar.id} variant="secondary" className="text-xs">
+                        {pillar.title}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                {taskThemes.length > 0 && (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Layers className="w-3 h-3 text-muted-foreground" />
+                    {taskThemes.map(theme => (
+                      <Badge key={theme.id} variant="default" className="text-xs">
+                        {theme.title}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
             
             <div className="flex items-center justify-between">

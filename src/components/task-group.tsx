@@ -1,4 +1,4 @@
-import { Task } from "@/types";
+import { Task, Theme, StrategicPillar, Domain } from "@/types";
 import { TaskCard } from "./task-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,9 @@ interface TaskGroupProps {
   parentTask: Task;
   subtasks: Task[];
   allTasks: Task[];
+  themes?: Theme[];
+  strategicPillars?: StrategicPillar[];
+  domains?: Domain[];
   prioritizedTaskIds?: Set<string>; // Tasks that are actually prioritized for current view
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
@@ -24,6 +27,9 @@ export function TaskGroup({
   parentTask,
   subtasks,
   allTasks,
+  themes = [],
+  strategicPillars = [],
+  domains = [],
   prioritizedTaskIds = new Set(),
   onTaskEdit,
   onTaskToggleStatus,
@@ -44,6 +50,9 @@ export function TaskGroup({
           <div className={cn("relative", !isParentPrioritized && "opacity-60")}>
             <TaskCard
               task={parentTask}
+              themes={themes}
+              strategicPillars={strategicPillars}
+              domains={domains}
               onEdit={onTaskEdit}
               onToggleStatus={onTaskToggleStatus}
               onReopen={onTaskReopen}
@@ -100,6 +109,9 @@ export function TaskGroup({
                   >
                     <TaskCard
                       task={subtask}
+                      themes={themes}
+                      strategicPillars={strategicPillars}
+                      domains={domains}
                       onEdit={onTaskEdit}
                       onToggleStatus={onTaskToggleStatus}
                       onReopen={onTaskReopen}
@@ -129,6 +141,9 @@ export function TaskGroup({
         <div className={cn("relative", !isParentPrioritized && parentTask.type === 'task' && "opacity-60")}>
           <TaskCard
             task={parentTask}
+            themes={themes}
+            strategicPillars={strategicPillars}
+            domains={domains}
             onEdit={onTaskEdit}
             onToggleStatus={onTaskToggleStatus}
             onReopen={onTaskReopen}
@@ -156,6 +171,9 @@ export function TaskGroup({
 interface OrganizedTaskListProps {
   tasks: Task[];
   allTasks: Task[];
+  themes?: Theme[];
+  strategicPillars?: StrategicPillar[];
+  domains?: Domain[];
   prioritizedTaskIds?: Set<string>; // Tasks that are actually prioritized for current view
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
@@ -166,6 +184,9 @@ interface OrganizedTaskListProps {
 export function OrganizedTaskList({
   tasks,
   allTasks,
+  themes = [],
+  strategicPillars = [],
+  domains = [],
   prioritizedTaskIds = new Set(),
   onTaskEdit,
   onTaskToggleStatus,
@@ -225,6 +246,9 @@ export function OrganizedTaskList({
           parentTask={parent}
           subtasks={children}
           allTasks={tasks}
+          themes={themes}
+          strategicPillars={strategicPillars}
+          domains={domains}
           prioritizedTaskIds={prioritizedTaskIds}
           onTaskEdit={onTaskEdit}
           onTaskToggleStatus={onTaskToggleStatus}
@@ -243,6 +267,9 @@ export function OrganizedTaskList({
           <div key={subtask.id} className={cn("relative", !isSubtaskPrioritized && "opacity-50")}>
             <TaskCard
               task={subtask}
+              themes={themes}
+              strategicPillars={strategicPillars}
+              domains={domains}
               onEdit={onTaskEdit}
               onToggleStatus={onTaskToggleStatus}
               onReopen={onTaskReopen}
@@ -273,6 +300,9 @@ export function OrganizedTaskList({
           parentTask={task}
           subtasks={[]}
           allTasks={tasks}
+          themes={themes}
+          strategicPillars={strategicPillars}
+          domains={domains}
           prioritizedTaskIds={prioritizedTaskIds}
           onTaskEdit={onTaskEdit}
           onTaskToggleStatus={onTaskToggleStatus}

@@ -216,6 +216,9 @@ const Index = () => {
               title="Today's Priorities"
               tasks={todaysTasks}
               allTasks={tasks}
+              themes={themes}
+              strategicPillars={strategicPillars}
+              domains={domains}
               onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
@@ -231,6 +234,9 @@ const Index = () => {
               title="This Week's Priorities"
               tasks={thisWeekTasks}
               allTasks={tasks}
+              themes={themes}
+              strategicPillars={strategicPillars}
+              domains={domains}
               onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
@@ -246,6 +252,9 @@ const Index = () => {
               title="Next Week's Priorities"
               tasks={nextWeekTasks}
               allTasks={tasks}
+              themes={themes}
+              strategicPillars={strategicPillars}
+              domains={domains}
               onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
@@ -261,6 +270,9 @@ const Index = () => {
               title="This Month's Priorities"
               tasks={monthlyTasks}
               allTasks={tasks}
+              themes={themes}
+              strategicPillars={strategicPillars}
+              domains={domains}
               onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
@@ -296,6 +308,9 @@ const Index = () => {
               title="Completed Tasks"
               tasks={completedTasks}
               allTasks={tasks}
+              themes={themes}
+              strategicPillars={strategicPillars}
+              domains={domains}
               onTaskEdit={handleTaskView}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -309,6 +324,9 @@ const Index = () => {
               title="All Active Tasks"
               tasks={allActiveTasks}
               allTasks={tasks}
+              themes={themes}
+              strategicPillars={strategicPillars}
+              domains={domains}
               onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}

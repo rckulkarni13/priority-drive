@@ -1,4 +1,4 @@
-import { Task } from "@/types";
+import { Task, Theme, StrategicPillar, Domain } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -10,13 +10,18 @@ import {
   Target, 
   Clock, 
   AlertTriangle,
-  RotateCcw
+  RotateCcw,
+  Layers,
+  Package
 } from "lucide-react";
 import { format, isBefore, startOfDay } from "date-fns";
 
 interface PriorityTaskRowProps {
   task: Task;
   allTasks: Task[];
+  themes?: Theme[];
+  strategicPillars?: StrategicPillar[];
+  domains?: Domain[];
   onTaskView?: (task: Task) => void;
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
@@ -27,6 +32,9 @@ interface PriorityTaskRowProps {
 export function PriorityTaskRow({
   task,
   allTasks,
+  themes = [],
+  strategicPillars = [],
+  domains = [],
   onTaskView,
   onTaskEdit,
   onTaskToggleStatus,
@@ -37,6 +45,15 @@ export function PriorityTaskRow({
   const parentTask = task.parentTaskId 
     ? allTasks.find(t => t.id === task.parentTaskId)
     : null;
+
+  // Get related data for this task
+  const taskThemes = themes.filter(theme => task.themeIds.includes(theme.id));
+  const relatedPillars = strategicPillars.filter(pillar => 
+    taskThemes.some(theme => theme.strategicPillarIds.includes(pillar.id))
+  );
+  const relatedDomains = domains.filter(domain =>
+    relatedPillars.some(pillar => pillar.domainIds.includes(domain.id))
+  );
 
   // Determine badge type and status
   const today = startOfDay(new Date());
@@ -134,6 +151,42 @@ export function PriorityTaskRow({
                 </p>
               )}
               
+              {/* Related items */}
+              {(taskThemes.length > 0 || relatedPillars.length > 0 || relatedDomains.length > 0) && (
+                <div className="mt-2 space-y-1">
+                  {relatedDomains.length > 0 && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Package className="w-3 h-3 text-muted-foreground" />
+                      {relatedDomains.map(domain => (
+                        <Badge key={domain.id} variant="outline" className="text-xs">
+                          {domain.title}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  {relatedPillars.length > 0 && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Target className="w-3 h-3 text-muted-foreground" />
+                      {relatedPillars.map(pillar => (
+                        <Badge key={pillar.id} variant="secondary" className="text-xs">
+                          {pillar.title}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  {taskThemes.length > 0 && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Layers className="w-3 h-3 text-muted-foreground" />
+                      {taskThemes.map(theme => (
+                        <Badge key={theme.id} variant="default" className="text-xs">
+                          {theme.title}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mt-2">
                 <Badge variant="secondary" className="text-xs">

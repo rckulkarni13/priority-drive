@@ -1,4 +1,4 @@
-import { Task } from "@/types";
+import { Task, Theme, StrategicPillar, Domain } from "@/types";
 import { TaskCard } from "./task-card";
 import { OrganizedTaskList } from "./task-group";
 import { PriorityTaskRow } from "./priority-task-row";
@@ -11,6 +11,9 @@ interface TaskListProps {
   title: string;
   tasks: Task[];
   allTasks: Task[];
+  themes?: Theme[];
+  strategicPillars?: StrategicPillar[];
+  domains?: Domain[];
   onTaskView?: (task: Task) => void;
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
@@ -24,6 +27,9 @@ export function TaskList({
   title, 
   tasks,
   allTasks,
+  themes = [],
+  strategicPillars = [],
+  domains = [],
   onTaskView,
   onTaskEdit, 
   onTaskToggleStatus, 
@@ -139,6 +145,9 @@ export function TaskList({
                       key={task.id}
                       task={task}
                       allTasks={allTasks}
+                      themes={themes}
+                      strategicPillars={strategicPillars}
+                      domains={domains}
                       onTaskView={onTaskView}
                       onTaskEdit={onTaskEdit}
                       onTaskToggleStatus={onTaskToggleStatus}
@@ -178,6 +187,9 @@ export function TaskList({
               key={task.id}
               task={task}
               allTasks={allTasks}
+              themes={themes}
+              strategicPillars={strategicPillars}
+              domains={domains}
               onTaskView={onTaskView}
               onTaskEdit={onTaskEdit}
               onTaskToggleStatus={onTaskToggleStatus}

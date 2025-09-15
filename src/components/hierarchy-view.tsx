@@ -305,15 +305,18 @@ export function HierarchyView({
                                                   <div className="flex items-center gap-2">
                                                     <Circle className="w-2 h-2 text-muted-foreground" />
                                                     <div className="flex-1">
-                                                      <PriorityTaskRow
-                                                        task={task}
-                                                        allTasks={tasks}
-                                                        onTaskView={onTaskView}
-                                                        onTaskEdit={onTaskEdit}
-                                                        onTaskToggleStatus={onTaskToggleStatus}
-                                                        onTaskReopen={onTaskReopen}
-                                                        onCreateSubtask={onCreateSubtask}
-                                                      />
+                                                       <PriorityTaskRow
+                                                         task={task}
+                                                         allTasks={tasks}
+                                                         themes={themes}
+                                                         strategicPillars={strategicPillars}
+                                                         domains={domains}
+                                                         onTaskView={onTaskView}
+                                                         onTaskEdit={onTaskEdit}
+                                                         onTaskToggleStatus={onTaskToggleStatus}
+                                                         onTaskReopen={onTaskReopen}
+                                                         onCreateSubtask={onCreateSubtask}
+                                                       />
                                                     </div>
                                                   </div>
                                                   
@@ -324,15 +327,18 @@ export function HierarchyView({
                                                         <div key={subtask.id} className="flex items-center gap-2">
                                                           <Circle className="w-1.5 h-1.5 text-muted-foreground" />
                                                           <div className="flex-1">
-                                                            <PriorityTaskRow
-                                                              task={subtask}
-                                                              allTasks={tasks}
-                                                              onTaskView={onTaskView}
-                                                              onTaskEdit={onTaskEdit}
-                                                              onTaskToggleStatus={onTaskToggleStatus}
-                                                              onTaskReopen={onTaskReopen}
-                                                              onCreateSubtask={onCreateSubtask}
-                                                            />
+                                                             <PriorityTaskRow
+                                                               task={subtask}
+                                                               allTasks={tasks}
+                                                               themes={themes}
+                                                               strategicPillars={strategicPillars}
+                                                               domains={domains}
+                                                               onTaskView={onTaskView}
+                                                               onTaskEdit={onTaskEdit}
+                                                               onTaskToggleStatus={onTaskToggleStatus}
+                                                               onTaskReopen={onTaskReopen}
+                                                               onCreateSubtask={onCreateSubtask}
+                                                             />
                                                           </div>
                                                         </div>
                                                       ))}
