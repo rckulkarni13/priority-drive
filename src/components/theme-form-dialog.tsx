@@ -41,10 +41,11 @@ type ThemeFormData = z.infer<typeof themeSchema>;
 interface ThemeFormDialogProps {
   children: React.ReactNode;
   strategicPillars: StrategicPillar[];
+  defaultPillarId?: string;
   onThemeCreate: (themeData: Omit<Theme, "id" | "createdDate">) => void;
 }
 
-export function ThemeFormDialog({ children, strategicPillars, onThemeCreate }: ThemeFormDialogProps) {
+export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, onThemeCreate }: ThemeFormDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<ThemeFormData>({
@@ -52,7 +53,7 @@ export function ThemeFormDialog({ children, strategicPillars, onThemeCreate }: T
     defaultValues: {
       title: "",
       description: "",
-      strategicPillarIds: [],
+      strategicPillarIds: defaultPillarId ? [defaultPillarId] : [],
     },
   });
 

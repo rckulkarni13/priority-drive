@@ -30,6 +30,7 @@ export function ControlledThemeDialog({
   return (
     <ThemeFormDialog
       strategicPillars={strategicPillars}
+      defaultPillarId={pillarId}
       onThemeCreate={(themeData) => {
         onThemeCreate(themeData);
         onClose();
