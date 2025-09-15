@@ -39,7 +39,7 @@ import {
   Tag,
   CheckCircle2,
   Circle,
-  ArrowUpRight,
+  ArrowLeft,
   MessageSquare,
   Calendar as CalendarDays
 } from "lucide-react";
@@ -69,7 +69,9 @@ interface TaskDetailDialogProps {
   tasks: Task[];
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
   onClose: () => void;
+  onBack?: () => void;
   onTaskView?: (task: Task) => void;
+  onThemeView?: (theme: Theme) => void;
 }
 
 export function TaskDetailDialog({ 
@@ -78,7 +80,9 @@ export function TaskDetailDialog({
   tasks, 
   onTaskUpdate, 
   onClose,
-  onTaskView 
+  onBack,
+  onTaskView,
+  onThemeView 
 }: TaskDetailDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'comments'>('overview');
@@ -142,8 +146,18 @@ export function TaskDetailDialog({
         <div className="p-6 border-b bg-background/50">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 space-y-3">
-              {/* Type badge and status */}
-              <div className="flex items-center gap-2">
+              {/* Back button and type */}
+              <div className="flex items-center gap-3">
+                {onBack && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onBack}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </Button>
+                )}
                 <Badge variant={task.type === 'subtask' ? 'secondary' : 'default'} className="text-xs">
                   {task.type === 'subtask' ? 'Subtask' : 'Task'}
                 </Badge>
@@ -181,7 +195,7 @@ export function TaskDetailDialog({
               {/* Parent task reference */}
               {parentTask && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <ArrowUpRight className="w-4 h-4" />
+                  <ArrowLeft className="w-4 h-4" />
                   <span>Subtask of</span>
                   <button 
                     onClick={() => onTaskView?.(parentTask)}
@@ -337,9 +351,15 @@ export function TaskDetailDialog({
                       {selectedThemes.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
                           {selectedThemes.map((theme) => (
-                            <Badge key={theme.id} variant="outline" className="text-xs">
-                              {theme.title}
-                            </Badge>
+                            <button
+                              key={theme.id}
+                              onClick={() => onThemeView?.(theme)}
+                              className="text-left"
+                            >
+                              <Badge variant="outline" className="text-xs hover:bg-muted cursor-pointer">
+                                {theme.title}
+                              </Badge>
+                            </button>
                           ))}
                         </div>
                       ) : (

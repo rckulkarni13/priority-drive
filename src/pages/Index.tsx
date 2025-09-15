@@ -8,6 +8,8 @@ import { HierarchyView } from "@/components/hierarchy-view";
 import { ManageView } from "@/components/manage-view";
 import { EditTaskDialog } from "@/components/edit-task-dialog";
 import { TaskDetailDialog } from "@/components/task-detail-dialog";
+import { ThemeDetailDialog } from "@/components/theme-detail-dialog";
+import { PillarDetailDialog } from "@/components/pillar-detail-dialog";
 import { ControlledSubtaskDialog } from "@/components/controlled-subtask-dialog";
 import { ControlledTaskDialog } from "@/components/controlled-task-dialog";
 import { ControlledThemeDialog } from "@/components/controlled-theme-dialog";
@@ -18,6 +20,7 @@ import { QuickCreateMenu } from "@/components/quick-create-menu";
 import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
+import { Theme, StrategicPillar } from "@/types";
 
 type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
@@ -25,6 +28,9 @@ const Index = () => {
   const [currentView, setCurrentView] = useState<View>('today');
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
+  const [viewingTheme, setViewingTheme] = useState<Theme | null>(null);
+  const [viewingPillar, setViewingPillar] = useState<StrategicPillar | null>(null);
+  const [navigationStack, setNavigationStack] = useState<Array<{type: 'task' | 'theme' | 'pillar', data: any}>>([]);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCreateSubtask, setShowCreateSubtask] = useState<string>('');
@@ -138,6 +144,68 @@ const Index = () => {
     setShowCreatePillar(domainId || 'new-pillar');
   };
 
+  const handleTaskView = (task: Task) => {
+    if (viewingTask) {
+      setNavigationStack(prev => [...prev, { type: 'task', data: viewingTask }]);
+    }
+    setViewingTask(task);
+    setViewingTheme(null);
+    setViewingPillar(null);
+  };
+
+  const handleThemeView = (theme: Theme) => {
+    if (viewingTask) {
+      setNavigationStack(prev => [...prev, { type: 'task', data: viewingTask }]);
+    } else if (viewingTheme) {
+      setNavigationStack(prev => [...prev, { type: 'theme', data: viewingTheme }]);
+    } else if (viewingPillar) {
+      setNavigationStack(prev => [...prev, { type: 'pillar', data: viewingPillar }]);
+    }
+    setViewingTheme(theme);
+    setViewingTask(null);
+    setViewingPillar(null);
+  };
+
+  const handlePillarView = (pillar: StrategicPillar) => {
+    if (viewingTask) {
+      setNavigationStack(prev => [...prev, { type: 'task', data: viewingTask }]);
+    } else if (viewingTheme) {
+      setNavigationStack(prev => [...prev, { type: 'theme', data: viewingTheme }]);
+    } else if (viewingPillar) {
+      setNavigationStack(prev => [...prev, { type: 'pillar', data: viewingPillar }]);
+    }
+    setViewingPillar(pillar);
+    setViewingTask(null);
+    setViewingTheme(null);
+  };
+
+  const handleBack = () => {
+    const lastItem = navigationStack[navigationStack.length - 1];
+    if (lastItem) {
+      setNavigationStack(prev => prev.slice(0, -1));
+      if (lastItem.type === 'task') {
+        setViewingTask(lastItem.data);
+        setViewingTheme(null);
+        setViewingPillar(null);
+      } else if (lastItem.type === 'theme') {
+        setViewingTheme(lastItem.data);
+        setViewingTask(null);
+        setViewingPillar(null);
+      } else if (lastItem.type === 'pillar') {
+        setViewingPillar(lastItem.data);
+        setViewingTask(null);
+        setViewingTheme(null);
+      }
+    }
+  };
+
+  const handleCloseAllDialogs = () => {
+    setViewingTask(null);
+    setViewingTheme(null);
+    setViewingPillar(null);
+    setNavigationStack([]);
+  };
+
   const renderContent = () => {
     switch (currentView) {
       case 'today':
@@ -146,7 +214,7 @@ const Index = () => {
               title="Today's Priorities"
               tasks={todaysTasks}
               allTasks={tasks}
-              onTaskEdit={setViewingTask}
+              onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -161,7 +229,7 @@ const Index = () => {
               title="This Week's Priorities"
               tasks={thisWeekTasks}
               allTasks={tasks}
-              onTaskEdit={setViewingTask}
+              onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -176,7 +244,7 @@ const Index = () => {
               title="Next Week's Priorities"
               tasks={nextWeekTasks}
               allTasks={tasks}
-              onTaskEdit={setViewingTask}
+              onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -191,7 +259,7 @@ const Index = () => {
               title="This Month's Priorities"
               tasks={monthlyTasks}
               allTasks={tasks}
-              onTaskEdit={setViewingTask}
+              onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -207,7 +275,7 @@ const Index = () => {
               strategicPillars={strategicPillars}
               themes={themes}
               tasks={tasks}
-              onTaskEdit={setViewingTask}
+              onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -226,7 +294,7 @@ const Index = () => {
               title="Completed Tasks"
               tasks={completedTasks}
               allTasks={tasks}
-              onTaskEdit={setViewingTask}
+              onTaskEdit={handleTaskView}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
               emptyMessage="No completed tasks yet. Complete some tasks to see them here!"
@@ -239,7 +307,7 @@ const Index = () => {
               title="All Active Tasks"
               tasks={allActiveTasks}
               allTasks={tasks}
-              onTaskEdit={setViewingTask}
+              onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -332,7 +400,31 @@ const Index = () => {
           themes={themes}
           tasks={allActiveTasks}
           onTaskUpdate={updateTask}
-          onClose={() => setViewingTask(null)}
+          onClose={handleCloseAllDialogs}
+          onBack={navigationStack.length > 0 ? handleBack : undefined}
+          onTaskView={handleTaskView}
+          onThemeView={handleThemeView}
+        />
+
+        {/* Theme Detail Dialog */}
+        <ThemeDetailDialog
+          theme={viewingTheme}
+          strategicPillars={strategicPillars}
+          tasks={tasks}
+          onClose={handleCloseAllDialogs}
+          onBack={navigationStack.length > 0 ? handleBack : undefined}
+          onTaskView={handleTaskView}
+          onPillarView={handlePillarView}
+        />
+
+        {/* Pillar Detail Dialog */}
+        <PillarDetailDialog
+          pillar={viewingPillar}
+          domains={domains}
+          themes={themes}
+          onClose={handleCloseAllDialogs}
+          onBack={navigationStack.length > 0 ? handleBack : undefined}
+          onThemeView={handleThemeView}
         />
 
         {/* Edit Task Dialog */}
