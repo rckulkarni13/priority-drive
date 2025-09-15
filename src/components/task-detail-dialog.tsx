@@ -41,7 +41,9 @@ import {
   Circle,
   ArrowLeft,
   MessageSquare,
-  Calendar as CalendarDays
+  Calendar as CalendarDays,
+  Plus,
+  List
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -49,6 +51,7 @@ import { Task, Theme } from "@/types";
 import { PriorityBadge } from "@/components/ui/priority-badge";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { TaskComments } from "@/components/task-comments";
+import { SubtaskFormDialog } from "@/components/subtask-form-dialog";
 
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -68,6 +71,7 @@ interface TaskDetailDialogProps {
   themes: Theme[];
   tasks: Task[];
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
+  onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order'>) => void;
   onClose: () => void;
   onBack?: () => void;
   onTaskView?: (task: Task) => void;
@@ -78,14 +82,15 @@ export function TaskDetailDialog({
   task, 
   themes, 
   tasks, 
-  onTaskUpdate, 
+  onTaskUpdate,
+  onTaskCreate, 
   onClose,
   onBack,
   onTaskView,
   onThemeView 
 }: TaskDetailDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'comments'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'comments' | 'subtasks'>('overview');
   
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
@@ -138,6 +143,8 @@ export function TaskDetailDialog({
 
   const parentTask = task.parentTaskId ? tasks.find(t => t.id === task.parentTaskId) : null;
   const selectedThemes = themes.filter(theme => task.themeIds.includes(theme.id));
+  const subtasks = tasks.filter(t => t.parentTaskId === task.id);
+  const canCreateSubtasks = task.type !== 'subtask';
 
   return (
     <Dialog open={!!task} onOpenChange={() => onClose()}>
@@ -269,6 +276,20 @@ export function TaskDetailDialog({
                 <MessageSquare className="w-4 h-4" />
                 Comments
               </button>
+              {canCreateSubtasks && (
+                <button
+                  onClick={() => setActiveTab('subtasks')}
+                  className={cn(
+                    "pb-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2",
+                    activeTab === 'subtasks' 
+                      ? "border-primary text-foreground" 
+                      : "border-transparent text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <List className="w-4 h-4" />
+                  Subtasks {subtasks.length > 0 && `(${subtasks.length})`}
+                </button>
+              )}
             </div>
 
             {/* Tab Content */}
@@ -590,6 +611,74 @@ export function TaskDetailDialog({
 
             {activeTab === 'comments' && (
               <TaskComments taskId={task.id} />
+            )}
+
+            {activeTab === 'subtasks' && canCreateSubtasks && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-medium flex items-center gap-2">
+                    <List className="w-4 h-4" />
+                    Subtasks ({subtasks.length})
+                  </h3>
+                  <SubtaskFormDialog
+                    themes={themes}
+                    tasks={tasks}
+                    parentTaskId={task.id}
+                    onTaskCreate={onTaskCreate}
+                  >
+                    <Button size="sm" variant="outline">
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Subtask
+                    </Button>
+                  </SubtaskFormDialog>
+                </div>
+
+                {subtasks.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <List className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">No subtasks yet</p>
+                    <p className="text-xs">Create subtasks to break down this task into smaller parts</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {subtasks.map((subtask) => (
+                      <div
+                        key={subtask.id}
+                        className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer"
+                        onClick={() => onTaskView?.(subtask)}
+                      >
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Toggle subtask status
+                          }}
+                          className="flex-shrink-0"
+                        >
+                          {subtask.status === 'completed' ? (
+                            <CheckCircle2 className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <Circle className="w-4 h-4 text-muted-foreground" />
+                          )}
+                        </button>
+                        <div className="flex-1 min-w-0">
+                          <p className={cn(
+                            "text-sm font-medium truncate",
+                            subtask.status === 'completed' && "line-through text-muted-foreground"
+                          )}>
+                            {subtask.title}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <PriorityBadge priority={subtask.priority} />
+                            <span className="text-xs text-muted-foreground">
+                              Due {format(subtask.dueDate, 'MMM d')}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>

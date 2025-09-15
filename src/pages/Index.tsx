@@ -400,6 +400,7 @@ const Index = () => {
           themes={themes}
           tasks={allActiveTasks}
           onTaskUpdate={updateTask}
+          onTaskCreate={createTask}
           onClose={handleCloseAllDialogs}
           onBack={navigationStack.length > 0 ? handleBack : undefined}
           onTaskView={handleTaskView}
