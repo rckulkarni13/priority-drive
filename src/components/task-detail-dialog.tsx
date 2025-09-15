@@ -144,7 +144,6 @@ export function TaskDetailDialog({
   const parentTask = task.parentTaskId ? tasks.find(t => t.id === task.parentTaskId) : null;
   const selectedThemes = themes.filter(theme => task.themeIds.includes(theme.id));
   const subtasks = tasks.filter(t => t.parentTaskId === task.id);
-  const canCreateSubtasks = task.type !== 'subtask';
 
   return (
     <Dialog open={!!task} onOpenChange={() => onClose()}>
@@ -276,20 +275,18 @@ export function TaskDetailDialog({
                 <MessageSquare className="w-4 h-4" />
                 Comments
               </button>
-              {canCreateSubtasks && (
-                <button
-                  onClick={() => setActiveTab('subtasks')}
-                  className={cn(
-                    "pb-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2",
-                    activeTab === 'subtasks' 
-                      ? "border-primary text-foreground" 
-                      : "border-transparent text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <List className="w-4 h-4" />
-                  Subtasks {subtasks.length > 0 && `(${subtasks.length})`}
-                </button>
-              )}
+              <button
+                onClick={() => setActiveTab('subtasks')}
+                className={cn(
+                  "pb-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2",
+                  activeTab === 'subtasks' 
+                    ? "border-primary text-foreground" 
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <List className="w-4 h-4" />
+                Subtasks {subtasks.length > 0 && `(${subtasks.length})`}
+              </button>
             </div>
 
             {/* Tab Content */}
@@ -613,7 +610,7 @@ export function TaskDetailDialog({
               <TaskComments taskId={task.id} />
             )}
 
-            {activeTab === 'subtasks' && canCreateSubtasks && (
+            {activeTab === 'subtasks' && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-medium flex items-center gap-2">
