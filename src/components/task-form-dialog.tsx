@@ -42,7 +42,7 @@ const taskSchema = z.object({
   prioritizedDate: z.date().optional(),
   prioritizedEndDate: z.date().optional(),
   priority: z.enum(["critical", "high", "medium", "low"]),
-  themeIds: z.array(z.string()).min(1, "Please select at least one theme"),
+  themeIds: z.array(z.string()).optional(),
   parentTaskId: z.string().optional(),
 });
 
@@ -79,7 +79,7 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultP
       prioritizedDate: data.prioritizedDate,
       prioritizedEndDate: data.prioritizedEndDate,
       priority: data.priority,
-      themeIds: data.themeIds,
+      themeIds: data.themeIds || [],
       parentTaskId: data.parentTaskId === "none" ? undefined : data.parentTaskId,
     });
     form.reset();
@@ -165,17 +165,18 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultP
                 name="themeIds"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Theme</FormLabel>
+                    <FormLabel>Theme (Optional)</FormLabel>
                     <Select
-                      onValueChange={(value) => field.onChange([value])}
-                      value={field.value[0] || ""}
+                      onValueChange={(value) => field.onChange(value === "none" ? [] : [value])}
+                      value={field.value?.[0] || "none"}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select theme" />
+                          <SelectValue placeholder="Select theme (optional)" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="none">No Theme</SelectItem>
                         {themes.map((theme) => (
                           <SelectItem key={theme.id} value={theme.id}>
                             {theme.title}
