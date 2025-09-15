@@ -5,6 +5,8 @@ import * as z from "zod";
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -115,7 +117,9 @@ export function ThemeDetailDialog({
   return (
     <Dialog open={!!theme} onOpenChange={() => onClose()}>
       <DialogContent className="sm:max-w-[800px] max-h-[95vh] p-0 overflow-hidden">
-        {/* Header */}
+        <DialogHeader className="sr-only">
+          <DialogTitle>Theme Details</DialogTitle>
+        </DialogHeader>
         <div className="p-6 border-b bg-background/50">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 space-y-3">
