@@ -205,9 +205,9 @@ export function useTasks() {
         .insert({
           title: taskData.title,
           description: taskData.description,
-          due_date: taskData.dueDate.toISOString(),
-          prioritized_date: taskData.prioritizedDate?.toISOString(),
-          prioritized_end_date: taskData.prioritizedEndDate?.toISOString(),
+          due_date: taskData.dueDate?.toISOString() || null,
+          prioritized_date: taskData.prioritizedDate?.toISOString() || null,
+          prioritized_end_date: taskData.prioritizedEndDate?.toISOString() || null,
           priority: taskData.priority,
           type: taskData.parentTaskId ? 'subtask' : 'task',
           parent_task_id: taskData.parentTaskId,
@@ -220,7 +220,7 @@ export function useTasks() {
       if (error) throw error;
 
       // Insert theme relationships
-      if (taskData.themeIds.length > 0) {
+      if (taskData.themeIds && taskData.themeIds.length > 0) {
         const themeInserts = taskData.themeIds.map(themeId => ({
           task_id: task.id,
           theme_id: themeId
@@ -456,6 +456,7 @@ export function useTasks() {
 
   // Helper function to check if task should appear today based on priority date range
   const isTaskActiveToday = useCallback((task: Task) => {
+    // Only show tasks with timing information in time-based views
     if (!task.prioritizedDate && !task.dueDate) return false;
     
     const today = new Date();
@@ -474,6 +475,7 @@ export function useTasks() {
 
   // Helper function to check if task should appear in a date range
   const isTaskActiveInRange = useCallback((task: Task, rangeStart: Date, rangeEnd: Date) => {
+    // Only show tasks with timing information in time-based views
     if (!task.prioritizedDate && !task.dueDate) return false;
     
     const startDate = getEffectiveDate(task);

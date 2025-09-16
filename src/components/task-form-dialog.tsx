@@ -224,7 +224,7 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultP
                 name="dueDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Due Date</FormLabel>
+                    <FormLabel>Due Date (Optional)</FormLabel>
                     <div className="flex gap-2">
                       <Popover>
                         <PopoverTrigger asChild>
@@ -280,7 +280,7 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultP
                 name="prioritizedDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Priority Period - Start Date</FormLabel>
+                    <FormLabel>Priority Period - Start Date (Optional)</FormLabel>
                     <div className="flex gap-2">
                       <Popover>
                         <PopoverTrigger asChild>

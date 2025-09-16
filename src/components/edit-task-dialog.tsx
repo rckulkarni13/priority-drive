@@ -41,7 +41,7 @@ const taskSchema = z.object({
   prioritizedDate: z.date().optional(),
   prioritizedEndDate: z.date().optional(),
   priority: z.enum(["critical", "high", "medium", "low"]),
-  themeIds: z.array(z.string()).min(1, "Please select at least one theme"),
+  themeIds: z.array(z.string()).optional(),
   parentTaskId: z.string().optional(),
 });
 
@@ -182,10 +182,10 @@ export function EditTaskDialog({
                 name="themeIds"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Theme</FormLabel>
+                    <FormLabel>Theme (Optional)</FormLabel>
                     <Select
-                      onValueChange={(value) => field.onChange([value])}
-                      value={field.value[0] || ""}
+                      onValueChange={(value) => field.onChange(value === "none" ? [] : [value])}
+                      value={field.value?.[0] || "none"}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -193,6 +193,7 @@ export function EditTaskDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="none">No Theme</SelectItem>
                         {themes.map((theme) => (
                           <SelectItem key={theme.id} value={theme.id}>
                             {theme.title}
@@ -240,7 +241,7 @@ export function EditTaskDialog({
                 name="dueDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Due Date</FormLabel>
+                    <FormLabel>Due Date (Optional)</FormLabel>
                     <div className="flex gap-2">
                       <Popover>
                         <PopoverTrigger asChild>
@@ -296,7 +297,7 @@ export function EditTaskDialog({
                 name="prioritizedDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Priority Start Date</FormLabel>
+                    <FormLabel>Priority Start Date (Optional)</FormLabel>
                     <div className="flex gap-2">
                       <Popover>
                         <PopoverTrigger asChild>
