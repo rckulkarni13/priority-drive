@@ -87,7 +87,9 @@ export function TaskList({
       let section = 'no-date';
       
       if (date) {
-        if (isBefore(date, today)) {
+        // Only consider tasks overdue if they have NO priority date and due date is past
+        // Tasks with priority date ranges are never "overdue"
+        if (!task.prioritizedDate && task.dueDate && isBefore(task.dueDate, today)) {
           section = 'overdue';
         } else if (isSameDay(date, today)) {
           section = 'today';

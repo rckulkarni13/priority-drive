@@ -444,30 +444,57 @@ export function useTasks() {
     }
   }, [toast]);
 
-  // Helper function to get effective date for task (priority date or due date)
+  // Helper function to get effective start date for priority range (priority date or due date)
   const getEffectiveDate = useCallback((task: Task) => {
     return task.prioritizedDate || task.dueDate;
   }, []);
 
+  // Helper function to get effective end date for priority range
   const getEffectiveEndDate = useCallback((task: Task) => {
     return task.prioritizedEndDate || task.prioritizedDate || task.dueDate;
   }, []);
 
+  // Helper function to check if task should appear today based on priority date range
+  const isTaskActiveToday = useCallback((task: Task) => {
+    if (!task.prioritizedDate && !task.dueDate) return false;
+    
+    const today = new Date();
+    const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
+    const startDate = getEffectiveDate(task);
+    const endDate = getEffectiveEndDate(task);
+    
+    if (!startDate) return false;
+    
+    const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const endDateOnly = endDate ? new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) : startDateOnly;
+    
+    return todayDateOnly >= startDateOnly && todayDateOnly <= endDateOnly;
+  }, [getEffectiveDate, getEffectiveEndDate]);
+
+  // Helper function to check if task should appear in a date range
+  const isTaskActiveInRange = useCallback((task: Task, rangeStart: Date, rangeEnd: Date) => {
+    if (!task.prioritizedDate && !task.dueDate) return false;
+    
+    const startDate = getEffectiveDate(task);
+    const endDate = getEffectiveEndDate(task);
+    
+    if (!startDate) return false;
+    
+    const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const endDateOnly = endDate ? new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) : startDateOnly;
+    const rangeStartOnly = new Date(rangeStart.getFullYear(), rangeStart.getMonth(), rangeStart.getDate());
+    const rangeEndOnly = new Date(rangeEnd.getFullYear(), rangeEnd.getMonth(), rangeEnd.getDate());
+    
+    // Task is active in range if its date range overlaps with the query range
+    return startDateOnly <= rangeEndOnly && endDateOnly >= rangeStartOnly;
+  }, [getEffectiveDate, getEffectiveEndDate]);
+
   // Helper functions for task filtering - only return tasks that actually meet the criteria
   const getTodaysTasks = useCallback(() => {
-    const today = new Date();
     return tasks.filter(task => {
-      const effectiveDate = getEffectiveDate(task);
-      if (!effectiveDate || task.status === 'completed') return false;
-      
-      const startDate = new Date(effectiveDate);
-      const endDate = getEffectiveEndDate(task) ? new Date(getEffectiveEndDate(task)!) : startDate;
-      
-      const todayTime = today.getTime();
-      const startTime = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).getTime();
-      const endTime = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime();
-      
-      return todayTime >= startTime && todayTime <= endTime;
+      if (task.status === 'completed') return false;
+      return isTaskActiveToday(task);
     }).sort((a, b) => {
       // First sort by custom order (if both have order), then by priority
       if (a.order !== undefined && b.order !== undefined) {
@@ -477,24 +504,14 @@ export function useTasks() {
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
-  }, [tasks, getEffectiveDate, getEffectiveEndDate]);
+  }, [tasks, isTaskActiveToday]);
 
   const getTodaysPrioritizedTaskIds = useCallback(() => {
-    const today = new Date();
     return new Set(tasks.filter(task => {
-      const effectiveDate = getEffectiveDate(task);
-      if (!effectiveDate || task.status === 'completed') return false;
-      
-      const startDate = new Date(effectiveDate);
-      const endDate = getEffectiveEndDate(task) ? new Date(getEffectiveEndDate(task)!) : startDate;
-      
-      const todayTime = today.getTime();
-      const startTime = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).getTime();
-      const endTime = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime();
-      
-      return todayTime >= startTime && todayTime <= endTime;
+      if (task.status === 'completed') return false;
+      return isTaskActiveToday(task);
     }).map(task => task.id));
-  }, [tasks, getEffectiveDate, getEffectiveEndDate]);
+  }, [tasks, isTaskActiveToday]);
 
   const getCompletedTasks = useCallback(() => {
     return tasks.filter(task => task.status === 'completed');
@@ -512,18 +529,13 @@ export function useTasks() {
     endOfWeek.setDate(startOfWeek.getDate() + 6);
 
     return tasks.filter(task => {
-      const effectiveDate = getEffectiveDate(task);
-      if (!effectiveDate || task.status === 'completed') return false;
-      
-      const startDate = new Date(effectiveDate);
-      const endDate = getEffectiveEndDate(task) ? new Date(getEffectiveEndDate(task)!) : startDate;
-      
-      return (startDate <= endOfWeek && endDate >= startOfWeek);
+      if (task.status === 'completed') return false;
+      return isTaskActiveInRange(task, startOfWeek, endOfWeek);
     }).sort((a, b) => {
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
-  }, [tasks, getEffectiveDate, getEffectiveEndDate]);
+  }, [tasks, isTaskActiveInRange]);
 
   const getNextWeekTasks = useCallback(() => {
     const today = new Date();
@@ -533,18 +545,13 @@ export function useTasks() {
     endOfNextWeek.setDate(startOfNextWeek.getDate() + 6);
 
     return tasks.filter(task => {
-      const effectiveDate = getEffectiveDate(task);
-      if (!effectiveDate || task.status === 'completed') return false;
-      
-      const startDate = new Date(effectiveDate);
-      const endDate = getEffectiveEndDate(task) ? new Date(getEffectiveEndDate(task)!) : startDate;
-      
-      return (startDate <= endOfNextWeek && endDate >= startOfNextWeek);
+      if (task.status === 'completed') return false;
+      return isTaskActiveInRange(task, startOfNextWeek, endOfNextWeek);
     }).sort((a, b) => {
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
-  }, [tasks, getEffectiveDate, getEffectiveEndDate]);
+  }, [tasks, isTaskActiveInRange]);
 
   const getMonthlyTasks = useCallback(() => {
     const today = new Date();
@@ -552,18 +559,13 @@ export function useTasks() {
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
     return tasks.filter(task => {
-      const effectiveDate = getEffectiveDate(task);
-      if (!effectiveDate || task.status === 'completed') return false;
-      
-      const startDate = new Date(effectiveDate);
-      const endDate = getEffectiveEndDate(task) ? new Date(getEffectiveEndDate(task)!) : startDate;
-      
-      return (startDate <= endOfMonth && endDate >= startOfMonth);
+      if (task.status === 'completed') return false;
+      return isTaskActiveInRange(task, startOfMonth, endOfMonth);
     }).sort((a, b) => {
       const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
-  }, [tasks, getEffectiveDate, getEffectiveEndDate]);
+  }, [tasks, isTaskActiveInRange]);
 
   // Deletion functions
   const deleteDomain = useCallback(async (domainId: string) => {
