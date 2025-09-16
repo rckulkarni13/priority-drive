@@ -170,7 +170,7 @@ export type Database = {
         Row: {
           created_date: string
           description: string | null
-          due_date: string
+          due_date: string | null
           id: string
           parent_task_id: string | null
           prioritized_date: string | null
@@ -185,7 +185,7 @@ export type Database = {
         Insert: {
           created_date?: string
           description?: string | null
-          due_date: string
+          due_date?: string | null
           id?: string
           parent_task_id?: string | null
           prioritized_date?: string | null
@@ -200,7 +200,7 @@ export type Database = {
         Update: {
           created_date?: string
           description?: string | null
-          due_date?: string
+          due_date?: string | null
           id?: string
           parent_task_id?: string | null
           prioritized_date?: string | null
