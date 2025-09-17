@@ -254,15 +254,24 @@ export function useTasks() {
       const updateData: any = {
         title: updates.title,
         description: updates.description,
-        // Dates: send null to clear when undefined
-        due_date: updates.dueDate === undefined ? null : updates.dueDate?.toISOString(),
-        prioritized_date: updates.prioritizedDate === undefined ? null : updates.prioritizedDate?.toISOString(),
-        prioritized_end_date: updates.prioritizedEndDate === undefined ? null : updates.prioritizedEndDate?.toISOString(),
         priority: updates.priority,
         status: updates.status,
         type: updates.type,
-        parent_task_id: updates.parentTaskId === undefined ? null : updates.parentTaskId,
       };
+
+      // Dates and parent: only include if explicitly provided
+      if ('dueDate' in updates) {
+        updateData.due_date = updates.dueDate ? updates.dueDate.toISOString() : null;
+      }
+      if ('prioritizedDate' in updates) {
+        updateData.prioritized_date = updates.prioritizedDate ? updates.prioritizedDate.toISOString() : null;
+      }
+      if ('prioritizedEndDate' in updates) {
+        updateData.prioritized_end_date = updates.prioritizedEndDate ? updates.prioritizedEndDate.toISOString() : null;
+      }
+      if ('parentTaskId' in updates) {
+        updateData.parent_task_id = updates.parentTaskId ?? null;
+      }
 
       // Remove undefined values
       Object.keys(updateData).forEach(key => {
