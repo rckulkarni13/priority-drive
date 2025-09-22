@@ -34,6 +34,9 @@ interface HierarchyViewProps {
   onDomainDelete?: (domainId: string) => void;
   onPillarDelete?: (pillarId: string) => void;
   onThemeDelete?: (themeId: string) => void;
+  onThemeView?: (theme: Theme) => void;
+  onPillarView?: (pillar: StrategicPillar) => void;
+  onDomainView?: (domain: Domain) => void;
 }
 
 export function HierarchyView({ 
@@ -52,6 +55,9 @@ export function HierarchyView({
   onDomainDelete,
   onPillarDelete,
   onThemeDelete,
+  onThemeView,
+  onPillarView,
+  onDomainView
 }: HierarchyViewProps) {
   const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
   const [expandedPillars, setExpandedPillars] = useState<Set<string>>(new Set());

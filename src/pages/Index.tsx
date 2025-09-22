@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Task } from "@/types";
+import { Task, Theme, StrategicPillar, Domain } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/navigation";
@@ -11,6 +11,7 @@ import { EditTaskDialog } from "@/components/edit-task-dialog";
 import { TaskDetailDialog } from "@/components/task-detail-dialog";
 import { ThemeDetailDialog } from "@/components/theme-detail-dialog";
 import { PillarDetailDialog } from "@/components/pillar-detail-dialog";
+import { DomainDetailDialog } from "@/components/domain-detail-dialog";
 import { ControlledSubtaskDialog } from "@/components/controlled-subtask-dialog";
 import { ControlledTaskDialog } from "@/components/controlled-task-dialog";
 import { ControlledThemeDialog } from "@/components/controlled-theme-dialog";
@@ -21,7 +22,6 @@ import { QuickCreateMenu } from "@/components/quick-create-menu";
 import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
-import { Theme, StrategicPillar } from "@/types";
 
 type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
@@ -31,7 +31,8 @@ const Index = () => {
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
   const [viewingTheme, setViewingTheme] = useState<Theme | null>(null);
   const [viewingPillar, setViewingPillar] = useState<StrategicPillar | null>(null);
-  const [navigationStack, setNavigationStack] = useState<Array<{type: 'task' | 'theme' | 'pillar', data: any}>>([]);
+  const [viewingDomain, setViewingDomain] = useState<Domain | null>(null);
+  const [navigationStack, setNavigationStack] = useState<Array<{type: 'task' | 'theme' | 'pillar' | 'domain', data: any}>>([]);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCreateSubtask, setShowCreateSubtask] = useState<string>('');
@@ -52,8 +53,11 @@ const Index = () => {
     updateTask,
     updateTaskOrder,
     createDomain,
+    updateDomain,
     createStrategicPillar,
+    updateStrategicPillar,
     createTheme,
+    updateTheme,
     deleteDomain,
     deleteStrategicPillar,
     deleteTheme,
@@ -153,6 +157,7 @@ const Index = () => {
     setViewingTask(task);
     setViewingTheme(null);
     setViewingPillar(null);
+    setViewingDomain(null);
   };
 
   const handleThemeView = (theme: Theme) => {
@@ -162,10 +167,13 @@ const Index = () => {
       setNavigationStack(prev => [...prev, { type: 'theme', data: viewingTheme }]);
     } else if (viewingPillar) {
       setNavigationStack(prev => [...prev, { type: 'pillar', data: viewingPillar }]);
+    } else if (viewingDomain) {
+      setNavigationStack(prev => [...prev, { type: 'domain', data: viewingDomain }]);
     }
     setViewingTheme(theme);
     setViewingTask(null);
     setViewingPillar(null);
+    setViewingDomain(null);
   };
 
   const handlePillarView = (pillar: StrategicPillar) => {
@@ -175,10 +183,29 @@ const Index = () => {
       setNavigationStack(prev => [...prev, { type: 'theme', data: viewingTheme }]);
     } else if (viewingPillar) {
       setNavigationStack(prev => [...prev, { type: 'pillar', data: viewingPillar }]);
+    } else if (viewingDomain) {
+      setNavigationStack(prev => [...prev, { type: 'domain', data: viewingDomain }]);
     }
     setViewingPillar(pillar);
     setViewingTask(null);
     setViewingTheme(null);
+    setViewingDomain(null);
+  };
+
+  const handleDomainView = (domain: Domain) => {
+    if (viewingTask) {
+      setNavigationStack(prev => [...prev, { type: 'task', data: viewingTask }]);
+    } else if (viewingTheme) {
+      setNavigationStack(prev => [...prev, { type: 'theme', data: viewingTheme }]);
+    } else if (viewingPillar) {
+      setNavigationStack(prev => [...prev, { type: 'pillar', data: viewingPillar }]);
+    } else if (viewingDomain) {
+      setNavigationStack(prev => [...prev, { type: 'domain', data: viewingDomain }]);
+    }
+    setViewingDomain(domain);
+    setViewingTask(null);
+    setViewingTheme(null);
+    setViewingPillar(null);
   };
 
   const handleBack = () => {
@@ -189,14 +216,22 @@ const Index = () => {
         setViewingTask(lastItem.data);
         setViewingTheme(null);
         setViewingPillar(null);
+        setViewingDomain(null);
       } else if (lastItem.type === 'theme') {
         setViewingTheme(lastItem.data);
         setViewingTask(null);
         setViewingPillar(null);
+        setViewingDomain(null);
       } else if (lastItem.type === 'pillar') {
         setViewingPillar(lastItem.data);
         setViewingTask(null);
         setViewingTheme(null);
+        setViewingDomain(null);
+      } else if (lastItem.type === 'domain') {
+        setViewingDomain(lastItem.data);
+        setViewingTask(null);
+        setViewingTheme(null);
+        setViewingPillar(null);
       }
     }
   };
@@ -205,6 +240,7 @@ const Index = () => {
     setViewingTask(null);
     setViewingTheme(null);
     setViewingPillar(null);
+    setViewingDomain(null);
     setNavigationStack([]);
   };
 
@@ -294,6 +330,9 @@ const Index = () => {
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
               onCreateTask={handleCreateTask}
+              onThemeView={handleThemeView}
+              onPillarView={handlePillarView}
+              onDomainView={handleDomainView}
               onCreateTheme={handleCreateTheme}
               onCreatePillar={handleCreatePillar}
               onDomainDelete={deleteDomain}
@@ -432,6 +471,7 @@ const Index = () => {
           theme={viewingTheme}
           strategicPillars={strategicPillars}
           tasks={tasks}
+          onThemeUpdate={updateTheme}
           onClose={handleCloseAllDialogs}
           onBack={navigationStack.length > 0 ? handleBack : undefined}
           onTaskView={handleTaskView}
@@ -443,9 +483,21 @@ const Index = () => {
           pillar={viewingPillar}
           domains={domains}
           themes={themes}
+          onPillarUpdate={updateStrategicPillar}
           onClose={handleCloseAllDialogs}
           onBack={navigationStack.length > 0 ? handleBack : undefined}
           onThemeView={handleThemeView}
+          onDomainView={handleDomainView}
+        />
+
+        {/* Domain Detail Dialog */}
+        <DomainDetailDialog
+          domain={viewingDomain}
+          strategicPillars={strategicPillars}
+          onDomainUpdate={updateDomain}
+          onClose={handleCloseAllDialogs}
+          onBack={navigationStack.length > 0 ? handleBack : undefined}
+          onPillarView={handlePillarView}
         />
 
         {/* Edit Task Dialog */}

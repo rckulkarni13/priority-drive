@@ -688,6 +688,138 @@ export function useTasks() {
     }
   }, [toast]);
 
+  const updateDomain = useCallback(async (domainId: string, updates: Partial<Domain>) => {
+    try {
+      const { error } = await supabase
+        .from('domains')
+        .update({
+          title: updates.title,
+          description: updates.description,
+        })
+        .eq('id', domainId);
+
+      if (error) throw error;
+
+      await fetchAllData();
+      
+      toast({
+        title: "Success",
+        description: "Domain updated successfully"
+      });
+    } catch (error) {
+      console.error('Error updating domain:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update domain",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
+
+  const updateStrategicPillar = useCallback(async (pillarId: string, updates: Partial<StrategicPillar>) => {
+    try {
+      const { error } = await supabase
+        .from('strategic_pillars')
+        .update({
+          title: updates.title,
+          description: updates.description,
+          target_timeframe: updates.targetTimeFrame,
+        })
+        .eq('id', pillarId);
+
+      if (error) throw error;
+
+      // Update domain relationships if provided
+      if (updates.domainIds !== undefined) {
+        // Delete existing relationships
+        await supabase
+          .from('pillar_domains')
+          .delete()
+          .eq('pillar_id', pillarId);
+
+        // Insert new relationships
+        if (updates.domainIds.length > 0) {
+          const domainInserts = updates.domainIds.map(domainId => ({
+            pillar_id: pillarId,
+            domain_id: domainId
+          }));
+
+          const { error: domainError } = await supabase
+            .from('pillar_domains')
+            .insert(domainInserts);
+
+          if (domainError) throw domainError;
+        }
+      }
+
+      await fetchAllData();
+      
+      toast({
+        title: "Success",
+        description: "Strategic pillar updated successfully"
+      });
+    } catch (error) {
+      console.error('Error updating strategic pillar:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update strategic pillar",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
+
+  const updateTheme = useCallback(async (themeId: string, updates: Partial<Theme>) => {
+    try {
+      const { error } = await supabase
+        .from('themes')
+        .update({
+          title: updates.title,
+          description: updates.description,
+          associated_project: updates.associatedProject,
+        })
+        .eq('id', themeId);
+
+      if (error) throw error;
+
+      // Update pillar relationships if provided
+      if (updates.strategicPillarIds !== undefined) {
+        // Delete existing relationships
+        await supabase
+          .from('theme_pillars')
+          .delete()
+          .eq('theme_id', themeId);
+
+        // Insert new relationships
+        if (updates.strategicPillarIds.length > 0) {
+          const pillarInserts = updates.strategicPillarIds.map(pillarId => ({
+            theme_id: themeId,
+            pillar_id: pillarId
+          }));
+
+          const { error: pillarError } = await supabase
+            .from('theme_pillars')
+            .insert(pillarInserts);
+
+          if (pillarError) throw pillarError;
+        }
+      }
+
+      await fetchAllData();
+      
+      toast({
+        title: "Success",
+        description: "Theme updated successfully"
+      });
+    } catch (error) {
+      console.error('Error updating theme:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update theme",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
+
   return {
     tasks,
     domains,
@@ -700,8 +832,11 @@ export function useTasks() {
     updateTask,
     updateTaskOrder,
     createDomain,
+    updateDomain,
     createStrategicPillar,
+    updateStrategicPillar,
     createTheme,
+    updateTheme,
     getTodaysTasks,
     getTodaysPrioritizedTaskIds,
     getThisWeekTasks,
