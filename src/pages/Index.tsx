@@ -91,6 +91,16 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  // Keep the currently viewed task in sync with latest task state (e.g., after updates)
+  useEffect(() => {
+    if (viewingTask) {
+      const updated = tasks.find((t) => t.id === viewingTask.id);
+      if (updated && updated !== viewingTask) {
+        setViewingTask(updated);
+      }
+    }
+  }, [tasks, viewingTask]);
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     toast({
@@ -121,15 +131,6 @@ const Index = () => {
   const completedTasks = getCompletedTasks();
   const allActiveTasks = getAllActiveTasks();
 
-  // Keep the currently viewed task in sync with latest task state (e.g., after updates)
-  useEffect(() => {
-    if (viewingTask) {
-      const updated = tasks.find((t) => t.id === viewingTask.id);
-      if (updated && updated !== viewingTask) {
-        setViewingTask(updated);
-      }
-    }
-  }, [tasks]);
 
   const handleCreateSubtask = (parentTaskId: string) => {
     if (showCreateSubtask !== '') {
