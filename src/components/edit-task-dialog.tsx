@@ -90,13 +90,21 @@ export function EditTaskDialog({
 
   const onSubmit = async (data: TaskFormData) => {
     if (!task) return;
+
+    console.debug('[EditTaskDialog] submit data:', {
+      ...data,
+      dueDate: data.dueDate ?? null,
+      prioritizedDate: data.prioritizedDate ?? null,
+      prioritizedEndDate: data.prioritizedEndDate ?? null,
+    });
     
     const updates: Partial<Task> = {
       title: data.title,
       description: data.description || "",
-      dueDate: data.dueDate,
-      prioritizedDate: data.prioritizedDate,
-      prioritizedEndDate: data.prioritizedEndDate,
+      // Explicitly include date keys so cleared fields persist as null
+      dueDate: data.dueDate ?? undefined,
+      prioritizedDate: data.prioritizedDate ?? undefined,
+      prioritizedEndDate: data.prioritizedEndDate ?? undefined,
       priority: data.priority,
       themeIds: data.themeIds,
       parentTaskId: data.parentTaskId === "none" ? undefined : data.parentTaskId,

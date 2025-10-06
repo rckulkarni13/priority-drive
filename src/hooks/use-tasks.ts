@@ -280,6 +280,8 @@ export function useTasks() {
         }
       });
 
+      console.debug('[useTasks.updateTask] taskId:', taskId, 'updates:', updates, 'payload:', updateData);
+
       const { error } = await supabase
         .from('tasks')
         .update(updateData)
