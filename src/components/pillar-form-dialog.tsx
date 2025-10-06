@@ -32,7 +32,7 @@ import { StrategicPillar, Domain } from "@/types";
 
 const pillarSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
+  description: z.string().optional(),
   targetTimeFrame: z.string().min(1, "Target timeframe is required"),
   domainIds: z.array(z.string()).min(1, "Please select at least one domain"),
 });
@@ -103,7 +103,7 @@ export function PillarFormDialog({ children, domains, onPillarCreate }: PillarFo
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Describe the strategic pillar..."

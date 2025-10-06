@@ -122,7 +122,7 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultP
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Describe the task..."

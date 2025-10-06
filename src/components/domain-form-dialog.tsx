@@ -25,7 +25,7 @@ import { Domain } from "@/types";
 
 const domainSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
+  description: z.string().optional(),
 });
 
 type DomainFormData = z.infer<typeof domainSchema>;
@@ -89,7 +89,7 @@ export function DomainFormDialog({ children, onDomainCreate }: DomainFormDialogP
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Describe the domain..."

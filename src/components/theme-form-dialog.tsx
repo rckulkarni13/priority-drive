@@ -32,7 +32,7 @@ import { Theme, StrategicPillar } from "@/types";
 
 const themeSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
+  description: z.string().optional(),
   strategicPillarIds: z.array(z.string()).min(1, "Please select at least one strategic pillar"),
 });
 
@@ -103,7 +103,7 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Describe the theme..."
