@@ -535,7 +535,11 @@ export function TaskDetailDialog({
                                     type="button"
                                     variant="outline"
                                     size="icon"
-                                    onClick={() => { console.debug('[TaskDetailDialog] clear dueDate'); field.onChange(undefined); }}
+                                    onClick={() => { 
+                                      console.debug('[TaskDetailDialog] clear dueDate'); 
+                                      form.setValue('dueDate', undefined, { shouldDirty: true, shouldTouch: true });
+                                      form.trigger('dueDate');
+                                    }}
                                     className="shrink-0"
                                   >
                                     <X className="h-4 w-4" />
@@ -588,7 +592,11 @@ export function TaskDetailDialog({
                                     type="button"
                                     variant="outline"
                                     size="icon"
-                                    onClick={() => { console.debug('[TaskDetailDialog] clear prioritizedDate'); field.onChange(undefined); }}
+                                    onClick={() => { 
+                                      console.debug('[TaskDetailDialog] clear prioritizedDate'); 
+                                      form.setValue('prioritizedDate', undefined, { shouldDirty: true, shouldTouch: true });
+                                      form.trigger('prioritizedDate');
+                                    }}
                                     className="shrink-0"
                                   >
                                     <X className="h-4 w-4" />
@@ -641,7 +649,11 @@ export function TaskDetailDialog({
                                     type="button"
                                     variant="outline"
                                     size="icon"
-                                    onClick={() => { console.debug('[TaskDetailDialog] clear prioritizedEndDate'); field.onChange(undefined); }}
+                                    onClick={() => { 
+                                      console.debug('[TaskDetailDialog] clear prioritizedEndDate'); 
+                                      form.setValue('prioritizedEndDate', undefined, { shouldDirty: true, shouldTouch: true });
+                                      form.trigger('prioritizedEndDate');
+                                    }}
                                     className="shrink-0"
                                   >
                                     <X className="h-4 w-4" />

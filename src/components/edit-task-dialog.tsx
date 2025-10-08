@@ -288,7 +288,11 @@ export function EditTaskDialog({
                           type="button"
                           variant="outline"
                           size="icon"
-                          onClick={() => { console.debug('[EditTaskDialog] clear dueDate'); field.onChange(undefined); }}
+                          onClick={() => { 
+                            console.debug('[EditTaskDialog] clear dueDate'); 
+                            form.setValue('dueDate', undefined, { shouldDirty: true, shouldTouch: true });
+                            form.trigger('dueDate');
+                          }}
                           className="shrink-0"
                         >
                           <X className="h-4 w-4" />
@@ -341,7 +345,11 @@ export function EditTaskDialog({
                           type="button"
                           variant="outline"
                           size="icon"
-                          onClick={() => { console.debug('[EditTaskDialog] clear prioritizedDate'); field.onChange(undefined); }}
+                          onClick={() => { 
+                            console.debug('[EditTaskDialog] clear prioritizedDate'); 
+                            form.setValue('prioritizedDate', undefined, { shouldDirty: true, shouldTouch: true });
+                            form.trigger('prioritizedDate');
+                          }}
                           className="shrink-0"
                         >
                           <X className="h-4 w-4" />
@@ -399,7 +407,11 @@ export function EditTaskDialog({
                           type="button"
                           variant="outline"
                           size="icon"
-                          onClick={() => { console.debug('[EditTaskDialog] clear prioritizedEndDate'); field.onChange(undefined); }}
+                          onClick={() => { 
+                            console.debug('[EditTaskDialog] clear prioritizedEndDate'); 
+                            form.setValue('prioritizedEndDate', undefined, { shouldDirty: true, shouldTouch: true });
+                            form.trigger('prioritizedEndDate');
+                          }}
                           className="shrink-0"
                         >
                         <X className="h-4 w-4" />
