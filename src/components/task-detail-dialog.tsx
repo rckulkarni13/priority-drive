@@ -103,9 +103,13 @@ export function TaskDetailDialog({
       themeIds: [],
       parentTaskId: undefined,
     },
-  });
-
-  useEffect(() => {
+   });
+ 
+   const watchedDueDate = form.watch('dueDate');
+   const watchedPrioritizedDate = form.watch('prioritizedDate');
+   const watchedPrioritizedEndDate = form.watch('prioritizedEndDate');
+ 
+   useEffect(() => {
     if (task) {
       const parentTask = task.parentTaskId ? tasks.find(t => t.id === task.parentTaskId) : null;
       const defaultThemeIds = task.type === 'subtask' && parentTask ? parentTask.themeIds : task.themeIds;
@@ -508,11 +512,11 @@ export function TaskDetailDialog({
                                         variant="outline"
                                         className={cn(
                                           "pl-3 text-left font-normal",
-                                          !field.value && "text-muted-foreground"
+                                          !watchedDueDate && "text-muted-foreground"
                                         )}
                                       >
-                                        {field.value ? (
-                                          format(field.value, "MMM d, yyyy")
+                                        {watchedDueDate ? (
+                                          format(watchedDueDate, "MMM d, yyyy")
                                         ) : (
                                           <span>Pick date</span>
                                         )}
@@ -530,7 +534,7 @@ export function TaskDetailDialog({
                                     />
                                   </PopoverContent>
                                 </Popover>
-                                {field.value && (
+                                {watchedDueDate && (
                                   <Button
                                     type="button"
                                     variant="outline"
@@ -565,11 +569,11 @@ export function TaskDetailDialog({
                                         variant="outline"
                                         className={cn(
                                           "pl-3 text-left font-normal",
-                                          !field.value && "text-muted-foreground"
+                                          !watchedPrioritizedDate && "text-muted-foreground"
                                         )}
                                       >
-                                        {field.value ? (
-                                          format(field.value, "MMM d, yyyy")
+                                        {watchedPrioritizedDate ? (
+                                          format(watchedPrioritizedDate, "MMM d, yyyy")
                                         ) : (
                                           <span>Pick date</span>
                                         )}
@@ -587,7 +591,7 @@ export function TaskDetailDialog({
                                     />
                                   </PopoverContent>
                                 </Popover>
-                                {field.value && (
+                                  {watchedPrioritizedDate && (
                                   <Button
                                     type="button"
                                     variant="outline"
@@ -622,11 +626,11 @@ export function TaskDetailDialog({
                                         variant="outline"
                                         className={cn(
                                           "pl-3 text-left font-normal",
-                                          !field.value && "text-muted-foreground"
+                                          !watchedPrioritizedEndDate && "text-muted-foreground"
                                         )}
                                       >
-                                        {field.value ? (
-                                          format(field.value, "MMM d, yyyy")
+                                        {watchedPrioritizedEndDate ? (
+                                          format(watchedPrioritizedEndDate, "MMM d, yyyy")
                                         ) : (
                                           <span>Pick date</span>
                                         )}
@@ -644,7 +648,7 @@ export function TaskDetailDialog({
                                     />
                                   </PopoverContent>
                                 </Popover>
-                                {field.value && (
+                                {watchedPrioritizedEndDate && (
                                   <Button
                                     type="button"
                                     variant="outline"

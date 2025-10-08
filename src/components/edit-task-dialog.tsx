@@ -73,6 +73,10 @@ export function EditTaskDialog({
     },
   });
 
+  const watchedDueDate = form.watch('dueDate');
+  const watchedPrioritizedDate = form.watch('prioritizedDate');
+  const watchedPrioritizedEndDate = form.watch('prioritizedEndDate');
+
   useEffect(() => {
     if (task) {
       form.reset({
@@ -258,11 +262,11 @@ export function EditTaskDialog({
                               variant="outline"
                               className={cn(
                                 "flex-1 pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
+                                 !watchedDueDate && "text-muted-foreground"
                               )}
                             >
-                              {field.value ? (
-                                format(field.value, "PPP")
+                               {watchedDueDate ? (
+                                 format(watchedDueDate, "PPP")
                               ) : (
                                 <span>Pick due date</span>
                               )}
@@ -283,7 +287,7 @@ export function EditTaskDialog({
                           />
                         </PopoverContent>
                       </Popover>
-                      {field.value && (
+                       {watchedDueDate && (
                         <Button
                           type="button"
                           variant="outline"
@@ -318,11 +322,11 @@ export function EditTaskDialog({
                               variant="outline"
                               className={cn(
                                 "flex-1 pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
+                                 !watchedPrioritizedDate && "text-muted-foreground"
                               )}
                             >
-                              {field.value ? (
-                                format(field.value, "PPP")
+                               {watchedPrioritizedDate ? (
+                                 format(watchedPrioritizedDate, "PPP")
                               ) : (
                                 <span>Pick start date</span>
                               )}
@@ -340,7 +344,7 @@ export function EditTaskDialog({
                           />
                         </PopoverContent>
                       </Popover>
-                      {field.value && (
+                       {watchedPrioritizedDate && (
                         <Button
                           type="button"
                           variant="outline"
@@ -376,11 +380,11 @@ export function EditTaskDialog({
                             variant="outline"
                             className={cn(
                               "flex-1 pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              !watchedPrioritizedEndDate && "text-muted-foreground"
                             )}
                           >
-                            {field.value ? (
-                              format(field.value, "PPP")
+                            {watchedPrioritizedEndDate ? (
+                              format(watchedPrioritizedEndDate, "PPP")
                             ) : (
                               <span>Pick end date</span>
                             )}
@@ -402,7 +406,7 @@ export function EditTaskDialog({
                         />
                       </PopoverContent>
                     </Popover>
-                    {field.value && (
+                    {watchedPrioritizedEndDate && (
                         <Button
                           type="button"
                           variant="outline"
