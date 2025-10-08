@@ -288,7 +288,7 @@ export function EditTaskDialog({
                           type="button"
                           variant="outline"
                           size="icon"
-                          onClick={() => field.onChange(undefined)}
+                          onClick={() => { console.debug('[EditTaskDialog] clear dueDate'); field.onChange(undefined); }}
                           className="shrink-0"
                         >
                           <X className="h-4 w-4" />
@@ -341,7 +341,7 @@ export function EditTaskDialog({
                           type="button"
                           variant="outline"
                           size="icon"
-                          onClick={() => field.onChange(undefined)}
+                          onClick={() => { console.debug('[EditTaskDialog] clear prioritizedDate'); field.onChange(undefined); }}
                           className="shrink-0"
                         >
                           <X className="h-4 w-4" />
@@ -395,13 +395,13 @@ export function EditTaskDialog({
                       </PopoverContent>
                     </Popover>
                     {field.value && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => field.onChange(undefined)}
-                        className="shrink-0"
-                      >
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => { console.debug('[EditTaskDialog] clear prioritizedEndDate'); field.onChange(undefined); }}
+                          className="shrink-0"
+                        >
                         <X className="h-4 w-4" />
                       </Button>
                     )}

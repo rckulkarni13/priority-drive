@@ -535,7 +535,7 @@ export function TaskDetailDialog({
                                     type="button"
                                     variant="outline"
                                     size="icon"
-                                    onClick={() => field.onChange(undefined)}
+                                    onClick={() => { console.debug('[TaskDetailDialog] clear dueDate'); field.onChange(undefined); }}
                                     className="shrink-0"
                                   >
                                     <X className="h-4 w-4" />
@@ -588,7 +588,7 @@ export function TaskDetailDialog({
                                     type="button"
                                     variant="outline"
                                     size="icon"
-                                    onClick={() => field.onChange(undefined)}
+                                    onClick={() => { console.debug('[TaskDetailDialog] clear prioritizedDate'); field.onChange(undefined); }}
                                     className="shrink-0"
                                   >
                                     <X className="h-4 w-4" />
@@ -641,7 +641,7 @@ export function TaskDetailDialog({
                                     type="button"
                                     variant="outline"
                                     size="icon"
-                                    onClick={() => field.onChange(undefined)}
+                                    onClick={() => { console.debug('[TaskDetailDialog] clear prioritizedEndDate'); field.onChange(undefined); }}
                                     className="shrink-0"
                                   >
                                     <X className="h-4 w-4" />
