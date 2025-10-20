@@ -18,6 +18,7 @@ export interface Domain {
   description: string;
   createdDate: Date;
   workspaceId: string;
+  color: string;
 }
 
 export interface StrategicPillar {

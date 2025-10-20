@@ -50,7 +50,8 @@ export function useTasks() {
       title: domain.title,
       description: domain.description || '',
       createdDate: new Date(domain.created_date),
-      workspaceId: domain.workspace_id
+      workspaceId: domain.workspace_id,
+      color: domain.color
     }));
 
     setDomains(formattedDomains);
@@ -344,7 +345,8 @@ export function useTasks() {
           title: domainData.title,
           description: domainData.description,
           user_id: user.user.id,
-          workspace_id: domainData.workspaceId
+          workspace_id: domainData.workspaceId,
+          color: domainData.color
         });
 
       if (error) throw error;

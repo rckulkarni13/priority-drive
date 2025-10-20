@@ -26,6 +26,7 @@ import { Domain } from "@/types";
 const domainSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
+  color: z.string().min(1, "Color is required"),
 });
 
 type DomainFormData = z.infer<typeof domainSchema>;
@@ -44,6 +45,7 @@ export function DomainFormDialog({ children, onDomainCreate, workspaceId }: Doma
     defaultValues: {
       title: "",
       description: "",
+      color: "#3b82f6",
     },
   });
 
@@ -51,7 +53,8 @@ export function DomainFormDialog({ children, onDomainCreate, workspaceId }: Doma
     onDomainCreate({
       title: data.title,
       description: data.description || "",
-      workspaceId
+      workspaceId,
+      color: data.color
     });
     form.reset();
     setOpen(false);
@@ -97,6 +100,24 @@ export function DomainFormDialog({ children, onDomainCreate, workspaceId }: Doma
                       placeholder="Describe the domain..."
                       className="min-h-[80px]"
                       {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Color</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="color" 
+                      {...field}
+                      className="h-10 w-full cursor-pointer"
                     />
                   </FormControl>
                   <FormMessage />

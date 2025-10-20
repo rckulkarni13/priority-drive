@@ -43,10 +43,12 @@ function DroppableDay({ date, children }: { date: Date; children: React.ReactNod
 function DraggableTaskCard({ 
   task, 
   themes,
+  domains,
   onClick 
 }: { 
   task: Task; 
   themes: Theme[];
+  domains: Domain[];
   onClick: () => void;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -71,6 +73,15 @@ function DraggableTaskCard({
   // Get theme name
   const taskTheme = task.themeIds.length > 0 
     ? themes.find(t => t.id === task.themeIds[0])?.title 
+    : null;
+
+  // Get related domain data for this task
+  const taskThemes = themes.filter(theme => task.themeIds.includes(theme.id));
+  const relatedDomain = taskThemes.length > 0 
+    ? domains.find(domain => taskThemes.some(theme => {
+        const pillar = theme.strategicPillarIds.length > 0;
+        return pillar;
+      }))
     : null;
 
   return (
@@ -102,6 +113,20 @@ function DraggableTaskCard({
           </p>
           
           <div className="flex flex-wrap items-center gap-1">
+            {relatedDomain && (
+              <Badge 
+                variant="outline" 
+                className="text-[10px] h-5 px-1.5 border-2 font-medium"
+                style={{ 
+                  borderColor: relatedDomain.color,
+                  backgroundColor: `${relatedDomain.color}15`,
+                  color: relatedDomain.color 
+                }}
+              >
+                {relatedDomain.title}
+              </Badge>
+            )}
+            
             {taskTheme && (
               <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-primary/10 text-primary border-primary/20">
                 {taskTheme}
@@ -313,6 +338,7 @@ export function CalendarWeekView({
                         key={task.id}
                         task={task}
                         themes={themes}
+                        domains={domains}
                         onClick={() => onTaskClick?.(task)}
                       />
                     ))}

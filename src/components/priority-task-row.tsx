@@ -147,7 +147,16 @@ export function PriorityTaskRow({
                 
                 {/* Related items badges inline */}
                 {relatedDomains.length > 0 && relatedDomains.map(domain => (
-                  <Badge key={domain.id} variant="outline" className="text-xs">
+                  <Badge 
+                    key={domain.id} 
+                    variant="outline" 
+                    className="text-xs border-2"
+                    style={{ 
+                      borderColor: domain.color,
+                      backgroundColor: `${domain.color}15`,
+                      color: domain.color 
+                    }}
+                  >
                     <Package className="w-3 h-3 mr-1" />
                     {domain.title}
                   </Badge>
