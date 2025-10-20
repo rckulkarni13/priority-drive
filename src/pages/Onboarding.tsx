@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CheckSquare2, Briefcase, GraduationCap, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useWorkspaces } from "@/hooks/use-workspaces";
 
 const workspaceOptions = [
   {
@@ -39,6 +40,14 @@ export default function Onboarding() {
   const [isCreating, setIsCreating] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { workspaces } = useWorkspaces();
+
+  // Redirect to dashboard if user already has workspaces
+  useEffect(() => {
+    if (workspaces.length > 0) {
+      navigate('/');
+    }
+  }, [workspaces, navigate]);
 
   const toggleWorkspace = (workspaceId: string) => {
     setSelectedWorkspaces(prev => 
