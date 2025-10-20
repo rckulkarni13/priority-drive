@@ -51,6 +51,7 @@ export type Database = {
       }
       domains: {
         Row: {
+          color: string
           created_date: string
           description: string | null
           id: string
@@ -59,6 +60,7 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          color?: string
           created_date?: string
           description?: string | null
           id?: string
@@ -67,6 +69,7 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          color?: string
           created_date?: string
           description?: string | null
           id?: string
