@@ -45,13 +45,13 @@ export function useTasks() {
 
     if (error) throw error;
 
-    const formattedDomains: Domain[] = data.map(domain => ({
+    const formattedDomains: Domain[] = data.map((domain: any) => ({
       id: domain.id,
       title: domain.title,
       description: domain.description || '',
       createdDate: new Date(domain.created_date),
       workspaceId: domain.workspace_id,
-      color: domain.color
+      color: domain.color || '#3b82f6'
     }));
 
     setDomains(formattedDomains);
