@@ -40,27 +40,47 @@ function DroppableDay({ date, children }: { date: Date; children: React.ReactNod
 }
 
 // Draggable task card
-function DraggableTaskCard({ task, onClick }: { task: Task; onClick: () => void }) {
+function DraggableTaskCard({ 
+  task, 
+  themes,
+  onClick 
+}: { 
+  task: Task; 
+  themes: Theme[];
+  onClick: () => void;
+}) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
     data: { task },
   });
 
   const priorityColors = {
-    critical: 'bg-red-100 border-red-300 hover:bg-red-200 dark:bg-red-950 dark:border-red-800',
-    high: 'bg-orange-100 border-orange-300 hover:bg-orange-200 dark:bg-orange-950 dark:border-orange-800',
-    medium: 'bg-yellow-100 border-yellow-300 hover:bg-yellow-200 dark:bg-yellow-950 dark:border-yellow-800',
-    low: 'bg-green-100 border-green-300 hover:bg-green-200 dark:bg-green-950 dark:border-green-800',
+    critical: 'border-l-red-500',
+    high: 'border-l-orange-500',
+    medium: 'border-l-blue-500',
+    low: 'border-l-green-500',
   };
+
+  const priorityBadgeColors = {
+    critical: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
+    high: 'bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300',
+    medium: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+    low: 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300',
+  };
+
+  // Get theme name
+  const taskTheme = task.themeIds.length > 0 
+    ? themes.find(t => t.id === task.themeIds[0])?.title 
+    : null;
 
   return (
     <div
       ref={setNodeRef}
       className={cn(
-        "group relative rounded-md border-l-4 p-2 mb-2 cursor-pointer transition-all",
+        "group relative bg-background rounded-lg border-l-4 border-t border-r border-b shadow-sm p-3 mb-2 cursor-pointer transition-all hover:shadow-md",
         priorityColors[task.priority],
-        isDragging && "opacity-50",
-        task.status === 'completed' && "opacity-60"
+        isDragging && "opacity-50 shadow-lg",
+        task.status === 'completed' && "opacity-60 bg-muted/50"
       )}
       onClick={onClick}
     >
@@ -68,28 +88,51 @@ function DraggableTaskCard({ task, onClick }: { task: Task; onClick: () => void 
         <div
           {...listeners}
           {...attributes}
-          className="cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+          className="cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity pt-1"
           onClick={(e) => e.stopPropagation()}
         >
           <GripVertical className="w-4 h-4 text-muted-foreground" />
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 space-y-2">
           <p className={cn(
-            "text-sm font-medium truncate",
-            task.status === 'completed' && "line-through"
+            "text-sm font-medium leading-tight",
+            task.status === 'completed' && "line-through text-muted-foreground"
           )}>
             {task.title}
           </p>
-          <div className="flex items-center gap-1 mt-1">
-            <Badge variant="outline" className="text-[10px] h-4 px-1">
+          
+          <div className="flex flex-wrap items-center gap-1">
+            <Badge 
+              variant="secondary" 
+              className={cn("text-[10px] h-5 px-1.5", priorityBadgeColors[task.priority])}
+            >
               {task.priority}
             </Badge>
+            
+            {taskTheme && (
+              <Badge variant="outline" className="text-[10px] h-5 px-1.5">
+                {taskTheme}
+              </Badge>
+            )}
+            
             {task.status === 'completed' && (
-              <Badge variant="secondary" className="text-[10px] h-4 px-1">
-                Done
+              <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300">
+                ✓ Done
+              </Badge>
+            )}
+            
+            {task.status === 'hold' && (
+              <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300">
+                On Hold
               </Badge>
             )}
           </div>
+
+          {task.description && (
+            <p className="text-xs text-muted-foreground line-clamp-2">
+              {task.description}
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -282,6 +325,7 @@ export function CalendarWeekView({
                       <DraggableTaskCard
                         key={task.id}
                         task={task}
+                        themes={themes}
                         onClick={() => onTaskClick?.(task)}
                       />
                     ))}
