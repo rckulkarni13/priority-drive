@@ -15,7 +15,8 @@ import { SubtaskFormDialog } from "./subtask-form-dialog";
 import { ThemeFormDialog } from "./theme-form-dialog";
 import { PillarFormDialog } from "./pillar-form-dialog";
 import { DomainFormDialog } from "./domain-form-dialog";
-import { Theme, Task, StrategicPillar, Domain } from "@/types";
+import { Theme, Task, StrategicPillar, Domain, WorkspaceType } from "@/types";
+import { getWorkspaceTerminology } from "@/lib/workspace-terminology";
 
 interface QuickCreateMenuProps {
   themes: Theme[];
@@ -30,6 +31,7 @@ interface QuickCreateMenuProps {
   defaultPillarId?: string;
   variant?: "default" | "compact";
   workspaceId: string;
+  workspaceType: WorkspaceType;
 }
 
 export function QuickCreateMenu({
@@ -44,10 +46,12 @@ export function QuickCreateMenu({
   defaultParentTaskId,
   defaultPillarId,
   variant = "default",
-  workspaceId
+  workspaceId,
+  workspaceType
 }: QuickCreateMenuProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const terminology = getWorkspaceTerminology(workspaceType);
 
   useEffect(() => {
     if (openDialog && triggerRef.current) {
@@ -59,23 +63,23 @@ export function QuickCreateMenu({
   const hierarchyOptions = [
     {
       id: 'domain',
-      label: 'Domain',
+      label: terminology.domain.singular,
       icon: FolderTree,
-      description: 'Top-level area of focus',
+      description: workspaceType === 'work' ? 'Top-level area of focus' : workspaceType === 'school' ? 'Academic subject or course' : 'Life area or category',
       level: 1
     },
     {
       id: 'pillar',
-      label: 'Strategic Pillar',
+      label: terminology.pillar.singular,
       icon: Target,
-      description: 'Key initiative within a domain',
+      description: workspaceType === 'work' ? 'Key initiative within a domain' : workspaceType === 'school' ? 'Learning objective or goal' : 'Personal goal or objective',
       level: 2
     },
     {
       id: 'theme',
-      label: 'Theme',
+      label: terminology.theme.singular,
       icon: Lightbulb,
-      description: 'Project or group of related tasks',
+      description: workspaceType === 'work' ? 'Project or group of related tasks' : workspaceType === 'school' ? 'Study topic or unit' : 'Home project or activity',
       level: 3
     }
   ];
@@ -191,7 +195,7 @@ export function QuickCreateMenu({
                     <Info className="w-3 h-3 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="text-xs">Domain → Pillar → Theme → Task</p>
+                    <p className="text-xs">{terminology.domain.singular} → {terminology.pillar.singular} → {terminology.theme.singular} → Task</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -271,7 +275,7 @@ export function QuickCreateMenu({
                 <TooltipContent>
                   <div className="text-sm">
                     <p className="font-medium mb-1">Hierarchy Structure:</p>
-                    <p>Domain → Pillar → Theme → Task</p>
+                    <p>{terminology.domain.singular} → {terminology.pillar.singular} → {terminology.theme.singular} → Task</p>
                   </div>
                 </TooltipContent>
               </Tooltip>

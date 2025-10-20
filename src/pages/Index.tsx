@@ -480,6 +480,7 @@ const Index = () => {
                   onPillarCreate={createStrategicPillar}
                   onDomainCreate={createDomain}
                   workspaceId={currentWorkspace.id}
+                  workspaceType={currentWorkspace.type}
                 />
               )}
 
