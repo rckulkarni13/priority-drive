@@ -134,16 +134,6 @@ function DraggableTaskCard({
               </Badge>
             )}
             
-            <Badge 
-              variant="outline" 
-              className={cn(
-                "text-[9px] h-4 px-1",
-                priorityBadgeColors[task.priority]
-              )}
-            >
-              {task.priority}
-            </Badge>
-            
             {task.status === 'completed' && (
               <Badge variant="secondary" className="text-[9px] h-4 px-1 bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300">
                 ✓
