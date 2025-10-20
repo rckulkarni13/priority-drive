@@ -379,6 +379,7 @@ const Index = () => {
               strategicPillars={strategicPillars}
               themes={themes}
               tasks={tasks}
+              workspaceType={currentWorkspace?.type || 'work'}
               onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}

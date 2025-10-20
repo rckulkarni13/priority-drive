@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Domain, StrategicPillar, Theme, Task } from "@/types";
+import { Domain, StrategicPillar, Theme, Task, WorkspaceType } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,12 +17,14 @@ import {
   Circle
 } from "lucide-react";
 import { PriorityTaskRow } from "./priority-task-row";
+import { getWorkspaceTerminology } from "@/lib/workspace-terminology";
 
 interface HierarchyViewProps {
   domains: Domain[];
   strategicPillars: StrategicPillar[];
   themes: Theme[];
   tasks: Task[];
+  workspaceType: WorkspaceType;
   onTaskView?: (task: Task) => void;
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
@@ -43,7 +45,8 @@ export function HierarchyView({
   domains, 
   strategicPillars, 
   themes, 
-  tasks, 
+  tasks,
+  workspaceType,
   onTaskView,
   onTaskEdit, 
   onTaskToggleStatus, 
@@ -62,6 +65,8 @@ export function HierarchyView({
   const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
   const [expandedPillars, setExpandedPillars] = useState<Set<string>>(new Set());
   const [expandedThemes, setExpandedThemes] = useState<Set<string>>(new Set());
+  
+  const terminology = getWorkspaceTerminology(workspaceType);
 
   const toggleExpanded = (id: string, type: 'domain' | 'pillar' | 'theme') => {
     const setters = {
@@ -108,7 +113,7 @@ export function HierarchyView({
       <Card>
         <CardContent className="p-8 text-center text-muted-foreground">
           <FolderTree className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No domains found. Create your first domain to get started!</p>
+          <p>No {terminology.domain.plural.toLowerCase()} found. Create your first {terminology.domain.singular.toLowerCase()} to get started!</p>
         </CardContent>
       </Card>
     );
@@ -160,10 +165,10 @@ export function HierarchyView({
                         className="opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         <Plus className="w-4 h-4 mr-1" />
-                        Add Pillar
+                        Add {terminology.pillar.singular}
                       </Button>
                       <Badge variant="secondary">
-                        {domainPillars.length} pillars
+                        {domainPillars.length} {terminology.pillar.plural.toLowerCase()}
                       </Badge>
                       <Button
                         variant="ghost"
@@ -220,10 +225,10 @@ export function HierarchyView({
                                     className="opacity-0 group-hover:opacity-100 transition-opacity"
                                   >
                                     <Plus className="w-3 h-3 mr-1" />
-                                    Add Theme
+                                    Add {terminology.theme.singular}
                                   </Button>
                                   <Badge variant="outline">
-                                    {pillarThemes.length} themes
+                                    {pillarThemes.length} {terminology.theme.plural.toLowerCase()}
                                   </Badge>
                                   <Button
                                     variant="ghost"
@@ -356,7 +361,7 @@ export function HierarchyView({
                                             
                                             {themeTasks.length === 0 && (
                                               <div className="text-sm text-muted-foreground italic p-3 bg-muted/30 rounded-lg flex items-center justify-between">
-                                                <span>No tasks in this theme</span>
+                                                <span>No tasks in this {terminology.theme.singular.toLowerCase()}</span>
                                                 <Button 
                                                   variant="ghost" 
                                                   size="sm"
@@ -377,7 +382,7 @@ export function HierarchyView({
                                 
                                 {pillarThemes.length === 0 && (
                                   <div className="text-sm text-muted-foreground italic p-3 bg-muted/30 rounded-lg flex items-center justify-between">
-                                    <span>No themes in this pillar</span>
+                                    <span>No {terminology.theme.plural.toLowerCase()} in this {terminology.pillar.singular.toLowerCase()}</span>
                                     <Button 
                                       variant="ghost" 
                                       size="sm"
@@ -385,7 +390,7 @@ export function HierarchyView({
                                       className="h-7 px-2 text-xs"
                                     >
                                       <Plus className="w-3 h-3 mr-1" />
-                                      Add Theme
+                                      Add {terminology.theme.singular}
                                     </Button>
                                   </div>
                                 )}
@@ -398,7 +403,7 @@ export function HierarchyView({
                     
                     {domainPillars.length === 0 && (
                       <div className="text-sm text-muted-foreground italic p-3 bg-muted/30 rounded-lg flex items-center justify-between">
-                        <span>No pillars in this domain</span>
+                        <span>No {terminology.pillar.plural.toLowerCase()} in this {terminology.domain.singular.toLowerCase()}</span>
                         <Button 
                           variant="ghost" 
                           size="sm"
@@ -406,7 +411,7 @@ export function HierarchyView({
                           className="h-7 px-2 text-xs"
                         >
                           <Plus className="w-3 h-3 mr-1" />
-                          Add Pillar
+                          Add {terminology.pillar.singular}
                         </Button>
                       </div>
                     )}
