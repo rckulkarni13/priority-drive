@@ -294,6 +294,9 @@ export function CalendarView({
                       <PriorityTaskRow
                         task={task}
                         allTasks={allTasks}
+                        themes={themes}
+                        strategicPillars={strategicPillars}
+                        domains={domains}
                         onTaskEdit={onTaskEdit}
                         onTaskToggleStatus={onTaskToggleStatus}
                         onTaskReopen={onTaskReopen}
