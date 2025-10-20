@@ -80,15 +80,9 @@ const Index = () => {
     // Check initial user state
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
-      setLoading(false);
       if (!user) {
+        setLoading(false);
         navigate("/auth");
-      } else {
-        // Check if user has completed onboarding (has workspaces)
-        const onboardingCompleted = localStorage.getItem('onboarding_completed');
-        if (!onboardingCompleted && workspaces.length === 0) {
-          navigate("/onboarding");
-        }
       }
     });
 
@@ -101,7 +95,20 @@ const Index = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, workspaces.length]);
+  }, [navigate]);
+
+  // Separate effect to check onboarding after workspaces are loaded
+  useEffect(() => {
+    if (user && !loading) {
+      // Only redirect to onboarding if user has NO workspaces
+      // This ensures existing users go straight to dashboard
+      if (workspaces.length === 0) {
+        navigate("/onboarding");
+      } else {
+        setLoading(false);
+      }
+    }
+  }, [user, workspaces.length, loading, navigate]);
 
 
   // Filter data by current workspace
