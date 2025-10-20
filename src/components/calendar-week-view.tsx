@@ -43,11 +43,13 @@ function DroppableDay({ date, children }: { date: Date; children: React.ReactNod
 function DraggableTaskCard({ 
   task, 
   themes,
+  strategicPillars,
   domains,
   onClick 
 }: { 
   task: Task; 
   themes: Theme[];
+  strategicPillars: StrategicPillar[];
   domains: Domain[];
   onClick: () => void;
 }) {
@@ -75,22 +77,21 @@ function DraggableTaskCard({
     ? themes.find(t => t.id === task.themeIds[0])?.title 
     : null;
 
-  // Get related domain data for this task
+  // Get related domain data for this task - properly traverse the hierarchy
   const taskThemes = themes.filter(theme => task.themeIds.includes(theme.id));
-  const relatedDomain = taskThemes.length > 0 
-    ? domains.find(domain => taskThemes.some(theme => {
-        const pillar = theme.strategicPillarIds.length > 0;
-        return pillar;
-      }))
+  const relatedPillarIds = taskThemes.flatMap(theme => theme.strategicPillarIds);
+  const relatedPillars = strategicPillars.filter(pillar => relatedPillarIds.includes(pillar.id));
+  const relatedDomainIds = relatedPillars.flatMap(pillar => pillar.domainIds);
+  const relatedDomain = relatedDomainIds.length > 0 
+    ? domains.find(domain => relatedDomainIds.includes(domain.id))
     : null;
 
   return (
     <div
       ref={setNodeRef}
       className={cn(
-        "group relative bg-background rounded-lg border-l-4 border-t border-r border-b shadow-sm p-3 mb-2 cursor-pointer transition-all hover:shadow-md",
-        priorityColors[task.priority],
-        isDragging && "opacity-50 shadow-lg",
+        "group relative bg-card rounded-lg border shadow-sm p-2.5 mb-2 cursor-pointer transition-all hover:shadow-md",
+        isDragging && "opacity-50 shadow-lg scale-105",
         task.status === 'completed' && "opacity-60 bg-muted/50"
       )}
       onClick={onClick}
@@ -99,14 +100,14 @@ function DraggableTaskCard({
         <div
           {...listeners}
           {...attributes}
-          className="cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity pt-1"
+          className="cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity pt-0.5 flex-shrink-0"
           onClick={(e) => e.stopPropagation()}
         >
-          <GripVertical className="w-4 h-4 text-muted-foreground" />
+          <GripVertical className="w-3.5 h-3.5 text-muted-foreground" />
         </div>
-        <div className="flex-1 min-w-0 space-y-2">
+        <div className="flex-1 min-w-0 space-y-1.5">
           <p className={cn(
-            "text-sm font-medium leading-tight",
+            "text-xs font-medium leading-snug line-clamp-2",
             task.status === 'completed' && "line-through text-muted-foreground"
           )}>
             {task.title}
@@ -116,10 +117,10 @@ function DraggableTaskCard({
             {relatedDomain && (
               <Badge 
                 variant="outline" 
-                className="text-[10px] h-5 px-1.5 border-2 font-medium"
+                className="text-[9px] h-4 px-1 border font-semibold"
                 style={{ 
                   borderColor: relatedDomain.color,
-                  backgroundColor: `${relatedDomain.color}15`,
+                  backgroundColor: `${relatedDomain.color}20`,
                   color: relatedDomain.color 
                 }}
               >
@@ -128,20 +129,30 @@ function DraggableTaskCard({
             )}
             
             {taskTheme && (
-              <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-primary/10 text-primary border-primary/20">
+              <Badge variant="secondary" className="text-[9px] h-4 px-1 bg-primary/10 text-primary">
                 {taskTheme}
               </Badge>
             )}
             
+            <Badge 
+              variant="outline" 
+              className={cn(
+                "text-[9px] h-4 px-1",
+                priorityBadgeColors[task.priority]
+              )}
+            >
+              {task.priority}
+            </Badge>
+            
             {task.status === 'completed' && (
-              <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300">
-                ✓ Done
+              <Badge variant="secondary" className="text-[9px] h-4 px-1 bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300">
+                ✓
               </Badge>
             )}
             
             {task.status === 'hold' && (
-              <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300">
-                On Hold
+              <Badge variant="secondary" className="text-[9px] h-4 px-1 bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300">
+                Hold
               </Badge>
             )}
           </div>
@@ -338,6 +349,7 @@ export function CalendarWeekView({
                         key={task.id}
                         task={task}
                         themes={themes}
+                        strategicPillars={strategicPillars}
                         domains={domains}
                         onClick={() => onTaskClick?.(task)}
                       />
