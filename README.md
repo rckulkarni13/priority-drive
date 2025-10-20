@@ -7,8 +7,12 @@ A comprehensive task management application designed to help you organize and pr
 ## Key Features
 
 ### 🎯 Multi-Workspace Organization
-- Separate your tasks into three dedicated life areas (Work, School, Home)
-- Each workspace maintains its own independent hierarchy of domains, strategic pillars, themes, and tasks
+- Separate your tasks into three dedicated life areas: **Work**, **School**, and **Home**
+- Each workspace uses context-appropriate terminology:
+  - **Work**: Domains → Strategic Pillars → Themes → Tasks
+  - **School**: Subjects → Learning Goals → Topics → Assignments
+  - **Home**: Areas → Goals → Projects → Tasks
+- Each workspace maintains its own independent hierarchy
 - Switch seamlessly between contexts without clutter or confusion
 
 ### 📅 Smart Date Prioritization
@@ -20,14 +24,28 @@ A comprehensive task management application designed to help you organize and pr
 ### ⚡ Quick Task Creation
 - Rapid task entry with one-click creation menu
 - Minimal friction between thought and action
-- Create tasks, themes, pillars, and domains on the fly
+- Create tasks, themes/topics/projects, pillars/goals, and domains/subjects/areas on the fly
 
 ### 🏗️ Strategic Hierarchy
-Organize work using a four-tier strategic framework:
+Organize your life using a flexible four-tier framework that adapts to each workspace:
+
+**Work Workspace:**
 - **Domains**: High-level areas of responsibility
-- **Strategic Pillars**: Major initiatives or focus areas within domains
+- **Strategic Pillars**: Major initiatives or focus areas
 - **Themes**: Specific projects or workstreams
 - **Tasks**: Individual action items (with support for subtasks)
+
+**School Workspace:**
+- **Subjects**: Academic disciplines or courses
+- **Learning Goals**: Educational objectives within subjects
+- **Topics**: Specific units or study areas
+- **Tasks**: Assignments and study activities
+
+**Home Workspace:**
+- **Areas**: Life domains (family, health, finance, etc.)
+- **Goals**: Personal objectives within each area
+- **Projects**: Specific initiatives or activities
+- **Tasks**: Individual action items
 
 ### 📊 Multiple Views
 - **Today's Priorities**: Focus on what matters most right now
