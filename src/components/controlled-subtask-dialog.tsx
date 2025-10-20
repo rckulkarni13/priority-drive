@@ -9,6 +9,7 @@ interface ControlledSubtaskDialogProps {
   tasks: Task[];
   onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order'>) => void;
   onClose: () => void;
+  workspaceId: string;
 }
 
 export function ControlledSubtaskDialog({
@@ -17,7 +18,8 @@ export function ControlledSubtaskDialog({
   themes,
   tasks,
   onTaskCreate,
-  onClose
+  onClose,
+  workspaceId
 }: ControlledSubtaskDialogProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -38,6 +40,7 @@ export function ControlledSubtaskDialog({
         onTaskCreate(taskData);
         onClose();
       }}
+      workspaceId={workspaceId}
     >
       <button ref={triggerRef} style={{ display: 'none' }} />
     </SubtaskFormDialog>

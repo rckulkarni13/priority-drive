@@ -8,6 +8,7 @@ interface ControlledPillarDialogProps {
   domains: Domain[];
   onPillarCreate: (pillarData: Omit<StrategicPillar, "id" | "createdDate">) => void;
   onClose: () => void;
+  workspaceId: string;
 }
 
 export function ControlledPillarDialog({
@@ -15,7 +16,8 @@ export function ControlledPillarDialog({
   domainId,
   domains,
   onPillarCreate,
-  onClose
+  onClose,
+  workspaceId
 }: ControlledPillarDialogProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -34,6 +36,7 @@ export function ControlledPillarDialog({
         onPillarCreate(pillarData);
         onClose();
       }}
+      workspaceId={workspaceId}
     >
       <button ref={triggerRef} style={{ display: 'none' }} />
     </PillarFormDialog>

@@ -56,6 +56,7 @@ export type Database = {
           id: string
           title: string
           user_id: string
+          workspace_id: string
         }
         Insert: {
           created_date?: string
@@ -63,6 +64,7 @@ export type Database = {
           id?: string
           title: string
           user_id: string
+          workspace_id: string
         }
         Update: {
           created_date?: string
@@ -70,8 +72,17 @@ export type Database = {
           id?: string
           title?: string
           user_id?: string
+          workspace_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "domains_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pillar_domains: {
         Row: {
@@ -114,6 +125,7 @@ export type Database = {
           target_timeframe: string
           title: string
           user_id: string
+          workspace_id: string
         }
         Insert: {
           created_date?: string
@@ -122,6 +134,7 @@ export type Database = {
           target_timeframe: string
           title: string
           user_id: string
+          workspace_id: string
         }
         Update: {
           created_date?: string
@@ -130,8 +143,17 @@ export type Database = {
           target_timeframe?: string
           title?: string
           user_id?: string
+          workspace_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "strategic_pillars_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       task_themes: {
         Row: {
@@ -181,6 +203,7 @@ export type Database = {
           title: string
           type: Database["public"]["Enums"]["task_type"]
           user_id: string
+          workspace_id: string
         }
         Insert: {
           created_date?: string
@@ -196,6 +219,7 @@ export type Database = {
           title: string
           type?: Database["public"]["Enums"]["task_type"]
           user_id: string
+          workspace_id: string
         }
         Update: {
           created_date?: string
@@ -211,6 +235,7 @@ export type Database = {
           title?: string
           type?: Database["public"]["Enums"]["task_type"]
           user_id?: string
+          workspace_id?: string
         }
         Relationships: [
           {
@@ -218,6 +243,13 @@ export type Database = {
             columns: ["parent_task_id"]
             isOneToOne: false
             referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -263,6 +295,7 @@ export type Database = {
           id: string
           title: string
           user_id: string
+          workspace_id: string
         }
         Insert: {
           associated_project?: string | null
@@ -271,6 +304,7 @@ export type Database = {
           id?: string
           title: string
           user_id: string
+          workspace_id: string
         }
         Update: {
           associated_project?: string | null
@@ -278,6 +312,45 @@ export type Database = {
           description?: string | null
           id?: string
           title?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "themes_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspaces: {
+        Row: {
+          color: string
+          created_date: string
+          icon: string
+          id: string
+          name: string
+          type: Database["public"]["Enums"]["workspace_type"]
+          user_id: string
+        }
+        Insert: {
+          color: string
+          created_date?: string
+          icon: string
+          id?: string
+          name: string
+          type: Database["public"]["Enums"]["workspace_type"]
+          user_id: string
+        }
+        Update: {
+          color?: string
+          created_date?: string
+          icon?: string
+          id?: string
+          name?: string
+          type?: Database["public"]["Enums"]["workspace_type"]
           user_id?: string
         }
         Relationships: []
@@ -293,6 +366,7 @@ export type Database = {
       priority: "critical" | "high" | "medium" | "low"
       status: "open" | "hold" | "completed"
       task_type: "task" | "subtask"
+      workspace_type: "work" | "school" | "home" | "custom"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -423,6 +497,7 @@ export const Constants = {
       priority: ["critical", "high", "medium", "low"],
       status: ["open", "hold", "completed"],
       task_type: ["task", "subtask"],
+      workspace_type: ["work", "school", "home", "custom"],
     },
   },
 } as const

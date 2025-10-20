@@ -55,9 +55,10 @@ interface TaskFormDialogProps {
   onTaskCreate: (taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">) => void;
   defaultParentTaskId?: string;
   defaultType?: 'task' | 'subtask';
+  workspaceId: string;
 }
 
-export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultParentTaskId, defaultType = 'task' }: TaskFormDialogProps) {
+export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultParentTaskId, defaultType = 'task', workspaceId }: TaskFormDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<TaskFormData>({
@@ -81,6 +82,7 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultP
       priority: data.priority,
       themeIds: data.themeIds || [],
       parentTaskId: data.parentTaskId === "none" ? undefined : data.parentTaskId,
+      workspaceId
     });
     form.reset();
     setOpen(false);

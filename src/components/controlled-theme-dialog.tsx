@@ -8,6 +8,7 @@ interface ControlledThemeDialogProps {
   strategicPillars: StrategicPillar[];
   onThemeCreate: (themeData: Omit<Theme, "id" | "createdDate">) => void;
   onClose: () => void;
+  workspaceId: string;
 }
 
 export function ControlledThemeDialog({
@@ -15,7 +16,8 @@ export function ControlledThemeDialog({
   pillarId,
   strategicPillars,
   onThemeCreate,
-  onClose
+  onClose,
+  workspaceId
 }: ControlledThemeDialogProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -39,6 +41,7 @@ export function ControlledThemeDialog({
       onOpenChange={(open) => {
         if (!open) onClose();
       }}
+      workspaceId={workspaceId}
     >
       <button ref={triggerRef} style={{ display: 'none' }} />
     </ThemeFormDialog>

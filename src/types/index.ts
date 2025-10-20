@@ -1,12 +1,23 @@
 export type Priority = 'critical' | 'high' | 'medium' | 'low';
 export type Status = 'open' | 'hold' | 'completed';
 export type TaskType = 'task' | 'subtask';
+export type WorkspaceType = 'work' | 'school' | 'home' | 'custom';
+
+export interface Workspace {
+  id: string;
+  name: string;
+  type: WorkspaceType;
+  icon: string;
+  color: string;
+  createdDate: Date;
+}
 
 export interface Domain {
   id: string;
   title: string;
   description: string;
   createdDate: Date;
+  workspaceId: string;
 }
 
 export interface StrategicPillar {
@@ -16,6 +27,7 @@ export interface StrategicPillar {
   createdDate: Date;
   targetTimeFrame: string;
   domainIds: string[];
+  workspaceId: string;
 }
 
 export interface Theme {
@@ -25,6 +37,7 @@ export interface Theme {
   createdDate: Date;
   associatedProject?: string;
   strategicPillarIds: string[];
+  workspaceId: string;
 }
 
 export interface Task {
@@ -42,6 +55,7 @@ export interface Task {
   themeIds: string[];
   order: number;
   prioritizedDays?: Date[];
+  workspaceId: string;
 }
 
 export interface Comment {

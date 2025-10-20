@@ -29,6 +29,7 @@ interface QuickCreateMenuProps {
   defaultParentTaskId?: string;
   defaultPillarId?: string;
   variant?: "default" | "compact";
+  workspaceId: string;
 }
 
 export function QuickCreateMenu({
@@ -42,7 +43,8 @@ export function QuickCreateMenu({
   onDomainCreate,
   defaultParentTaskId,
   defaultPillarId,
-  variant = "default"
+  variant = "default",
+  workspaceId
 }: QuickCreateMenuProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -108,6 +110,7 @@ export function QuickCreateMenu({
               onTaskCreate(data);
               setOpenDialog(null);
             }}
+            workspaceId={workspaceId}
           >
             <button ref={triggerRef} style={{ display: 'none' }} />
           </TaskFormDialog>
@@ -122,6 +125,7 @@ export function QuickCreateMenu({
               onTaskCreate(data);
               setOpenDialog(null);
             }}
+            workspaceId={workspaceId}
           >
             <button ref={triggerRef} style={{ display: 'none' }} />
           </SubtaskFormDialog>
@@ -134,6 +138,7 @@ export function QuickCreateMenu({
               onThemeCreate(data);
               setOpenDialog(null);
             }}
+            workspaceId={workspaceId}
           >
             <button ref={triggerRef} style={{ display: 'none' }} />
           </ThemeFormDialog>
@@ -146,6 +151,7 @@ export function QuickCreateMenu({
               onPillarCreate(data);
               setOpenDialog(null);
             }}
+            workspaceId={workspaceId}
           >
             <button ref={triggerRef} style={{ display: 'none' }} />
           </PillarFormDialog>
@@ -157,6 +163,7 @@ export function QuickCreateMenu({
               onDomainCreate(data);
               setOpenDialog(null);
             }}
+            workspaceId={workspaceId}
           >
             <button ref={triggerRef} style={{ display: 'none' }} />
           </DomainFormDialog>

@@ -9,6 +9,7 @@ interface ControlledTaskDialogProps {
   tasks: Task[];
   onTaskCreate: (taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">) => void;
   onClose: () => void;
+  workspaceId: string;
 }
 
 export function ControlledTaskDialog({
@@ -17,7 +18,8 @@ export function ControlledTaskDialog({
   themes,
   tasks,
   onTaskCreate,
-  onClose
+  onClose,
+  workspaceId
 }: ControlledTaskDialogProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -37,6 +39,7 @@ export function ControlledTaskDialog({
         onTaskCreate(taskData);
         onClose();
       }}
+      workspaceId={workspaceId}
     >
       <button ref={triggerRef} style={{ display: 'none' }} />
     </TaskFormDialog>

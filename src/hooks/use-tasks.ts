@@ -49,7 +49,8 @@ export function useTasks() {
       id: domain.id,
       title: domain.title,
       description: domain.description || '',
-      createdDate: new Date(domain.created_date)
+      createdDate: new Date(domain.created_date),
+      workspaceId: domain.workspace_id
     }));
 
     setDomains(formattedDomains);
@@ -72,7 +73,8 @@ export function useTasks() {
       description: pillar.description || '',
       createdDate: new Date(pillar.created_date),
       targetTimeFrame: pillar.target_timeframe,
-      domainIds: pillar.pillar_domains?.map((pd: any) => pd.domain_id) || []
+      domainIds: pillar.pillar_domains?.map((pd: any) => pd.domain_id) || [],
+      workspaceId: pillar.workspace_id
     }));
 
     setStrategicPillars(formattedPillars);
@@ -95,7 +97,8 @@ export function useTasks() {
       description: theme.description || '',
       createdDate: new Date(theme.created_date),
       associatedProject: theme.associated_project || undefined,
-      strategicPillarIds: theme.theme_pillars?.map((tp: any) => tp.pillar_id) || []
+      strategicPillarIds: theme.theme_pillars?.map((tp: any) => tp.pillar_id) || [],
+      workspaceId: theme.workspace_id
     }));
 
     setThemes(formattedThemes);
@@ -126,7 +129,8 @@ export function useTasks() {
       parentTaskId: task.parent_task_id || undefined,
       themeIds: task.task_themes?.map((tt: any) => tt.theme_id) || [],
       order: task.task_order,
-      prioritizedDays: []
+      prioritizedDays: [],
+      workspaceId: task.workspace_id
     }));
 
     setTasks(formattedTasks);
@@ -212,7 +216,8 @@ export function useTasks() {
           type: taskData.parentTaskId ? 'subtask' : 'task',
           parent_task_id: taskData.parentTaskId,
           task_order: Math.max(...tasks.map(t => t.order || 0), 0) + 1,
-          user_id: user.user.id
+          user_id: user.user.id,
+          workspace_id: taskData.workspaceId
         })
         .select()
         .single();
@@ -338,7 +343,8 @@ export function useTasks() {
         .insert({
           title: domainData.title,
           description: domainData.description,
-          user_id: user.user.id
+          user_id: user.user.id,
+          workspace_id: domainData.workspaceId
         });
 
       if (error) throw error;
@@ -370,7 +376,8 @@ export function useTasks() {
           title: pillarData.title,
           description: pillarData.description,
           target_timeframe: pillarData.targetTimeFrame,
-          user_id: user.user.id
+          user_id: user.user.id,
+          workspace_id: pillarData.workspaceId
         })
         .select()
         .single();
@@ -418,7 +425,8 @@ export function useTasks() {
           title: themeData.title,
           description: themeData.description,
           associated_project: themeData.associatedProject,
-          user_id: user.user.id
+          user_id: user.user.id,
+          workspace_id: themeData.workspaceId
         })
         .select()
         .single();

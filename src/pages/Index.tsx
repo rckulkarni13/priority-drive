@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Task, Theme, StrategicPillar, Domain } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +17,8 @@ import { ControlledTaskDialog } from "@/components/controlled-task-dialog";
 import { ControlledThemeDialog } from "@/components/controlled-theme-dialog";
 import { ControlledPillarDialog } from "@/components/controlled-pillar-dialog";
 import { useTasks } from "@/hooks/use-tasks";
+import { useWorkspaces } from "@/hooks/use-workspaces";
+import { WorkspaceSwitcher } from "@/components/workspace-switcher";
 import { Button } from "@/components/ui/button";
 import { QuickCreateMenu } from "@/components/quick-create-menu";
 import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut } from "lucide-react";
@@ -69,6 +71,29 @@ const Index = () => {
     getCompletedTasks,
     getAllActiveTasks,
   } = useTasks();
+
+  const { workspaces, currentWorkspace, switchWorkspace } = useWorkspaces();
+
+  // Filter data by current workspace
+  const filteredDomains = useMemo(
+    () => currentWorkspace ? domains.filter(d => d.workspaceId === currentWorkspace.id) : [],
+    [domains, currentWorkspace]
+  );
+  
+  const filteredPillars = useMemo(
+    () => currentWorkspace ? strategicPillars.filter(p => p.workspaceId === currentWorkspace.id) : [],
+    [strategicPillars, currentWorkspace]
+  );
+  
+  const filteredThemes = useMemo(
+    () => currentWorkspace ? themes.filter(t => t.workspaceId === currentWorkspace.id) : [],
+    [themes, currentWorkspace]
+  );
+  
+  const filteredTasks = useMemo(
+    () => currentWorkspace ? tasks.filter(t => t.workspaceId === currentWorkspace.id) : [],
+    [tasks, currentWorkspace]
+  );
 
   useEffect(() => {
     // Check initial user state
@@ -389,9 +414,9 @@ const Index = () => {
       case 'manage':
         return (
           <ManageView
-            domains={domains}
-            strategicPillars={strategicPillars}
-            themes={themes}
+            domains={filteredDomains}
+            strategicPillars={filteredPillars}
+            themes={filteredThemes}
             onDomainDelete={deleteDomain}
             onPillarDelete={deleteStrategicPillar}
             onThemeDelete={deleteTheme}
@@ -420,16 +445,24 @@ const Index = () => {
             </div>
             
             <div className="flex gap-2">
-              <QuickCreateMenu
-                themes={themes}
-                tasks={tasks}
-                strategicPillars={strategicPillars}
-                domains={domains}
-                onTaskCreate={createTask}
-                onThemeCreate={createTheme}
-                onPillarCreate={createStrategicPillar}
-                onDomainCreate={createDomain}
+              <WorkspaceSwitcher
+                workspaces={workspaces}
+                currentWorkspace={currentWorkspace}
+                onWorkspaceChange={switchWorkspace}
               />
+              {currentWorkspace && (
+                <QuickCreateMenu
+                  themes={filteredThemes}
+                  tasks={filteredTasks}
+                  strategicPillars={filteredPillars}
+                  domains={filteredDomains}
+                  onTaskCreate={createTask}
+                  onThemeCreate={createTheme}
+                  onPillarCreate={createStrategicPillar}
+                  onDomainCreate={createDomain}
+                  workspaceId={currentWorkspace.id}
+                />
+              )}
 
               <Button
                 onClick={handleSignOut}
@@ -465,17 +498,20 @@ const Index = () => {
         </div>
 
         {/* Task Detail Dialog */}
-        <TaskDetailDialog
-          task={viewingTask}
-          themes={themes}
-          tasks={allActiveTasks}
-          onTaskUpdate={updateTask}
-          onTaskCreate={createTask}
-          onClose={handleCloseAllDialogs}
-          onBack={navigationStack.length > 0 ? handleBack : undefined}
-          onTaskView={handleTaskView}
-          onThemeView={handleThemeView}
-        />
+        {currentWorkspace && (
+          <TaskDetailDialog
+            task={viewingTask}
+            themes={filteredThemes}
+            tasks={filteredTasks}
+            onTaskUpdate={updateTask}
+            onTaskCreate={createTask}
+            onClose={handleCloseAllDialogs}
+            onBack={navigationStack.length > 0 ? handleBack : undefined}
+            onTaskView={handleTaskView}
+            onThemeView={handleThemeView}
+            workspaceId={currentWorkspace.id}
+          />
+        )}
 
         {/* Theme Detail Dialog */}
         <ThemeDetailDialog
@@ -521,42 +557,54 @@ const Index = () => {
         />
 
         {/* Create Subtask Dialog */}
-        <ControlledSubtaskDialog
-          isOpen={!!showCreateSubtask && showCreateSubtask !== ''}
-          parentTaskId={showCreateSubtask}
-          themes={themes}
-          tasks={tasks}
-          onTaskCreate={createTask}
-          onClose={() => setShowCreateSubtask('')}
-        />
+        {currentWorkspace && (
+          <ControlledSubtaskDialog
+            isOpen={!!showCreateSubtask && showCreateSubtask !== ''}
+            parentTaskId={showCreateSubtask}
+            themes={filteredThemes}
+            tasks={filteredTasks}
+            onTaskCreate={createTask}
+            onClose={() => setShowCreateSubtask('')}
+            workspaceId={currentWorkspace.id}
+          />
+        )}
 
         {/* Create Task Dialog */}
-        <ControlledTaskDialog
-          isOpen={!!showCreateTask && showCreateTask !== ''}
-          themeId={showCreateTask !== 'new-task' ? showCreateTask : undefined}
-          themes={themes}
-          tasks={tasks}
-          onTaskCreate={createTask}
-          onClose={() => setShowCreateTask('')}
-        />
+        {currentWorkspace && (
+          <ControlledTaskDialog
+            isOpen={!!showCreateTask && showCreateTask !== ''}
+            themeId={showCreateTask !== 'new-task' ? showCreateTask : undefined}
+            themes={filteredThemes}
+            tasks={filteredTasks}
+            onTaskCreate={createTask}
+            onClose={() => setShowCreateTask('')}
+            workspaceId={currentWorkspace.id}
+          />
+        )}
 
         {/* Create Theme Dialog */}
-        <ControlledThemeDialog
-          isOpen={!!showCreateTheme && showCreateTheme !== ''}
-          pillarId={showCreateTheme !== 'new-theme' ? showCreateTheme : undefined}
-          strategicPillars={strategicPillars}
-          onThemeCreate={createTheme}
-          onClose={() => setShowCreateTheme('')}
-        />
+        {currentWorkspace && (
+          <ControlledThemeDialog
+            isOpen={!!showCreateTheme && showCreateTheme !== ''}
+            pillarId={showCreateTheme !== 'new-theme' ? showCreateTheme : undefined}
+            strategicPillars={filteredPillars}
+            onThemeCreate={createTheme}
+            onClose={() => setShowCreateTheme('')}
+            workspaceId={currentWorkspace.id}
+          />
+        )}
 
         {/* Create Pillar Dialog */}
-        <ControlledPillarDialog
-          isOpen={!!showCreatePillar && showCreatePillar !== ''}
-          domainId={showCreatePillar !== 'new-pillar' ? showCreatePillar : undefined}
-          domains={domains}
-          onPillarCreate={createStrategicPillar}
-          onClose={() => setShowCreatePillar('')}
-        />
+        {currentWorkspace && (
+          <ControlledPillarDialog
+            isOpen={!!showCreatePillar && showCreatePillar !== ''}
+            domainId={showCreatePillar !== 'new-pillar' ? showCreatePillar : undefined}
+            domains={filteredDomains}
+            onPillarCreate={createStrategicPillar}
+            onClose={() => setShowCreatePillar('')}
+            workspaceId={currentWorkspace.id}
+          />
+        )}
       </div>
   );
 };

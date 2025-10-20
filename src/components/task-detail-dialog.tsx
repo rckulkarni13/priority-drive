@@ -78,6 +78,7 @@ interface TaskDetailDialogProps {
   onBack?: () => void;
   onTaskView?: (task: Task) => void;
   onThemeView?: (theme: Theme) => void;
+  workspaceId: string;
 }
 
 export function TaskDetailDialog({ 
@@ -89,7 +90,8 @@ export function TaskDetailDialog({
   onClose,
   onBack,
   onTaskView,
-  onThemeView 
+  onThemeView,
+  workspaceId
 }: TaskDetailDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'comments' | 'subtasks'>('overview');
@@ -691,6 +693,7 @@ export function TaskDetailDialog({
                     tasks={tasks}
                     parentTaskId={task.id}
                     onTaskCreate={onTaskCreate}
+                    workspaceId={workspaceId}
                   >
                     <Button size="sm" variant="outline">
                       <Plus className="w-4 h-4 mr-1" />

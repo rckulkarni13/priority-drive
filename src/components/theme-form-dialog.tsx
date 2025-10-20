@@ -44,9 +44,10 @@ interface ThemeFormDialogProps {
   defaultPillarId?: string;
   onThemeCreate: (themeData: Omit<Theme, "id" | "createdDate">) => void;
   onOpenChange?: (open: boolean) => void;
+  workspaceId: string;
 }
 
-export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, onThemeCreate, onOpenChange }: ThemeFormDialogProps) {
+export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, onThemeCreate, onOpenChange, workspaceId }: ThemeFormDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<ThemeFormData>({
@@ -61,8 +62,9 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
   const onSubmit = (data: ThemeFormData) => {
     onThemeCreate({
       title: data.title,
-      description: data.description,
+      description: data.description || "",
       strategicPillarIds: data.strategicPillarIds,
+      workspaceId
     });
     form.reset();
     setOpen(false);

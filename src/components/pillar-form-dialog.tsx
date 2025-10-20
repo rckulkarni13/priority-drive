@@ -43,9 +43,10 @@ interface PillarFormDialogProps {
   children: React.ReactNode;
   domains: Domain[];
   onPillarCreate: (pillarData: Omit<StrategicPillar, "id" | "createdDate">) => void;
+  workspaceId: string;
 }
 
-export function PillarFormDialog({ children, domains, onPillarCreate }: PillarFormDialogProps) {
+export function PillarFormDialog({ children, domains, onPillarCreate, workspaceId }: PillarFormDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<PillarFormData>({
@@ -61,9 +62,10 @@ export function PillarFormDialog({ children, domains, onPillarCreate }: PillarFo
   const onSubmit = (data: PillarFormData) => {
     onPillarCreate({
       title: data.title,
-      description: data.description,
+      description: data.description || "",
       targetTimeFrame: data.targetTimeFrame,
       domainIds: data.domainIds,
+      workspaceId
     });
     form.reset();
     setOpen(false);

@@ -33,9 +33,10 @@ type DomainFormData = z.infer<typeof domainSchema>;
 interface DomainFormDialogProps {
   children: React.ReactNode;
   onDomainCreate: (domainData: Omit<Domain, "id" | "createdDate">) => void;
+  workspaceId: string;
 }
 
-export function DomainFormDialog({ children, onDomainCreate }: DomainFormDialogProps) {
+export function DomainFormDialog({ children, onDomainCreate, workspaceId }: DomainFormDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<DomainFormData>({
@@ -49,7 +50,8 @@ export function DomainFormDialog({ children, onDomainCreate }: DomainFormDialogP
   const onSubmit = (data: DomainFormData) => {
     onDomainCreate({
       title: data.title,
-      description: data.description,
+      description: data.description || "",
+      workspaceId
     });
     form.reset();
     setOpen(false);
