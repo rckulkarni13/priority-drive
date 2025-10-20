@@ -435,6 +435,7 @@ const Index = () => {
             domains={filteredDomains}
             strategicPillars={filteredPillars}
             themes={filteredThemes}
+            workspaceType={currentWorkspace?.type || 'work'}
             onDomainDelete={deleteDomain}
             onPillarDelete={deleteStrategicPillar}
             onThemeDelete={deleteTheme}

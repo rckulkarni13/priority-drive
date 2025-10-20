@@ -1,13 +1,15 @@
-import { Domain, StrategicPillar, Theme } from "@/types";
+import { Domain, StrategicPillar, Theme, WorkspaceType } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Package, Target, Lightbulb, Trash2, Settings } from "lucide-react";
+import { getWorkspaceTerminology } from "@/lib/workspace-terminology";
 
 interface ManageViewProps {
   domains: Domain[];
   strategicPillars: StrategicPillar[];
   themes: Theme[];
+  workspaceType: WorkspaceType;
   onDomainDelete?: (domainId: string) => void;
   onPillarDelete?: (pillarId: string) => void;
   onThemeDelete?: (themeId: string) => void;
@@ -17,10 +19,13 @@ export function ManageView({
   domains, 
   strategicPillars, 
   themes, 
+  workspaceType,
   onDomainDelete, 
   onPillarDelete, 
   onThemeDelete 
 }: ManageViewProps) {
+  const terminology = getWorkspaceTerminology(workspaceType);
+  
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold flex items-center gap-2">
@@ -33,13 +38,13 @@ export function ManageView({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Package className="w-5 h-5 text-primary" />
-            Domains
+            {terminology.domain.plural}
             <Badge variant="outline">{domains.length}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
           {domains.length === 0 ? (
-            <p className="text-muted-foreground">No domains created yet.</p>
+            <p className="text-muted-foreground">No {terminology.domain.plural.toLowerCase()} created yet.</p>
           ) : (
             <div className="space-y-3">
               {domains.map((domain) => (
@@ -68,13 +73,13 @@ export function ManageView({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Target className="w-5 h-5 text-blue-600" />
-            Strategic Pillars
+            {terminology.pillar.plural}
             <Badge variant="outline">{strategicPillars.length}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
           {strategicPillars.length === 0 ? (
-            <p className="text-muted-foreground">No strategic pillars created yet.</p>
+            <p className="text-muted-foreground">No {terminology.pillar.plural.toLowerCase()} created yet.</p>
           ) : (
             <div className="space-y-3">
               {strategicPillars.map((pillar) => (
@@ -87,7 +92,7 @@ export function ManageView({
                         {pillar.targetTimeFrame}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
-                        {pillar.domainIds.length} domains
+                        {pillar.domainIds.length} {terminology.domain.plural.toLowerCase()}
                       </Badge>
                     </div>
                   </div>
@@ -111,13 +116,13 @@ export function ManageView({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Lightbulb className="w-5 h-5 text-green-600" />
-            Themes
+            {terminology.theme.plural}
             <Badge variant="outline">{themes.length}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
           {themes.length === 0 ? (
-            <p className="text-muted-foreground">No themes created yet.</p>
+            <p className="text-muted-foreground">No {terminology.theme.plural.toLowerCase()} created yet.</p>
           ) : (
             <div className="space-y-3">
               {themes.map((theme) => (
@@ -126,7 +131,7 @@ export function ManageView({
                     <h4 className="font-medium">{theme.title}</h4>
                     <p className="text-sm text-muted-foreground">{theme.description}</p>
                     <Badge variant="outline" className="text-xs mt-1">
-                      {theme.strategicPillarIds.length} pillars
+                      {theme.strategicPillarIds.length} {terminology.pillar.plural.toLowerCase()}
                     </Badge>
                   </div>
                   <Button 
