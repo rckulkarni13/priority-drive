@@ -222,49 +222,11 @@ export function CalendarView({
           <p className="text-sm text-muted-foreground">Drag tasks to move them to different dates</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Calendar */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Select Date</CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={(date) => date && setSelectedDate(date)}
-                modifiers={modifiers}
-                modifiersStyles={modifiersStyles}
-                className={cn("rounded-md border pointer-events-auto")}
-                components={{
-                  DayContent: ({ date }) => {
-                    const hasTask = datesWithTasks.has(format(startOfDay(date), 'yyyy-MM-dd'));
-                    return (
-                      <DroppableDate date={date}>
-                        <div className="relative w-full h-full flex items-center justify-center">
-                          <span>{format(date, 'd')}</span>
-                          {hasTask && (
-                            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
-                          )}
-                        </div>
-                      </DroppableDate>
-                    );
-                  }
-                }}
-              />
-            </CardContent>
-          </Card>
-
-        {/* Tasks for selected date */}
+        {/* Calendar - Full Width */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>
-                {format(selectedDate, 'MMMM d, yyyy')}
-                <Badge variant="secondary" className="ml-2">
-                  {selectedDateTasks.length} {selectedDateTasks.length === 1 ? 'task' : 'tasks'}
-                </Badge>
-              </CardTitle>
+              <CardTitle>Select a Date</CardTitle>
               <QuickCreateMenu
                 themes={themes}
                 tasks={allTasks}
@@ -280,33 +242,79 @@ export function CalendarView({
               />
             </div>
           </CardHeader>
+          <CardContent className="flex justify-center py-6">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={(date) => date && setSelectedDate(date)}
+              modifiers={modifiers}
+              modifiersStyles={modifiersStyles}
+              className={cn("rounded-md border pointer-events-auto scale-110")}
+              components={{
+                DayContent: ({ date }) => {
+                  const hasTask = datesWithTasks.has(format(startOfDay(date), 'yyyy-MM-dd'));
+                  const taskCount = getTasksForDate(date).length;
+                  return (
+                    <DroppableDate date={date}>
+                      <div className="relative w-full h-full flex flex-col items-center justify-center gap-0.5">
+                        <span className="text-sm">{format(date, 'd')}</span>
+                        {hasTask && (
+                          <Badge variant="secondary" className="text-[10px] h-4 px-1 min-w-4">
+                            {taskCount}
+                          </Badge>
+                        )}
+                      </div>
+                    </DroppableDate>
+                  );
+                }
+              }}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Tasks for Selected Date - Full Width Below Calendar */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl">
+                  {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                </CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {selectedDateTasks.length === 0 
+                    ? 'No tasks scheduled' 
+                    : `${selectedDateTasks.length} ${selectedDateTasks.length === 1 ? 'task' : 'tasks'} scheduled`
+                  }
+                </p>
+              </div>
+            </div>
+          </CardHeader>
           <CardContent>
-            <ScrollArea className="h-[400px] pr-4">
-              {selectedDateTasks.length === 0 ? (
-                <div className="text-center text-muted-foreground py-8">
-                  <p>No tasks for this date</p>
-                  <p className="text-sm mt-2">Use the + button above to create items</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {selectedDateTasks.map((task) => (
-                    <DraggableTask key={task.id} task={task}>
-                      <PriorityTaskRow
-                        task={task}
-                        allTasks={allTasks}
-                        themes={themes}
-                        strategicPillars={strategicPillars}
-                        domains={domains}
-                        onTaskEdit={onTaskEdit}
-                        onTaskToggleStatus={onTaskToggleStatus}
-                        onTaskReopen={onTaskReopen}
-                        onCreateSubtask={onCreateSubtask}
-                      />
-                    </DraggableTask>
-                  ))}
-                </div>
-              )}
-            </ScrollArea>
+            {selectedDateTasks.length === 0 ? (
+              <div className="text-center text-muted-foreground py-16 bg-muted/20 rounded-lg border-2 border-dashed">
+                <CalendarIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p className="text-lg font-medium">No tasks scheduled for this date</p>
+                <p className="text-sm mt-2">Drag tasks from other dates or create new ones</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {selectedDateTasks.map((task) => (
+                  <DraggableTask key={task.id} task={task}>
+                    <PriorityTaskRow
+                      task={task}
+                      allTasks={allTasks}
+                      themes={themes}
+                      strategicPillars={strategicPillars}
+                      domains={domains}
+                      onTaskEdit={onTaskEdit}
+                      onTaskToggleStatus={onTaskToggleStatus}
+                      onTaskReopen={onTaskReopen}
+                      onCreateSubtask={onCreateSubtask}
+                    />
+                  </DraggableTask>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -321,7 +329,6 @@ export function CalendarView({
           </div>
         )}
       </DragOverlay>
-    </div>
     </DndContext>
   );
 }
