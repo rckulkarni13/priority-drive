@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 import { 
   Calendar, 
   FolderTree, 
@@ -10,7 +18,8 @@ import {
   CalendarDays,
   CalendarRange,
   CalendarX2,
-  Settings
+  Settings,
+  MoreHorizontal
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -43,10 +52,11 @@ export function Navigation({
   pillarsCount,
   themesCount
 }: NavigationProps) {
-  const navItems = [
+  // Time-based views shown directly
+  const timeBasedViews = [
     {
       id: 'today' as View,
-      label: 'Today\'s Priorities',
+      label: 'Today',
       icon: CalendarDays,
       count: todayTasksCount,
       color: 'text-blue-600',
@@ -74,11 +84,15 @@ export function Navigation({
     },
     {
       id: 'monthly' as View,
-      label: 'Monthly View',
+      label: 'Monthly',
       icon: CalendarRange,
       count: monthlyTasksCount,
       color: 'text-rose-600',
     },
+  ];
+
+  // Other views in More dropdown
+  const moreViews = [
     {
       id: 'hierarchy' as View,
       label: 'Hierarchy View',
@@ -109,9 +123,12 @@ export function Navigation({
     },
   ];
 
+  const isMoreViewActive = moreViews.some(view => view.id === currentView);
+
   return (
     <nav className="flex flex-wrap gap-2 p-1 bg-muted/50 rounded-lg">
-      {navItems.map((item) => {
+      {/* Time-based views */}
+      {timeBasedViews.map((item) => {
         const Icon = item.icon;
         const isActive = currentView === item.id;
         
@@ -140,6 +157,50 @@ export function Navigation({
           </Button>
         );
       })}
+
+      {/* More dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant={isMoreViewActive ? "default" : "ghost"}
+            size="sm"
+            className={cn(
+              "flex items-center gap-2 transition-all duration-200",
+              isMoreViewActive && "shadow-md"
+            )}
+          >
+            <MoreHorizontal className="w-4 h-4" />
+            <span className="font-medium">More</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56 bg-background">
+          <DropdownMenuLabel>Other Views</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {moreViews.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentView === item.id;
+            
+            return (
+              <DropdownMenuItem
+                key={item.id}
+                onClick={() => onViewChange(item.id)}
+                className={cn(
+                  "flex items-center gap-2 cursor-pointer",
+                  isActive && "bg-accent"
+                )}
+              >
+                <Icon className={cn("w-4 h-4", item.color)} />
+                <span className="flex-1">{item.label}</span>
+                {item.count > 0 && (
+                  <Badge variant="outline" className="text-xs">
+                    {item.count}
+                  </Badge>
+                )}
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </nav>
   );
 }
