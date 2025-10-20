@@ -103,7 +103,7 @@ function DraggableTaskCard({
           
           <div className="flex flex-wrap items-center gap-1">
             {taskTheme && (
-              <Badge variant="outline" className="text-[10px] h-5 px-1.5">
+              <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-primary/10 text-primary border-primary/20">
                 {taskTheme}
               </Badge>
             )}
