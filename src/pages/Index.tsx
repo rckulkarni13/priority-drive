@@ -82,6 +82,12 @@ const Index = () => {
       setLoading(false);
       if (!user) {
         navigate("/auth");
+      } else {
+        // Check if user has completed onboarding (has workspaces)
+        const onboardingCompleted = localStorage.getItem('onboarding_completed');
+        if (!onboardingCompleted && workspaces.length === 0) {
+          navigate("/onboarding");
+        }
       }
     });
 
@@ -94,7 +100,8 @@ const Index = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, workspaces.length]);
+
 
   // Filter data by current workspace
   const filteredDomains = useMemo(
