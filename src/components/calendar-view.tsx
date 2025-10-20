@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Task } from "@/types";
+import { Task, Theme, StrategicPillar, Domain, WorkspaceType } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
@@ -7,27 +7,44 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CalendarIcon, Plus } from "lucide-react";
 import { PriorityTaskRow } from "./priority-task-row";
+import { QuickCreateMenu } from "./quick-create-menu";
 import { format, isSameDay, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface CalendarViewProps {
   tasks: Task[];
   allTasks: Task[];
+  themes: Theme[];
+  strategicPillars: StrategicPillar[];
+  domains: Domain[];
+  workspaceId: string;
+  workspaceType: WorkspaceType;
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
-  onCreateTask?: (themeId?: string, date?: Date) => void;
+  onTaskCreate: (taskData: any) => void;
+  onThemeCreate: (themeData: any) => void;
+  onPillarCreate: (pillarData: any) => void;
+  onDomainCreate: (domainData: any) => void;
 }
 
 export function CalendarView({
   tasks,
   allTasks,
+  themes,
+  strategicPillars,
+  domains,
+  workspaceId,
+  workspaceType,
   onTaskEdit,
   onTaskToggleStatus,
   onTaskReopen,
   onCreateSubtask,
-  onCreateTask,
+  onTaskCreate,
+  onThemeCreate,
+  onPillarCreate,
+  onDomainCreate,
 }: CalendarViewProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
@@ -145,14 +162,19 @@ export function CalendarView({
                   {selectedDateTasks.length} {selectedDateTasks.length === 1 ? 'task' : 'tasks'}
                 </Badge>
               </CardTitle>
-              <Button
-                size="sm"
-                onClick={() => onCreateTask?.(undefined, selectedDate)}
-                className="gap-1"
-              >
-                <Plus className="w-4 h-4" />
-                Add Task
-              </Button>
+              <QuickCreateMenu
+                themes={themes}
+                tasks={allTasks}
+                strategicPillars={strategicPillars}
+                domains={domains}
+                onTaskCreate={onTaskCreate}
+                onThemeCreate={onThemeCreate}
+                onPillarCreate={onPillarCreate}
+                onDomainCreate={onDomainCreate}
+                workspaceId={workspaceId}
+                workspaceType={workspaceType}
+                variant="compact"
+              />
             </div>
           </CardHeader>
           <CardContent>
@@ -160,15 +182,7 @@ export function CalendarView({
               {selectedDateTasks.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8">
                   <p>No tasks for this date</p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onCreateTask?.(undefined, selectedDate)}
-                    className="mt-4"
-                  >
-                    <Plus className="w-4 h-4 mr-1" />
-                    Create Task
-                  </Button>
+                  <p className="text-sm mt-2">Use the + button above to create items</p>
                 </div>
               ) : (
                 <div className="space-y-2">
