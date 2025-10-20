@@ -5,11 +5,68 @@ import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { CalendarIcon, Plus } from "lucide-react";
+import { CalendarIcon, Plus, GripVertical } from "lucide-react";
 import { PriorityTaskRow } from "./priority-task-row";
 import { QuickCreateMenu } from "./quick-create-menu";
 import { format, isSameDay, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  closestCenter,
+  useSensor,
+  useSensors,
+  PointerSensor,
+} from "@dnd-kit/core";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
+
+// Droppable date wrapper
+function DroppableDate({ date, children }: { date: Date; children: React.ReactNode }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: format(date, 'yyyy-MM-dd'),
+    data: { date },
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={cn(
+        "w-full h-full transition-colors",
+        isOver && "bg-primary/20 rounded"
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+
+// Draggable task wrapper
+function DraggableTask({ task, children }: { task: Task; children: React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: task.id,
+    data: { task },
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={cn(
+        "border rounded-lg p-2 bg-background transition-opacity",
+        isDragging && "opacity-50"
+      )}
+    >
+      <div className="flex items-center gap-2">
+        <div {...listeners} {...attributes} className="cursor-grab active:cursor-grabbing">
+          <GripVertical className="w-4 h-4 text-muted-foreground" />
+        </div>
+        <div className="flex-1">{children}</div>
+      </div>
+    </div>
+  );
+}
 
 interface CalendarViewProps {
   tasks: Task[];
@@ -27,7 +84,9 @@ interface CalendarViewProps {
   onThemeCreate: (themeData: any) => void;
   onPillarCreate: (pillarData: any) => void;
   onDomainCreate: (domainData: any) => void;
+  onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
 }
+
 
 export function CalendarView({
   tasks,
@@ -45,10 +104,45 @@ export function CalendarView({
   onThemeCreate,
   onPillarCreate,
   onDomainCreate,
+  onTaskUpdate,
 }: CalendarViewProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
 
-  // Get tasks for a specific date
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const task = event.active.data.current?.task;
+    if (task) {
+      setActiveTask(task);
+    }
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveTask(null);
+    
+    const { active, over } = event;
+    
+    if (!over) return;
+    
+    const task = active.data.current?.task as Task;
+    const newDate = over.data.current?.date as Date;
+    
+    if (task && newDate) {
+      // Update the task's prioritized date to the new date
+      onTaskUpdate(task.id, {
+        prioritizedDate: newDate,
+        prioritizedEndDate: newDate,
+      });
+    }
+  };
+
   const getTasksForDate = (date: Date) => {
     const dateStart = startOfDay(date);
     return tasks.filter((task) => {
@@ -113,44 +207,53 @@ export function CalendarView({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
-          <CalendarIcon className="w-5 h-5" />
-          Calendar View
-        </h2>
-      </div>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <CalendarIcon className="w-5 h-5" />
+            Calendar View
+          </h2>
+          <p className="text-sm text-muted-foreground">Drag tasks to move them to different dates</p>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Calendar */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Select Date</CardTitle>
-          </CardHeader>
-          <CardContent className="flex justify-center">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={(date) => date && setSelectedDate(date)}
-              modifiers={modifiers}
-              modifiersStyles={modifiersStyles}
-              className={cn("rounded-md border pointer-events-auto")}
-              components={{
-                DayContent: ({ date }) => {
-                  const hasTask = datesWithTasks.has(format(startOfDay(date), 'yyyy-MM-dd'));
-                  return (
-                    <div className="relative w-full h-full flex items-center justify-center">
-                      <span>{format(date, 'd')}</span>
-                      {hasTask && (
-                        <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
-                      )}
-                    </div>
-                  );
-                }
-              }}
-            />
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Calendar */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Select Date</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => date && setSelectedDate(date)}
+                modifiers={modifiers}
+                modifiersStyles={modifiersStyles}
+                className={cn("rounded-md border pointer-events-auto")}
+                components={{
+                  DayContent: ({ date }) => {
+                    const hasTask = datesWithTasks.has(format(startOfDay(date), 'yyyy-MM-dd'));
+                    return (
+                      <DroppableDate date={date}>
+                        <div className="relative w-full h-full flex items-center justify-center">
+                          <span>{format(date, 'd')}</span>
+                          {hasTask && (
+                            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
+                          )}
+                        </div>
+                      </DroppableDate>
+                    );
+                  }
+                }}
+              />
+            </CardContent>
+          </Card>
 
         {/* Tasks for selected date */}
         <Card>
@@ -187,7 +290,7 @@ export function CalendarView({
               ) : (
                 <div className="space-y-2">
                   {selectedDateTasks.map((task) => (
-                    <div key={task.id} className="border rounded-lg p-2">
+                    <DraggableTask key={task.id} task={task}>
                       <PriorityTaskRow
                         task={task}
                         allTasks={allTasks}
@@ -196,7 +299,7 @@ export function CalendarView({
                         onTaskReopen={onTaskReopen}
                         onCreateSubtask={onCreateSubtask}
                       />
-                    </div>
+                    </DraggableTask>
                   ))}
                 </div>
               )}
@@ -204,6 +307,18 @@ export function CalendarView({
           </CardContent>
         </Card>
       </div>
+
+      <DragOverlay>
+        {activeTask && (
+          <div className="bg-background border rounded-lg p-2 shadow-lg">
+            <div className="flex items-center gap-2">
+              <GripVertical className="w-4 h-4 text-muted-foreground" />
+              <div className="font-medium">{activeTask.title}</div>
+            </div>
+          </div>
+        )}
+      </DragOverlay>
     </div>
+    </DndContext>
   );
 }

@@ -397,6 +397,7 @@ const Index = () => {
             onThemeCreate={createTheme}
             onPillarCreate={createStrategicPillar}
             onDomainCreate={createDomain}
+            onTaskUpdate={updateTask}
           />
         );
       
