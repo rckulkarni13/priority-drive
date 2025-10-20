@@ -6,7 +6,7 @@ import { Navigation } from "@/components/navigation";
 import { TaskList } from "@/components/task-list";
 import { SortableTaskList } from "@/components/sortable-task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
-import { CalendarView } from "@/components/calendar-view";
+import { CalendarWeekView } from "@/components/calendar-week-view";
 import { ManageView } from "@/components/manage-view";
 import { EditTaskDialog } from "@/components/edit-task-dialog";
 import { TaskDetailDialog } from "@/components/task-detail-dialog";
@@ -381,7 +381,7 @@ const Index = () => {
       
       case 'calendar':
         return (
-          <CalendarView
+          <CalendarWeekView
             tasks={filteredTasks}
             allTasks={filteredTasks}
             themes={filteredThemes}
@@ -389,10 +389,7 @@ const Index = () => {
             domains={filteredDomains}
             workspaceId={currentWorkspace?.id || ''}
             workspaceType={currentWorkspace?.type || 'work'}
-            onTaskEdit={handleTaskView}
-            onTaskToggleStatus={toggleTaskStatus}
-            onTaskReopen={reopenTask}
-            onCreateSubtask={handleCreateSubtask}
+            onTaskClick={handleTaskView}
             onTaskCreate={createTask}
             onThemeCreate={createTheme}
             onPillarCreate={createStrategicPillar}
