@@ -120,12 +120,6 @@ function DraggableTaskCard({
               </Badge>
             )}
           </div>
-
-          {task.description && (
-            <p className="text-xs text-muted-foreground line-clamp-2">
-              {task.description}
-            </p>
-          )}
         </div>
       </div>
     </div>
