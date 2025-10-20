@@ -74,26 +74,6 @@ const Index = () => {
 
   const { workspaces, currentWorkspace, switchWorkspace } = useWorkspaces();
 
-  // Filter data by current workspace
-  const filteredDomains = useMemo(
-    () => currentWorkspace ? domains.filter(d => d.workspaceId === currentWorkspace.id) : [],
-    [domains, currentWorkspace]
-  );
-  
-  const filteredPillars = useMemo(
-    () => currentWorkspace ? strategicPillars.filter(p => p.workspaceId === currentWorkspace.id) : [],
-    [strategicPillars, currentWorkspace]
-  );
-  
-  const filteredThemes = useMemo(
-    () => currentWorkspace ? themes.filter(t => t.workspaceId === currentWorkspace.id) : [],
-    [themes, currentWorkspace]
-  );
-  
-  const filteredTasks = useMemo(
-    () => currentWorkspace ? tasks.filter(t => t.workspaceId === currentWorkspace.id) : [],
-    [tasks, currentWorkspace]
-  );
 
   useEffect(() => {
     // Check initial user state
@@ -116,23 +96,53 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Keep the currently viewed task in sync with latest task state (e.g., after updates)
-  useEffect(() => {
-    if (viewingTask) {
-      const updated = tasks.find((t) => t.id === viewingTask.id);
-      if (updated && updated !== viewingTask) {
-        setViewingTask(updated);
-      }
-    }
-  }, [tasks, viewingTask]);
+  // Filter data by current workspace
+  const filteredDomains = useMemo(
+    () => currentWorkspace ? domains.filter(d => d.workspaceId === currentWorkspace.id) : [],
+    [domains, currentWorkspace]
+  );
+  
+  const filteredPillars = useMemo(
+    () => currentWorkspace ? strategicPillars.filter(p => p.workspaceId === currentWorkspace.id) : [],
+    [strategicPillars, currentWorkspace]
+  );
+  
+  const filteredThemes = useMemo(
+    () => currentWorkspace ? themes.filter(t => t.workspaceId === currentWorkspace.id) : [],
+    [themes, currentWorkspace]
+  );
+  
+  const filteredTasks = useMemo(
+    () => currentWorkspace ? tasks.filter(t => t.workspaceId === currentWorkspace.id) : [],
+    [tasks, currentWorkspace]
+  );
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Signed out",
-      description: "You have been signed out successfully.",
-    });
-  };
+  // Filter tasks by workspace for display
+  const todaysTasks = useMemo(() => 
+    getTodaysTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
+    [getTodaysTasks, currentWorkspace]
+  );
+  const thisWeekTasks = useMemo(() => 
+    getThisWeekTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
+    [getThisWeekTasks, currentWorkspace]
+  );
+  const nextWeekTasks = useMemo(() => 
+    getNextWeekTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
+    [getNextWeekTasks, currentWorkspace]
+  );
+  const monthlyTasks = useMemo(() => 
+    getMonthlyTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
+    [getMonthlyTasks, currentWorkspace]
+  );
+  const completedTasks = useMemo(() => 
+    getCompletedTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
+    [getCompletedTasks, currentWorkspace]
+  );
+  const allActiveTasks = useMemo(() => 
+    getAllActiveTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
+    [getAllActiveTasks, currentWorkspace]
+  );
+  const todaysPrioritizedIds = getTodaysPrioritizedTaskIds();
 
   if (loading) {
     return (
@@ -149,6 +159,14 @@ const Index = () => {
     return null; // Will redirect to auth
   }
 
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Signed out",
+      description: "You have been signed out successfully.",
+    });
+  };
 
   const handleCreateSubtask = (parentTaskId: string) => {
     if (showCreateSubtask !== '') {
@@ -272,33 +290,6 @@ const Index = () => {
     setViewingDomain(null);
     setNavigationStack([]);
   };
-
-  // Filter tasks by workspace for display
-  const todaysTasks = useMemo(() => 
-    getTodaysTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
-    [getTodaysTasks, currentWorkspace]
-  );
-  const thisWeekTasks = useMemo(() => 
-    getThisWeekTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
-    [getThisWeekTasks, currentWorkspace]
-  );
-  const nextWeekTasks = useMemo(() => 
-    getNextWeekTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
-    [getNextWeekTasks, currentWorkspace]
-  );
-  const monthlyTasks = useMemo(() => 
-    getMonthlyTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
-    [getMonthlyTasks, currentWorkspace]
-  );
-  const completedTasks = useMemo(() => 
-    getCompletedTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
-    [getCompletedTasks, currentWorkspace]
-  );
-  const allActiveTasks = useMemo(() => 
-    getAllActiveTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
-    [getAllActiveTasks, currentWorkspace]
-  );
-  const todaysPrioritizedIds = getTodaysPrioritizedTaskIds();
 
   const renderContent = () => {
     switch (currentView) {
