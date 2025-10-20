@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
+type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
 interface NavigationProps {
   currentView: View;
@@ -66,11 +66,18 @@ export function Navigation({
       color: 'text-violet-600',
     },
     {
+      id: 'calendar' as View,
+      label: 'Calendar',
+      icon: CalendarX2,
+      count: allTasksCount,
+      color: 'text-pink-600',
+    },
+    {
       id: 'monthly' as View,
       label: 'Monthly View',
-      icon: CalendarX2,
+      icon: CalendarRange,
       count: monthlyTasksCount,
-      color: 'text-pink-600',
+      color: 'text-rose-600',
     },
     {
       id: 'hierarchy' as View,

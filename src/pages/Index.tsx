@@ -6,6 +6,7 @@ import { Navigation } from "@/components/navigation";
 import { TaskList } from "@/components/task-list";
 import { SortableTaskList } from "@/components/sortable-task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
+import { CalendarView } from "@/components/calendar-view";
 import { ManageView } from "@/components/manage-view";
 import { EditTaskDialog } from "@/components/edit-task-dialog";
 import { TaskDetailDialog } from "@/components/task-detail-dialog";
@@ -25,7 +26,7 @@ import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut } from "lucide-r
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
-type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
+type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('today');
@@ -184,8 +185,14 @@ const Index = () => {
     }
   };
 
-  const handleCreateTask = (themeId?: string) => {
-    setShowCreateTask(themeId || 'new-task');
+  const handleCreateTask = (themeId?: string, date?: Date) => {
+    // Store the date if provided for use in the task creation dialog
+    if (date) {
+      // We'll pass this through showCreateTask state
+      setShowCreateTask(`${themeId || 'new-task'}|${date.toISOString()}`);
+    } else {
+      setShowCreateTask(themeId || 'new-task');
+    }
   };
 
   const handleEditTask = (task: Task) => {
@@ -370,6 +377,19 @@ const Index = () => {
               showDateGroups={true}
               emptyMessage="No tasks prioritized for this month."
             />
+        );
+      
+      case 'calendar':
+        return (
+          <CalendarView
+            tasks={filteredTasks}
+            allTasks={filteredTasks}
+            onTaskEdit={handleTaskView}
+            onTaskToggleStatus={toggleTaskStatus}
+            onTaskReopen={reopenTask}
+            onCreateSubtask={handleCreateSubtask}
+            onCreateTask={handleCreateTask}
+          />
         );
       
       case 'hierarchy':
