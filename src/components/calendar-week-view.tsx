@@ -102,13 +102,6 @@ function DraggableTaskCard({
           </p>
           
           <div className="flex flex-wrap items-center gap-1">
-            <Badge 
-              variant="secondary" 
-              className={cn("text-[10px] h-5 px-1.5", priorityBadgeColors[task.priority])}
-            >
-              {task.priority}
-            </Badge>
-            
             {taskTheme && (
               <Badge variant="outline" className="text-[10px] h-5 px-1.5">
                 {taskTheme}
