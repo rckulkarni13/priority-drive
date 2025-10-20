@@ -149,13 +149,6 @@ const Index = () => {
     return null; // Will redirect to auth
   }
 
-  const todaysTasks = getTodaysTasks();
-  const thisWeekTasks = getThisWeekTasks();
-  const nextWeekTasks = getNextWeekTasks();
-  const monthlyTasks = getMonthlyTasks();
-  const completedTasks = getCompletedTasks();
-  const allActiveTasks = getAllActiveTasks();
-
 
   const handleCreateSubtask = (parentTaskId: string) => {
     if (showCreateSubtask !== '') {
@@ -280,6 +273,33 @@ const Index = () => {
     setNavigationStack([]);
   };
 
+  // Filter tasks by workspace for display
+  const todaysTasks = useMemo(() => 
+    getTodaysTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
+    [getTodaysTasks, currentWorkspace]
+  );
+  const thisWeekTasks = useMemo(() => 
+    getThisWeekTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
+    [getThisWeekTasks, currentWorkspace]
+  );
+  const nextWeekTasks = useMemo(() => 
+    getNextWeekTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
+    [getNextWeekTasks, currentWorkspace]
+  );
+  const monthlyTasks = useMemo(() => 
+    getMonthlyTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
+    [getMonthlyTasks, currentWorkspace]
+  );
+  const completedTasks = useMemo(() => 
+    getCompletedTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
+    [getCompletedTasks, currentWorkspace]
+  );
+  const allActiveTasks = useMemo(() => 
+    getAllActiveTasks().filter(t => !currentWorkspace || t.workspaceId === currentWorkspace.id),
+    [getAllActiveTasks, currentWorkspace]
+  );
+  const todaysPrioritizedIds = getTodaysPrioritizedTaskIds();
+
   const renderContent = () => {
     switch (currentView) {
       case 'today':
@@ -287,10 +307,10 @@ const Index = () => {
             <SortableTaskList
               title="Today's Priorities"
               tasks={todaysTasks}
-              allTasks={tasks}
-              themes={themes}
-              strategicPillars={strategicPillars}
-              domains={domains}
+              allTasks={filteredTasks}
+              themes={filteredThemes}
+              strategicPillars={filteredPillars}
+              domains={filteredDomains}
               onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
@@ -382,10 +402,10 @@ const Index = () => {
             <TaskList
               title="Completed Tasks"
               tasks={completedTasks}
-              allTasks={tasks}
-              themes={themes}
-              strategicPillars={strategicPillars}
-              domains={domains}
+              allTasks={filteredTasks}
+              themes={filteredThemes}
+              strategicPillars={filteredPillars}
+              domains={filteredDomains}
               onTaskEdit={handleTaskView}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
@@ -398,10 +418,10 @@ const Index = () => {
             <TaskList
               title="All Active Tasks"
               tasks={allActiveTasks}
-              allTasks={tasks}
-              themes={themes}
-              strategicPillars={strategicPillars}
-              domains={domains}
+              allTasks={filteredTasks}
+              themes={filteredThemes}
+              strategicPillars={filteredPillars}
+              domains={filteredDomains}
               onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
@@ -485,9 +505,9 @@ const Index = () => {
             monthlyTasksCount={monthlyTasks.length}
             completedTasksCount={completedTasks.length}
             allTasksCount={allActiveTasks.length}
-            domainsCount={domains.length}
-            pillarsCount={strategicPillars.length}
-            themesCount={themes.length}
+            domainsCount={filteredDomains.length}
+            pillarsCount={filteredPillars.length}
+            themesCount={filteredThemes.length}
           />
         </div>
 
