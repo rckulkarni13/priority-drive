@@ -26,7 +26,7 @@ import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut } from "lucide-r
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
-type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
+type View = 'today' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('today');
@@ -325,60 +325,6 @@ const Index = () => {
             />
         );
 
-      case 'this-week':
-        return (
-            <TaskList
-              title="This Week's Priorities"
-              tasks={thisWeekTasks}
-              allTasks={tasks}
-              themes={themes}
-              strategicPillars={strategicPillars}
-              domains={domains}
-              onTaskEdit={handleTaskView}
-              onTaskToggleStatus={toggleTaskStatus}
-              onTaskReopen={reopenTask}
-              onCreateSubtask={handleCreateSubtask}
-              showDateGroups={true}
-              emptyMessage="No tasks prioritized for this week."
-            />
-        );
-
-      case 'next-week':
-        return (
-            <TaskList
-              title="Next Week's Priorities"
-              tasks={nextWeekTasks}
-              allTasks={tasks}
-              themes={themes}
-              strategicPillars={strategicPillars}
-              domains={domains}
-              onTaskEdit={handleTaskView}
-              onTaskToggleStatus={toggleTaskStatus}
-              onTaskReopen={reopenTask}
-              onCreateSubtask={handleCreateSubtask}
-              showDateGroups={true}
-              emptyMessage="No tasks prioritized for next week."
-            />
-        );
-
-      case 'monthly':
-        return (
-            <TaskList
-              title="This Month's Priorities"
-              tasks={monthlyTasks}
-              allTasks={tasks}
-              themes={themes}
-              strategicPillars={strategicPillars}
-              domains={domains}
-              onTaskEdit={handleTaskView}
-              onTaskToggleStatus={toggleTaskStatus}
-              onTaskReopen={reopenTask}
-              onCreateSubtask={handleCreateSubtask}
-              showDateGroups={true}
-              emptyMessage="No tasks prioritized for this month."
-            />
-        );
-      
       case 'calendar':
         return (
           <CalendarWeekView
@@ -530,9 +476,6 @@ const Index = () => {
             currentView={currentView}
             onViewChange={setCurrentView}
             todayTasksCount={todaysTasks.length}
-            thisWeekTasksCount={thisWeekTasks.length}
-            nextWeekTasksCount={nextWeekTasks.length}
-            monthlyTasksCount={monthlyTasks.length}
             completedTasksCount={completedTasks.length}
             allTasksCount={allActiveTasks.length}
             domainsCount={filteredDomains.length}

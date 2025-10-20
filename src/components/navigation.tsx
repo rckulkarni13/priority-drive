@@ -23,15 +23,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type View = 'today' | 'this-week' | 'next-week' | 'monthly' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
+type View = 'today' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
 interface NavigationProps {
   currentView: View;
   onViewChange: (view: View) => void;
   todayTasksCount: number;
-  thisWeekTasksCount: number;
-  nextWeekTasksCount: number;
-  monthlyTasksCount: number;
   completedTasksCount: number;
   allTasksCount: number;
   domainsCount: number;
@@ -43,9 +40,6 @@ export function Navigation({
   currentView, 
   onViewChange, 
   todayTasksCount,
-  thisWeekTasksCount,
-  nextWeekTasksCount,
-  monthlyTasksCount,
   completedTasksCount,
   allTasksCount,
   domainsCount,
@@ -62,32 +56,11 @@ export function Navigation({
       color: 'text-blue-600',
     },
     {
-      id: 'this-week' as View,
-      label: 'This Week',
-      icon: CalendarRange,
-      count: thisWeekTasksCount,
-      color: 'text-indigo-600',
-    },
-    {
-      id: 'next-week' as View,
-      label: 'Next Week',
-      icon: Calendar,
-      count: nextWeekTasksCount,
-      color: 'text-violet-600',
-    },
-    {
       id: 'calendar' as View,
       label: 'Calendar',
       icon: CalendarX2,
       count: allTasksCount,
       color: 'text-pink-600',
-    },
-    {
-      id: 'monthly' as View,
-      label: 'Monthly',
-      icon: CalendarRange,
-      count: monthlyTasksCount,
-      color: 'text-rose-600',
     },
   ];
 
