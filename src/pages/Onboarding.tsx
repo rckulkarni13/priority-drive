@@ -40,14 +40,14 @@ export default function Onboarding() {
   const [isCreating, setIsCreating] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { workspaces } = useWorkspaces();
+  const { workspaces, isLoading: workspacesLoading } = useWorkspaces();
 
   // Redirect to dashboard if user already has workspaces
   useEffect(() => {
-    if (workspaces.length > 0) {
+    if (!workspacesLoading && workspaces.length > 0) {
       navigate('/');
     }
-  }, [workspaces, navigate]);
+  }, [workspacesLoading, workspaces, navigate]);
 
   const toggleWorkspace = (workspaceId: string) => {
     setSelectedWorkspaces(prev => 

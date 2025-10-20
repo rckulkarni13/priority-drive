@@ -73,7 +73,7 @@ const Index = () => {
     getAllActiveTasks,
   } = useTasks();
 
-  const { workspaces, currentWorkspace, switchWorkspace } = useWorkspaces();
+  const { workspaces, currentWorkspace, switchWorkspace, isLoading: workspacesLoading } = useWorkspaces();
 
 
   useEffect(() => {
@@ -99,10 +99,12 @@ const Index = () => {
 
   // Separate effect to check onboarding after workspaces are loaded
   useEffect(() => {
-    if (user && !loading && workspaces.length === 0) {
-      navigate("/onboarding");
+    if (user && !loading && !workspacesLoading) {
+      if (workspaces.length === 0) {
+        navigate("/onboarding");
+      }
     }
-  }, [user, workspaces.length, loading, navigate]);
+  }, [user, loading, workspacesLoading, workspaces.length, navigate]);
 
 
   // Filter data by current workspace
