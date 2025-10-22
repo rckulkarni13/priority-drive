@@ -425,54 +425,68 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         {/* Header */}
-        <div className="flex flex-col gap-6 mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-                <CheckSquare2 className="w-8 h-8 text-primary" />
-                Task Manager
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                Organize your work with strategic precision
-              </p>
+        <div className="flex flex-col gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center justify-between sm:justify-start">
+              <div>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2 sm:gap-3">
+                  <CheckSquare2 className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+                  Task Manager
+                </h1>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1 hidden sm:block">
+                  Organize your work with strategic precision
+                </p>
+              </div>
+              
+              <Button
+                onClick={handleSignOut}
+                variant="ghost"
+                size="sm"
+                className="gap-1 sm:hidden"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-muted-foreground">Workspace:</span>
+                <span className="text-xs sm:text-sm font-medium text-muted-foreground whitespace-nowrap">Workspace:</span>
                 <WorkspaceSwitcher
                   workspaces={workspaces}
                   currentWorkspace={currentWorkspace}
                   onWorkspaceChange={switchWorkspace}
                 />
               </div>
-              {currentWorkspace && (
-                <QuickCreateMenu
-                  themes={filteredThemes}
-                  tasks={filteredTasks}
-                  strategicPillars={filteredPillars}
-                  domains={filteredDomains}
-                  onTaskCreate={createTask}
-                  onThemeCreate={createTheme}
-                  onPillarCreate={createStrategicPillar}
-                  onDomainCreate={createDomain}
-                  workspaceId={currentWorkspace.id}
-                  workspaceType={currentWorkspace.type}
-                />
-              )}
+              
+              <div className="flex items-center gap-2">
+                {currentWorkspace && (
+                  <QuickCreateMenu
+                    themes={filteredThemes}
+                    tasks={filteredTasks}
+                    strategicPillars={filteredPillars}
+                    domains={filteredDomains}
+                    onTaskCreate={createTask}
+                    onThemeCreate={createTheme}
+                    onPillarCreate={createStrategicPillar}
+                    onDomainCreate={createDomain}
+                    workspaceId={currentWorkspace.id}
+                    workspaceType={currentWorkspace.type}
+                  />
+                )}
+                
+                <Button
+                  onClick={handleSignOut}
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1 hidden sm:flex"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </Button>
+              </div>
             </div>
-
-            <Button
-              onClick={handleSignOut}
-              variant="ghost"
-              size="sm"
-              className="gap-1"
-            >
-              <LogOut className="w-4 h-4" />
-              Sign Out
-            </Button>
           </div>
 
           <Navigation

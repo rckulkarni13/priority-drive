@@ -99,7 +99,7 @@ export function Navigation({
   const isMoreViewActive = moreViews.some(view => view.id === currentView);
 
   return (
-    <nav className="flex flex-wrap gap-2 p-1 bg-muted/50 rounded-lg">
+    <nav className="flex flex-wrap gap-1.5 sm:gap-2 p-1 bg-muted/50 rounded-lg">
       {/* Time-based views */}
       {timeBasedViews.map((item) => {
         const Icon = item.icon;
@@ -112,17 +112,17 @@ export function Navigation({
             size="sm"
             onClick={() => onViewChange(item.id)}
             className={cn(
-              "flex items-center gap-2 transition-all duration-200",
+              "flex items-center gap-1.5 sm:gap-2 transition-all duration-200 text-xs sm:text-sm px-2 sm:px-3",
               isActive && "shadow-md",
               !isActive && "hover:bg-background/80"
             )}
           >
-            <Icon className={cn("w-4 h-4", !isActive && item.color)} />
+            <Icon className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", !isActive && item.color)} />
             <span className="font-medium">{item.label}</span>
             {item.count > 0 && (
               <Badge 
                 variant={isActive ? "secondary" : "outline"} 
-                className="text-xs ml-1"
+                className="text-[10px] sm:text-xs ml-0.5 sm:ml-1 h-4 sm:h-5 px-1 sm:px-1.5"
               >
                 {item.count}
               </Badge>
@@ -138,15 +138,15 @@ export function Navigation({
             variant={isMoreViewActive ? "default" : "ghost"}
             size="sm"
             className={cn(
-              "flex items-center gap-2 transition-all duration-200",
+              "flex items-center gap-1.5 sm:gap-2 transition-all duration-200 text-xs sm:text-sm px-2 sm:px-3",
               isMoreViewActive && "shadow-md"
             )}
           >
-            <MoreHorizontal className="w-4 h-4" />
+            <MoreHorizontal className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="font-medium">More</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56 bg-background">
+        <DropdownMenuContent align="end" className="w-48 sm:w-56 bg-background z-50">
           <DropdownMenuLabel>Other Views</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {moreViews.map((item) => {
@@ -158,14 +158,14 @@ export function Navigation({
                 key={item.id}
                 onClick={() => onViewChange(item.id)}
                 className={cn(
-                  "flex items-center gap-2 cursor-pointer",
+                  "flex items-center gap-2 cursor-pointer text-sm",
                   isActive && "bg-accent"
                 )}
               >
                 <Icon className={cn("w-4 h-4", item.color)} />
                 <span className="flex-1">{item.label}</span>
                 {item.count > 0 && (
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-[10px] sm:text-xs h-4 sm:h-5 px-1 sm:px-1.5">
                     {item.count}
                   </Badge>
                 )}
