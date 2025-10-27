@@ -163,14 +163,32 @@ export function PriorityTaskRow({
                 ))}
                 
                 {relatedPillars.length > 0 && relatedPillars.map(pillar => (
-                  <Badge key={pillar.id} variant="secondary" className="text-xs">
+                  <Badge 
+                    key={pillar.id} 
+                    variant="outline" 
+                    className="text-xs border-2"
+                    style={{ 
+                      borderColor: pillar.color,
+                      backgroundColor: `${pillar.color}15`,
+                      color: pillar.color 
+                    }}
+                  >
                     <Target className="w-3 h-3 mr-1" />
                     {pillar.title}
                   </Badge>
                 ))}
                 
                 {taskThemes.length > 0 && taskThemes.map(theme => (
-                  <Badge key={theme.id} variant="default" className="text-xs">
+                  <Badge 
+                    key={theme.id} 
+                    variant="outline" 
+                    className="text-xs border-2"
+                    style={{ 
+                      borderColor: theme.color,
+                      backgroundColor: `${theme.color}15`,
+                      color: theme.color 
+                    }}
+                  >
                     <Layers className="w-3 h-3 mr-1" />
                     {theme.title}
                   </Badge>

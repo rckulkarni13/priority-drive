@@ -75,7 +75,8 @@ export function useTasks() {
       createdDate: new Date(pillar.created_date),
       targetTimeFrame: pillar.target_timeframe,
       domainIds: pillar.pillar_domains?.map((pd: any) => pd.domain_id) || [],
-      workspaceId: pillar.workspace_id
+      workspaceId: pillar.workspace_id,
+      color: pillar.color || '#8b5cf6'
     }));
 
     setStrategicPillars(formattedPillars);
@@ -99,7 +100,8 @@ export function useTasks() {
       createdDate: new Date(theme.created_date),
       associatedProject: theme.associated_project || undefined,
       strategicPillarIds: theme.theme_pillars?.map((tp: any) => tp.pillar_id) || [],
-      workspaceId: theme.workspace_id
+      workspaceId: theme.workspace_id,
+      color: theme.color || '#06b6d4'
     }));
 
     setThemes(formattedThemes);
@@ -379,7 +381,8 @@ export function useTasks() {
           description: pillarData.description,
           target_timeframe: pillarData.targetTimeFrame,
           user_id: user.user.id,
-          workspace_id: pillarData.workspaceId
+          workspace_id: pillarData.workspaceId,
+          color: pillarData.color
         })
         .select()
         .single();
@@ -428,7 +431,8 @@ export function useTasks() {
           description: themeData.description,
           associated_project: themeData.associatedProject,
           user_id: user.user.id,
-          workspace_id: themeData.workspaceId
+          workspace_id: themeData.workspaceId,
+          color: themeData.color
         })
         .select()
         .single();

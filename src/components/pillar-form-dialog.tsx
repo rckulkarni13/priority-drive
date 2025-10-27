@@ -35,6 +35,7 @@ const pillarSchema = z.object({
   description: z.string().optional(),
   targetTimeFrame: z.string().min(1, "Target timeframe is required"),
   domainIds: z.array(z.string()).min(1, "Please select at least one domain"),
+  color: z.string().min(1, "Color is required"),
 });
 
 type PillarFormData = z.infer<typeof pillarSchema>;
@@ -56,6 +57,7 @@ export function PillarFormDialog({ children, domains, onPillarCreate, workspaceI
       description: "",
       targetTimeFrame: "",
       domainIds: [],
+      color: "#8b5cf6",
     },
   });
 
@@ -65,7 +67,8 @@ export function PillarFormDialog({ children, domains, onPillarCreate, workspaceI
       description: data.description || "",
       targetTimeFrame: data.targetTimeFrame,
       domainIds: data.domainIds,
-      workspaceId
+      workspaceId,
+      color: data.color
     });
     form.reset();
     setOpen(false);
@@ -126,6 +129,24 @@ export function PillarFormDialog({ children, domains, onPillarCreate, workspaceI
                   <FormLabel>Target Timeframe</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., Q1 2024, H1 2024..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Color</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="color" 
+                      {...field}
+                      className="h-10 w-full cursor-pointer"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

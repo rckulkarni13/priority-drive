@@ -139,14 +139,20 @@ export function HierarchyView({
                 onOpenChange={() => toggleExpanded(domain.id, 'domain')}
               >
                 <CollapsibleTrigger asChild>
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg hover:from-primary/15 hover:to-primary/10 transition-all cursor-pointer group">
+                  <div 
+                    className="flex items-center justify-between p-4 rounded-lg transition-all cursor-pointer group border-l-4"
+                    style={{
+                      backgroundColor: `${domain.color}10`,
+                      borderLeftColor: domain.color
+                    }}
+                  >
                     <div className="flex items-center gap-3">
                       {isDomainExpanded ? (
-                        <ChevronDown className="w-5 h-5 text-primary" />
+                        <ChevronDown className="w-5 h-5" style={{ color: domain.color }} />
                       ) : (
-                        <ChevronRight className="w-5 h-5 text-primary" />
+                        <ChevronRight className="w-5 h-5" style={{ color: domain.color }} />
                       )}
-                      <Building2 className="w-5 h-5 text-primary" />
+                      <Building2 className="w-5 h-5" style={{ color: domain.color }} />
                       <div>
                         <h3 className="font-semibold text-lg">{domain.title}</h3>
                         {domain.description && (
@@ -199,14 +205,20 @@ export function HierarchyView({
                             onOpenChange={() => toggleExpanded(pillar.id, 'pillar')}
                           >
                             <CollapsibleTrigger asChild>
-                              <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-blue-25 rounded-lg hover:from-blue-100 hover:to-blue-50 transition-all cursor-pointer group border-l-4 border-blue-200">
+                              <div 
+                                className="flex items-center justify-between p-3 rounded-lg transition-all cursor-pointer group border-l-4"
+                                style={{
+                                  backgroundColor: `${pillar.color}10`,
+                                  borderLeftColor: pillar.color
+                                }}
+                              >
                                 <div className="flex items-center gap-3">
                                   {isPillarExpanded ? (
-                                    <ChevronDown className="w-4 h-4 text-blue-600" />
+                                    <ChevronDown className="w-4 h-4" style={{ color: pillar.color }} />
                                   ) : (
-                                    <ChevronRight className="w-4 h-4 text-blue-600" />
+                                    <ChevronRight className="w-4 h-4" style={{ color: pillar.color }} />
                                   )}
-                                  <Target className="w-4 h-4 text-blue-600" />
+                                  <Target className="w-4 h-4" style={{ color: pillar.color }} />
                                   <div>
                                     <h4 className="font-medium">{pillar.title}</h4>
                                     {pillar.description && (
@@ -259,14 +271,20 @@ export function HierarchyView({
                                         onOpenChange={() => toggleExpanded(theme.id, 'theme')}
                                       >
                                         <CollapsibleTrigger asChild>
-                                          <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-green-25 rounded-lg hover:from-green-100 hover:to-green-50 transition-all cursor-pointer group border-l-4 border-green-200">
+                                          <div 
+                                            className="flex items-center justify-between p-3 rounded-lg transition-all cursor-pointer group border-l-4"
+                                            style={{
+                                              backgroundColor: `${theme.color}10`,
+                                              borderLeftColor: theme.color
+                                            }}
+                                          >
                                             <div className="flex items-center gap-3">
                                               {isThemeExpanded ? (
-                                                <ChevronDown className="w-4 h-4 text-green-600" />
+                                                <ChevronDown className="w-4 h-4" style={{ color: theme.color }} />
                                               ) : (
-                                                <ChevronRight className="w-4 h-4 text-green-600" />
+                                                <ChevronRight className="w-4 h-4" style={{ color: theme.color }} />
                                               )}
-                                              <Lightbulb className="w-4 h-4 text-green-600" />
+                                              <Lightbulb className="w-4 h-4" style={{ color: theme.color }} />
                                               <div>
                                                 <h5 className="font-medium">{theme.title}</h5>
                                                 {theme.description && (

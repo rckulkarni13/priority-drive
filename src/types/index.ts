@@ -29,6 +29,7 @@ export interface StrategicPillar {
   targetTimeFrame: string;
   domainIds: string[];
   workspaceId: string;
+  color: string;
 }
 
 export interface Theme {
@@ -39,6 +40,7 @@ export interface Theme {
   associatedProject?: string;
   strategicPillarIds: string[];
   workspaceId: string;
+  color: string;
 }
 
 export interface Task {

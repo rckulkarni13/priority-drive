@@ -122,6 +122,7 @@ export type Database = {
       }
       strategic_pillars: {
         Row: {
+          color: string
           created_date: string
           description: string | null
           id: string
@@ -131,6 +132,7 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          color?: string
           created_date?: string
           description?: string | null
           id?: string
@@ -140,6 +142,7 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          color?: string
           created_date?: string
           description?: string | null
           id?: string
@@ -293,6 +296,7 @@ export type Database = {
       themes: {
         Row: {
           associated_project: string | null
+          color: string
           created_date: string
           description: string | null
           id: string
@@ -302,6 +306,7 @@ export type Database = {
         }
         Insert: {
           associated_project?: string | null
+          color?: string
           created_date?: string
           description?: string | null
           id?: string
@@ -311,6 +316,7 @@ export type Database = {
         }
         Update: {
           associated_project?: string | null
+          color?: string
           created_date?: string
           description?: string | null
           id?: string

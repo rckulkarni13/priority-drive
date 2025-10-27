@@ -48,7 +48,14 @@ export function ManageView({
           ) : (
             <div className="space-y-3">
               {domains.map((domain) => (
-                <div key={domain.id} className="flex items-center justify-between p-3 border rounded-lg">
+                <div 
+                  key={domain.id} 
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                  style={{
+                    borderLeftWidth: '4px',
+                    borderLeftColor: domain.color
+                  }}
+                >
                   <div>
                     <h4 className="font-medium">{domain.title}</h4>
                     <p className="text-sm text-muted-foreground">{domain.description}</p>
@@ -83,7 +90,14 @@ export function ManageView({
           ) : (
             <div className="space-y-3">
               {strategicPillars.map((pillar) => (
-                <div key={pillar.id} className="flex items-center justify-between p-3 border rounded-lg">
+                <div 
+                  key={pillar.id} 
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                  style={{
+                    borderLeftWidth: '4px',
+                    borderLeftColor: pillar.color
+                  }}
+                >
                   <div>
                     <h4 className="font-medium">{pillar.title}</h4>
                     <p className="text-sm text-muted-foreground">{pillar.description}</p>
@@ -126,7 +140,14 @@ export function ManageView({
           ) : (
             <div className="space-y-3">
               {themes.map((theme) => (
-                <div key={theme.id} className="flex items-center justify-between p-3 border rounded-lg">
+                <div 
+                  key={theme.id} 
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                  style={{
+                    borderLeftWidth: '4px',
+                    borderLeftColor: theme.color
+                  }}
+                >
                   <div>
                     <h4 className="font-medium">{theme.title}</h4>
                     <p className="text-sm text-muted-foreground">{theme.description}</p>

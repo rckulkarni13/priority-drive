@@ -34,6 +34,7 @@ const themeSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   strategicPillarIds: z.array(z.string()).min(1, "Please select at least one strategic pillar"),
+  color: z.string().min(1, "Color is required"),
 });
 
 type ThemeFormData = z.infer<typeof themeSchema>;
@@ -56,6 +57,7 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
       title: "",
       description: "",
       strategicPillarIds: defaultPillarId ? [defaultPillarId] : [],
+      color: "#06b6d4",
     },
   });
 
@@ -64,7 +66,8 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
       title: data.title,
       description: data.description || "",
       strategicPillarIds: data.strategicPillarIds,
-      workspaceId
+      workspaceId,
+      color: data.color
     });
     form.reset();
     setOpen(false);
@@ -111,6 +114,24 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
                       placeholder="Describe the theme..."
                       className="min-h-[80px]"
                       {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Color</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="color" 
+                      {...field}
+                      className="h-10 w-full cursor-pointer"
                     />
                   </FormControl>
                   <FormMessage />
