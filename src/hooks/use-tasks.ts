@@ -706,12 +706,14 @@ export function useTasks() {
 
   const updateDomain = useCallback(async (domainId: string, updates: Partial<Domain>) => {
     try {
+      const updateData: any = {};
+      if (updates.title !== undefined) updateData.title = updates.title;
+      if (updates.description !== undefined) updateData.description = updates.description;
+      if (updates.color !== undefined) updateData.color = updates.color;
+
       const { error } = await supabase
         .from('domains')
-        .update({
-          title: updates.title,
-          description: updates.description,
-        })
+        .update(updateData)
         .eq('id', domainId);
 
       if (error) throw error;
@@ -734,13 +736,15 @@ export function useTasks() {
 
   const updateStrategicPillar = useCallback(async (pillarId: string, updates: Partial<StrategicPillar>) => {
     try {
+      const updateData: any = {};
+      if (updates.title !== undefined) updateData.title = updates.title;
+      if (updates.description !== undefined) updateData.description = updates.description;
+      if (updates.targetTimeFrame !== undefined) updateData.target_timeframe = updates.targetTimeFrame;
+      if (updates.color !== undefined) updateData.color = updates.color;
+
       const { error } = await supabase
         .from('strategic_pillars')
-        .update({
-          title: updates.title,
-          description: updates.description,
-          target_timeframe: updates.targetTimeFrame,
-        })
+        .update(updateData)
         .eq('id', pillarId);
 
       if (error) throw error;
@@ -786,13 +790,15 @@ export function useTasks() {
 
   const updateTheme = useCallback(async (themeId: string, updates: Partial<Theme>) => {
     try {
+      const updateData: any = {};
+      if (updates.title !== undefined) updateData.title = updates.title;
+      if (updates.description !== undefined) updateData.description = updates.description;
+      if (updates.associatedProject !== undefined) updateData.associated_project = updates.associatedProject;
+      if (updates.color !== undefined) updateData.color = updates.color;
+
       const { error } = await supabase
         .from('themes')
-        .update({
-          title: updates.title,
-          description: updates.description,
-          associated_project: updates.associatedProject,
-        })
+        .update(updateData)
         .eq('id', themeId);
 
       if (error) throw error;
