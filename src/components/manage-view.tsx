@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { Domain, StrategicPillar, Theme, WorkspaceType } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Package, Target, Lightbulb, Trash2, Settings } from "lucide-react";
+import { Package, Target, Lightbulb, Trash2, Settings, Pencil } from "lucide-react";
 import { getWorkspaceTerminology } from "@/lib/workspace-terminology";
+import { EditDomainDialog } from "./edit-domain-dialog";
+import { EditPillarDialog } from "./edit-pillar-dialog";
+import { EditThemeDialog } from "./edit-theme-dialog";
 
 interface ManageViewProps {
   domains: Domain[];
@@ -13,6 +17,9 @@ interface ManageViewProps {
   onDomainDelete?: (domainId: string) => void;
   onPillarDelete?: (pillarId: string) => void;
   onThemeDelete?: (themeId: string) => void;
+  onDomainUpdate?: (domainId: string, updates: Partial<Domain>) => void;
+  onPillarUpdate?: (pillarId: string, updates: Partial<StrategicPillar>) => void;
+  onThemeUpdate?: (themeId: string, updates: Partial<Theme>) => void;
 }
 
 export function ManageView({ 
@@ -22,9 +29,16 @@ export function ManageView({
   workspaceType,
   onDomainDelete, 
   onPillarDelete, 
-  onThemeDelete 
+  onThemeDelete,
+  onDomainUpdate,
+  onPillarUpdate,
+  onThemeUpdate
 }: ManageViewProps) {
   const terminology = getWorkspaceTerminology(workspaceType);
+  
+  const [editingDomain, setEditingDomain] = useState<Domain | null>(null);
+  const [editingPillar, setEditingPillar] = useState<StrategicPillar | null>(null);
+  const [editingTheme, setEditingTheme] = useState<Theme | null>(null);
   
   return (
     <div className="space-y-6">
@@ -60,14 +74,24 @@ export function ManageView({
                     <h4 className="font-medium">{domain.title}</h4>
                     <p className="text-sm text-muted-foreground">{domain.description}</p>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => onDomainDelete?.(domain.id)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setEditingDomain(domain)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => onDomainDelete?.(domain.id)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -110,14 +134,24 @@ export function ManageView({
                       </Badge>
                     </div>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => onPillarDelete?.(pillar.id)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setEditingPillar(pillar)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => onPillarDelete?.(pillar.id)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -155,20 +189,63 @@ export function ManageView({
                       {theme.strategicPillarIds.length} {terminology.pillar.plural.toLowerCase()}
                     </Badge>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => onThemeDelete?.(theme.id)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setEditingTheme(theme)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => onThemeDelete?.(theme.id)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Dialogs */}
+      <EditDomainDialog
+        domain={editingDomain}
+        open={!!editingDomain}
+        onOpenChange={(open) => !open && setEditingDomain(null)}
+        onDomainUpdate={(id, updates) => {
+          onDomainUpdate?.(id, updates);
+          setEditingDomain(null);
+        }}
+      />
+
+      <EditPillarDialog
+        pillar={editingPillar}
+        domains={domains}
+        open={!!editingPillar}
+        onOpenChange={(open) => !open && setEditingPillar(null)}
+        onPillarUpdate={(id, updates) => {
+          onPillarUpdate?.(id, updates);
+          setEditingPillar(null);
+        }}
+      />
+
+      <EditThemeDialog
+        theme={editingTheme}
+        strategicPillars={strategicPillars}
+        open={!!editingTheme}
+        onOpenChange={(open) => !open && setEditingTheme(null)}
+        onThemeUpdate={(id, updates) => {
+          onThemeUpdate?.(id, updates);
+          setEditingTheme(null);
+        }}
+      />
     </div>
   );
 }

@@ -415,6 +415,9 @@ const Index = () => {
             onDomainDelete={deleteDomain}
             onPillarDelete={deleteStrategicPillar}
             onThemeDelete={deleteTheme}
+            onDomainUpdate={updateDomain}
+            onPillarUpdate={updateStrategicPillar}
+            onThemeUpdate={updateTheme}
           />
         );
       
