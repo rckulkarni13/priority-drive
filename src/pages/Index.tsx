@@ -350,10 +350,10 @@ const Index = () => {
       case 'hierarchy':
         return (
             <HierarchyView
-              domains={domains}
-              strategicPillars={strategicPillars}
-              themes={themes}
-              tasks={tasks}
+              domains={filteredDomains}
+              strategicPillars={filteredPillars}
+              themes={filteredThemes}
+              tasks={filteredTasks}
               workspaceType={currentWorkspace?.type || 'work'}
               onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
