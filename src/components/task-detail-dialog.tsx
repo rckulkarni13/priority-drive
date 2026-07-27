@@ -692,6 +692,7 @@ export function TaskDetailDialog({
                     themes={themes}
                     tasks={tasks}
                     parentTaskId={task.id}
+                    defaultThemeId={task.themeIds?.[0]}
                     onTaskCreate={onTaskCreate}
                     workspaceId={workspaceId}
                   >
