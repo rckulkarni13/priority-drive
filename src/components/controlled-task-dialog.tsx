@@ -27,14 +27,16 @@ export function ControlledTaskDialog({
     if (isOpen && triggerRef.current) {
       triggerRef.current.click();
     }
-  }, [isOpen]);
+  }, [isOpen, themeId]);
 
   if (!isOpen) return null;
 
   return (
     <TaskFormDialog
+      key={themeId || 'new-task'}
       themes={themes}
       tasks={tasks}
+      defaultThemeId={themeId}
       onTaskCreate={(taskData) => {
         onTaskCreate(taskData);
         onClose();

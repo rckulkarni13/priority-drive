@@ -43,11 +43,12 @@ type PillarFormData = z.infer<typeof pillarSchema>;
 interface PillarFormDialogProps {
   children: React.ReactNode;
   domains: Domain[];
+  defaultDomainId?: string;
   onPillarCreate: (pillarData: Omit<StrategicPillar, "id" | "createdDate">) => void;
   workspaceId: string;
 }
 
-export function PillarFormDialog({ children, domains, onPillarCreate, workspaceId }: PillarFormDialogProps) {
+export function PillarFormDialog({ children, domains, defaultDomainId, onPillarCreate, workspaceId }: PillarFormDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<PillarFormData>({
@@ -56,7 +57,7 @@ export function PillarFormDialog({ children, domains, onPillarCreate, workspaceI
       title: "",
       description: "",
       targetTimeFrame: "",
-      domainIds: [],
+      domainIds: defaultDomainId ? [defaultDomainId] : [],
       color: "#8b5cf6",
     },
   });

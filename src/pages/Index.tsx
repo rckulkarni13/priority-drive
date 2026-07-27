@@ -586,6 +586,10 @@ const Index = () => {
       {currentWorkspace && (
         <ControlledTaskDialog
           isOpen={!!showCreateTask && showCreateTask !== ''}
+          themeId={(() => {
+            const raw = showCreateTask.split('|')[0];
+            return raw && raw !== 'new-task' ? raw : undefined;
+          })()}
           themes={filteredThemes}
           tasks={filteredTasks}
           onTaskCreate={createTask}
@@ -598,6 +602,7 @@ const Index = () => {
       {currentWorkspace && (
         <ControlledThemeDialog
           isOpen={!!showCreateTheme && showCreateTheme !== ''}
+          pillarId={showCreateTheme && showCreateTheme !== 'new-theme' ? showCreateTheme : undefined}
           strategicPillars={filteredPillars}
           onThemeCreate={createTheme}
           onClose={() => setShowCreateTheme('')}
@@ -609,6 +614,7 @@ const Index = () => {
       {currentWorkspace && (
         <ControlledPillarDialog
           isOpen={!!showCreatePillar && showCreatePillar !== ''}
+          domainId={showCreatePillar && showCreatePillar !== 'new-pillar' ? showCreatePillar : undefined}
           domains={filteredDomains}
           onPillarCreate={createStrategicPillar}
           onClose={() => setShowCreatePillar('')}

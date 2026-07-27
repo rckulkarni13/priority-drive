@@ -4,8 +4,8 @@ import { Domain, StrategicPillar } from "@/types";
 
 interface ControlledPillarDialogProps {
   isOpen: boolean;
-  domainId?: string;
   domains: Domain[];
+  domainId?: string;
   onPillarCreate: (pillarData: Omit<StrategicPillar, "id" | "createdDate">) => void;
   onClose: () => void;
   workspaceId: string;
@@ -13,8 +13,8 @@ interface ControlledPillarDialogProps {
 
 export function ControlledPillarDialog({
   isOpen,
-  domainId,
   domains,
+  domainId,
   onPillarCreate,
   onClose,
   workspaceId
@@ -25,13 +25,15 @@ export function ControlledPillarDialog({
     if (isOpen && triggerRef.current) {
       triggerRef.current.click();
     }
-  }, [isOpen]);
+  }, [isOpen, domainId]);
 
   if (!isOpen) return null;
 
   return (
     <PillarFormDialog
+      key={domainId || 'new-pillar'}
       domains={domains}
+      defaultDomainId={domainId}
       onPillarCreate={(pillarData) => {
         onPillarCreate(pillarData);
         onClose();
