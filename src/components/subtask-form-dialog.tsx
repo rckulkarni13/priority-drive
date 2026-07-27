@@ -6,6 +6,7 @@ interface SubtaskFormDialogProps {
   themes: Theme[];
   tasks: Task[];
   parentTaskId: string;
+  defaultThemeId?: string;
   onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order'>) => void;
   workspaceId: string;
 }
@@ -15,6 +16,7 @@ export function SubtaskFormDialog({
   themes, 
   tasks, 
   parentTaskId, 
+  defaultThemeId,
   onTaskCreate,
   workspaceId
 }: SubtaskFormDialogProps) {
@@ -24,6 +26,7 @@ export function SubtaskFormDialog({
       tasks={tasks}
       onTaskCreate={onTaskCreate}
       defaultParentTaskId={parentTaskId}
+      defaultThemeId={defaultThemeId}
       defaultType="subtask"
       workspaceId={workspaceId}
     >
