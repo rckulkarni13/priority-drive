@@ -31,11 +31,15 @@ export function ControlledSubtaskDialog({
 
   if (!isOpen) return null;
 
+  const parentTask = tasks.find(t => t.id === parentTaskId);
+  const parentThemeId = parentTask?.themeIds?.[0];
+
   return (
     <SubtaskFormDialog
       themes={themes}
       tasks={tasks}
       parentTaskId={parentTaskId}
+      defaultThemeId={parentThemeId}
       onTaskCreate={(taskData) => {
         onTaskCreate(taskData);
         onClose();
