@@ -519,6 +519,7 @@ const Index = () => {
           tasks={filteredTasks}
           onTaskUpdate={updateTask}
           onTaskCreate={createTask}
+          onApplyChecklist={applyChecklistToTask}
           onClose={handleCloseAllDialogs}
           onBack={navigationStack.length > 0 ? handleBack : undefined}
           onTaskView={handleTaskView}
