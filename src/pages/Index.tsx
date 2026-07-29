@@ -23,7 +23,7 @@ import { WorkspaceSwitcher } from "@/components/workspace-switcher";
 import { Button } from "@/components/ui/button";
 import { QuickCreateMenu } from "@/components/quick-create-menu";
 import { ChecklistsManagerDialog } from "@/components/checklists-manager-dialog";
-import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut } from "lucide-react";
+import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut, ListChecks } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
@@ -33,6 +33,7 @@ const Index = () => {
   const [currentView, setCurrentView] = useState<View>('today');
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
+  const [checklistsOpen, setChecklistsOpen] = useState(false);
   const [viewingTheme, setViewingTheme] = useState<Theme | null>(null);
   const [viewingPillar, setViewingPillar] = useState<StrategicPillar | null>(null);
   const [viewingDomain, setViewingDomain] = useState<Domain | null>(null);
