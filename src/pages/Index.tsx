@@ -527,6 +527,15 @@ const Index = () => {
 
       {/* Task Detail Dialog */}
       {currentWorkspace && (
+        <ChecklistsManagerDialog
+          open={checklistsOpen}
+          onOpenChange={setChecklistsOpen}
+          workspaceId={currentWorkspace.id}
+          workspaceName={currentWorkspace.name}
+        />
+      )}
+
+      {currentWorkspace && (
         <TaskDetailDialog
           task={viewingTask}
           themes={filteredThemes}
