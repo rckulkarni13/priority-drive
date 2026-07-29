@@ -70,6 +70,21 @@ export interface Comment {
   updatedDate: Date;
 }
 
+export interface ChecklistItem {
+  title: string;
+  order: number;
+}
+
+export interface Checklist {
+  id: string;
+  title: string;
+  description: string;
+  workspaceId: string;
+  versionNumber: number;
+  items: ChecklistItem[];
+  createdDate: Date;
+}
+
 export interface TaskGroup {
   date: string;
   tasks: Task[];
