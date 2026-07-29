@@ -702,19 +702,53 @@ export function TaskDetailDialog({
                     <List className="w-4 h-4" />
                     Subtasks ({subtasks.length})
                   </h3>
-                  <SubtaskFormDialog
-                    themes={themes}
-                    tasks={tasks}
-                    parentTaskId={task.id}
-                    defaultThemeId={task.themeIds?.[0]}
-                    onTaskCreate={onTaskCreate}
-                    workspaceId={workspaceId}
-                  >
-                    <Button size="sm" variant="outline">
-                      <Plus className="w-4 h-4 mr-1" />
-                      Add Subtask
-                    </Button>
-                  </SubtaskFormDialog>
+                  <div className="flex items-center gap-2">
+                    {onApplyChecklist && task.type !== 'subtask' && checklists.length > 0 && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size="sm" variant="outline">
+                            <ListChecks className="w-4 h-4 mr-1" />
+                            Apply Checklist
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-64 bg-popover z-50">
+                          <DropdownMenuLabel>Add steps as subtasks</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          {checklists.map((checklist) => (
+                            <DropdownMenuItem
+                              key={checklist.id}
+                              onClick={() =>
+                                onApplyChecklist(
+                                  task,
+                                  checklist.items.map((item) => item.title)
+                                )
+                              }
+                            >
+                              <div className="flex flex-col">
+                                <span>{checklist.title}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  v{checklist.versionNumber} · {checklist.items.length} steps
+                                </span>
+                              </div>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                    <SubtaskFormDialog
+                      themes={themes}
+                      tasks={tasks}
+                      parentTaskId={task.id}
+                      defaultThemeId={task.themeIds?.[0]}
+                      onTaskCreate={onTaskCreate}
+                      workspaceId={workspaceId}
+                    >
+                      <Button size="sm" variant="outline">
+                        <Plus className="w-4 h-4 mr-1" />
+                        Add Subtask
+                      </Button>
+                    </SubtaskFormDialog>
+                  </div>
                 </div>
 
                 {subtasks.length === 0 ? (
