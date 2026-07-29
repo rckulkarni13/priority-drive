@@ -98,6 +98,7 @@ export function TaskDetailDialog({
   tasks, 
   onTaskUpdate,
   onTaskCreate, 
+  onApplyChecklist,
   onClose,
   onBack,
   onTaskView,
@@ -106,6 +107,8 @@ export function TaskDetailDialog({
 }: TaskDetailDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'comments' | 'subtasks'>('overview');
+  // Checklists apply to top-level tasks only — they create subtasks.
+  const { checklists } = useChecklists(task && task.type !== 'subtask' ? workspaceId : undefined);
   
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
