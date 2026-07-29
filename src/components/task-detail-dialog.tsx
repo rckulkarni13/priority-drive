@@ -45,7 +45,8 @@ import {
   MessageSquare,
   Calendar as CalendarDays,
   Plus,
-  List
+  List,
+  ListChecks
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -54,6 +55,15 @@ import { PriorityBadge } from "@/components/ui/priority-badge";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { TaskComments } from "@/components/task-comments";
 import { SubtaskFormDialog } from "@/components/subtask-form-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useChecklists } from "@/hooks/use-checklists";
 
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -74,6 +84,7 @@ interface TaskDetailDialogProps {
   tasks: Task[];
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
   onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order'>) => void;
+  onApplyChecklist?: (parentTask: Task, itemTitles: string[]) => void;
   onClose: () => void;
   onBack?: () => void;
   onTaskView?: (task: Task) => void;
