@@ -22,7 +22,8 @@ import { useWorkspaces } from "@/hooks/use-workspaces";
 import { WorkspaceSwitcher } from "@/components/workspace-switcher";
 import { Button } from "@/components/ui/button";
 import { QuickCreateMenu } from "@/components/quick-create-menu";
-import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut } from "lucide-react";
+import { ChecklistsManagerDialog } from "@/components/checklists-manager-dialog";
+import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut, ListChecks } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
@@ -32,6 +33,7 @@ const Index = () => {
   const [currentView, setCurrentView] = useState<View>('today');
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
+  const [checklistsOpen, setChecklistsOpen] = useState(false);
   const [viewingTheme, setViewingTheme] = useState<Theme | null>(null);
   const [viewingPillar, setViewingPillar] = useState<StrategicPillar | null>(null);
   const [viewingDomain, setViewingDomain] = useState<Domain | null>(null);
@@ -53,6 +55,7 @@ const Index = () => {
     toggleTaskStatus,
     reopenTask,
     createTask,
+    applyChecklistToTask,
     updateTask,
     updateTaskOrder,
     createDomain,
@@ -465,6 +468,18 @@ const Index = () => {
               
               <div className="flex items-center gap-2">
                 {currentWorkspace && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1"
+                    onClick={() => setChecklistsOpen(true)}
+                  >
+                    <ListChecks className="w-4 h-4" />
+                    <span className="hidden sm:inline">Checklists</span>
+                  </Button>
+                )}
+
+                {currentWorkspace && (
                   <QuickCreateMenu
                     themes={filteredThemes}
                     tasks={filteredTasks}
@@ -512,12 +527,22 @@ const Index = () => {
 
       {/* Task Detail Dialog */}
       {currentWorkspace && (
+        <ChecklistsManagerDialog
+          open={checklistsOpen}
+          onOpenChange={setChecklistsOpen}
+          workspaceId={currentWorkspace.id}
+          workspaceName={currentWorkspace.name}
+        />
+      )}
+
+      {currentWorkspace && (
         <TaskDetailDialog
           task={viewingTask}
           themes={filteredThemes}
           tasks={filteredTasks}
           onTaskUpdate={updateTask}
           onTaskCreate={createTask}
+          onApplyChecklist={applyChecklistToTask}
           onClose={handleCloseAllDialogs}
           onBack={navigationStack.length > 0 ? handleBack : undefined}
           onTaskView={handleTaskView}

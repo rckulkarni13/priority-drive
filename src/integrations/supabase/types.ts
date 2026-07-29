@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      checklist_versions: {
+        Row: {
+          checklist_id: string
+          created_date: string
+          id: string
+          items: Json
+          version_number: number
+        }
+        Insert: {
+          checklist_id: string
+          created_date?: string
+          id?: string
+          items?: Json
+          version_number?: number
+        }
+        Update: {
+          checklist_id?: string
+          created_date?: string
+          id?: string
+          items?: Json
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_versions_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "checklists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklists: {
+        Row: {
+          created_date: string
+          current_version_id: string | null
+          description: string | null
+          id: string
+          title: string
+          updated_date: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_date?: string
+          current_version_id?: string | null
+          description?: string | null
+          id?: string
+          title: string
+          updated_date?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_date?: string
+          current_version_id?: string | null
+          description?: string | null
+          id?: string
+          title?: string
+          updated_date?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklists_current_version_fkey"
+            columns: ["current_version_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklists_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           content: string

@@ -34,6 +34,8 @@ import { CalendarIcon, X } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Task, Priority, Theme } from "@/types";
+import { useChecklists } from "@/hooks/use-checklists";
+import { ApplyChecklistSelect, NO_CHECKLIST } from "@/components/apply-checklist-select";
 
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -52,7 +54,11 @@ interface TaskFormDialogProps {
   children: React.ReactNode;
   themes: Theme[];
   tasks: Task[];
-  onTaskCreate: (taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">) => void;
+  onTaskCreate: (
+    taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order"> & {
+      checklistItems?: string[];
+    }
+  ) => void;
   defaultParentTaskId?: string;
   defaultThemeId?: string;
   defaultType?: 'task' | 'subtask';
@@ -61,6 +67,7 @@ interface TaskFormDialogProps {
 
 export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultParentTaskId, defaultThemeId, defaultType = 'task', workspaceId }: TaskFormDialogProps) {
   const [open, setOpen] = useState(false);
+  const [checklistId, setChecklistId] = useState<string>(NO_CHECKLIST);
 
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
@@ -73,7 +80,18 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultP
     },
   });
 
+  const watchedParentTaskId = form.watch("parentTaskId");
+  const isSubtask =
+    defaultType === "subtask" || (!!watchedParentTaskId && watchedParentTaskId !== "none");
+  // Checklists only apply to top-level tasks — a checklist creates subtasks,
+  // and subtasks can't have subtasks of their own.
+  const { checklists } = useChecklists(!isSubtask && open ? workspaceId : undefined);
+
   const onSubmit = (data: TaskFormData) => {
+    const selectedChecklist = isSubtask
+      ? undefined
+      : checklists.find((c) => c.id === checklistId);
+
     onTaskCreate({
       title: data.title,
       description: data.description || "",
@@ -83,9 +101,11 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultP
       priority: data.priority,
       themeIds: data.themeIds || [],
       parentTaskId: data.parentTaskId === "none" ? undefined : data.parentTaskId,
-      workspaceId
+      workspaceId,
+      checklistItems: selectedChecklist?.items.map((item) => item.title),
     });
     form.reset();
+    setChecklistId(NO_CHECKLIST);
     setOpen(false);
   };
 
@@ -220,6 +240,21 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultP
                 )}
               />
             </div>
+
+            {!isSubtask && checklists.length > 0 && (
+              <div className="space-y-2">
+                <FormLabel>Apply Checklist (Optional)</FormLabel>
+                <ApplyChecklistSelect
+                  checklists={checklists}
+                  value={checklistId}
+                  onChange={setChecklistId}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Its steps are created as subtasks with no dates — assign dates yourself so
+                  they finish before this task is due.
+                </p>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField

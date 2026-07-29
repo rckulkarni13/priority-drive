@@ -202,10 +202,52 @@ export function useTasks() {
     }
   }, [toast]);
 
-  const createTask = useCallback(async (taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">) => {
+  // Inserts one plain subtask per checklist item under the given parent.
+  // Subtasks get no dates and carry no reference back to the checklist —
+  // they are ordinary subtasks from the moment they are created.
+  const insertChecklistSubtasks = async (
+    parent: { id: string; priority: Priority; workspaceId: string; themeIds?: string[] },
+    itemTitles: string[],
+    userId: string,
+    startOrder: number
+  ) => {
+    const titles = itemTitles.map(t => t.trim()).filter(Boolean);
+    if (titles.length === 0) return;
+
+    const { data: created, error } = await supabase
+      .from('tasks')
+      .insert(titles.map((title, index) => ({
+        title,
+        description: '',
+        due_date: null,
+        prioritized_date: null,
+        prioritized_end_date: null,
+        priority: parent.priority,
+        type: 'subtask' as const,
+        parent_task_id: parent.id,
+        task_order: startOrder + index,
+        user_id: userId,
+        workspace_id: parent.workspaceId
+      })))
+      .select();
+
+    if (error) throw error;
+
+    if (parent.themeIds && parent.themeIds.length > 0 && created) {
+      const themeInserts = created.flatMap(subtask =>
+        parent.themeIds!.map(themeId => ({ task_id: subtask.id, theme_id: themeId }))
+      );
+      const { error: themeError } = await supabase.from('task_themes').insert(themeInserts);
+      if (themeError) throw themeError;
+    }
+  };
+
+  const createTask = useCallback(async (taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order"> & { checklistItems?: string[] }) => {
     try {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
+
+      const baseOrder = Math.max(...tasks.map(t => t.order || 0), 0) + 1;
 
       const { data: task, error } = await supabase
         .from('tasks')
@@ -218,7 +260,7 @@ export function useTasks() {
           priority: taskData.priority,
           type: taskData.parentTaskId ? 'subtask' : 'task',
           parent_task_id: taskData.parentTaskId,
-          task_order: Math.max(...tasks.map(t => t.order || 0), 0) + 1,
+          task_order: baseOrder,
           user_id: user.user.id,
           workspace_id: taskData.workspaceId
         })
@@ -241,11 +283,29 @@ export function useTasks() {
         if (themeError) throw themeError;
       }
 
+      // Apply a checklist selected at creation time
+      const checklistItems = taskData.checklistItems ?? [];
+      if (!taskData.parentTaskId && checklistItems.length > 0) {
+        await insertChecklistSubtasks(
+          {
+            id: task.id,
+            priority: taskData.priority,
+            workspaceId: taskData.workspaceId,
+            themeIds: taskData.themeIds
+          },
+          checklistItems,
+          user.user.id,
+          baseOrder + 1
+        );
+      }
+
       await fetchTasks();
       
       toast({
         title: "Success",
-        description: "Task created successfully"
+        description: checklistItems.length > 0 && !taskData.parentTaskId
+          ? `Task created with ${checklistItems.length} checklist subtasks`
+          : "Task created successfully"
       });
     } catch (error) {
       console.error('Error creating task:', error);
@@ -256,6 +316,44 @@ export function useTasks() {
       });
     }
   }, [tasks.length, toast]);
+
+  const applyChecklistToTask = useCallback(async (parentTask: Task, itemTitles: string[]) => {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
+
+      const existingSubtaskOrders = tasks
+        .filter(t => t.parentTaskId === parentTask.id)
+        .map(t => t.order || 0);
+      const startOrder = Math.max(parentTask.order || 0, ...existingSubtaskOrders, 0) + 1;
+
+      await insertChecklistSubtasks(
+        {
+          id: parentTask.id,
+          priority: parentTask.priority,
+          workspaceId: parentTask.workspaceId,
+          themeIds: parentTask.themeIds
+        },
+        itemTitles,
+        user.user.id,
+        startOrder
+      );
+
+      await fetchTasks();
+
+      toast({
+        title: "Success",
+        description: `Added ${itemTitles.filter(t => t.trim()).length} subtasks from checklist`
+      });
+    } catch (error) {
+      console.error('Error applying checklist:', error);
+      toast({
+        title: "Error",
+        description: "Failed to apply checklist",
+        variant: "destructive"
+      });
+    }
+  }, [tasks, toast]);
 
   const updateTask = useCallback(async (taskId: string, updates: Partial<Task>) => {
     try {
@@ -851,6 +949,7 @@ export function useTasks() {
     toggleTaskStatus,
     reopenTask,
     createTask,
+    applyChecklistToTask,
     updateTask,
     updateTaskOrder,
     createDomain,
