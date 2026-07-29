@@ -949,6 +949,7 @@ export function useTasks() {
     toggleTaskStatus,
     reopenTask,
     createTask,
+    applyChecklistToTask,
     updateTask,
     updateTaskOrder,
     createDomain,
