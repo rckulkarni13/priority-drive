@@ -467,6 +467,18 @@ const Index = () => {
               
               <div className="flex items-center gap-2">
                 {currentWorkspace && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1"
+                    onClick={() => setChecklistsOpen(true)}
+                  >
+                    <ListChecks className="w-4 h-4" />
+                    <span className="hidden sm:inline">Checklists</span>
+                  </Button>
+                )}
+
+                {currentWorkspace && (
                   <QuickCreateMenu
                     themes={filteredThemes}
                     tasks={filteredTasks}
