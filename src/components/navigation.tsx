@@ -19,11 +19,12 @@ import {
   CalendarRange,
   CalendarX2,
   Settings,
-  MoreHorizontal
+  MoreHorizontal,
+  LayoutDashboard
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type View = 'today' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
+type View = 'overview' | 'today' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
 interface NavigationProps {
   currentView: View;
@@ -34,6 +35,7 @@ interface NavigationProps {
   domainsCount: number;
   pillarsCount: number;
   themesCount: number;
+  overviewAlertCount: number;
 }
 
 export function Navigation({ 
@@ -44,7 +46,8 @@ export function Navigation({
   allTasksCount,
   domainsCount,
   pillarsCount,
-  themesCount
+  themesCount,
+  overviewAlertCount
 }: NavigationProps) {
   // Time-based views shown directly
   const timeBasedViews = [
@@ -100,6 +103,29 @@ export function Navigation({
 
   return (
     <nav className="flex flex-wrap gap-1.5 sm:gap-2 p-1 bg-muted/50 rounded-lg">
+      {/* Cross-workspace Overview */}
+      <Button
+        variant={currentView === 'overview' ? "default" : "ghost"}
+        size="sm"
+        onClick={() => onViewChange('overview')}
+        className={cn(
+          "relative flex items-center gap-1.5 sm:gap-2 transition-all duration-200 text-xs sm:text-sm px-2 sm:px-3",
+          currentView === 'overview' && "shadow-md",
+          currentView !== 'overview' && "hover:bg-background/80"
+        )}
+      >
+        <LayoutDashboard className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", currentView !== 'overview' && "text-indigo-600")} />
+        <span className="font-medium">Overview</span>
+        {overviewAlertCount > 0 && (
+          <Badge
+            variant="destructive"
+            className="text-[10px] sm:text-xs ml-0.5 sm:ml-1 h-4 sm:h-5 px-1 sm:px-1.5"
+          >
+            {overviewAlertCount}
+          </Badge>
+        )}
+      </Button>
+
       {/* Time-based views */}
       {timeBasedViews.map((item) => {
         const Icon = item.icon;
