@@ -580,8 +580,12 @@ export function useTasks() {
   const getTodaysTasks = useCallback(() => {
     return tasks.filter(task => {
       if (task.status === 'completed') return false;
-      return isTaskActiveToday(task);
+      return isTaskActiveToday(task) || isTaskOverdue(task);
     }).sort((a, b) => {
+      // Overdue tasks always float to the top
+      const overdueA = isTaskOverdue(a);
+      const overdueB = isTaskOverdue(b);
+      if (overdueA !== overdueB) return overdueA ? -1 : 1;
       // First sort by custom order (if both have order), then by priority
       if (a.order !== undefined && b.order !== undefined) {
         return a.order - b.order;
@@ -595,7 +599,7 @@ export function useTasks() {
   const getTodaysPrioritizedTaskIds = useCallback(() => {
     return new Set(tasks.filter(task => {
       if (task.status === 'completed') return false;
-      return isTaskActiveToday(task);
+      return isTaskActiveToday(task) || isTaskOverdue(task);
     }).map(task => task.id));
   }, [tasks, isTaskActiveToday]);
 
