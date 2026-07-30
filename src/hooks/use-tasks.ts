@@ -274,12 +274,14 @@ export function useTasks() {
       if (titles.length === 0) return;
 
       const startOrder = Math.max(...tasks.map(t => t.order || 0), 0) + 1;
+      const baseTime = Date.now();
 
       const { data: created, error } = await supabase
         .from('tasks')
         .insert(titles.map((title, index) => ({
           title,
           description: '',
+          created_date: new Date(baseTime + index * 1000).toISOString(),
           due_date: null,
           prioritized_date: null,
           prioritized_end_date: null,
