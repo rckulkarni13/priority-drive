@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/navigation";
 import { TaskList } from "@/components/task-list";
+import { isTaskOverdue } from "@/lib/task-dates";
 import { SortableTaskList } from "@/components/sortable-task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
 import { CalendarWeekView } from "@/components/calendar-week-view";
