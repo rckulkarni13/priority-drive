@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/navigation";
 import { TaskList } from "@/components/task-list";
+import { OverviewView } from "@/components/overview-view";
+import { getOverviewAlertCount } from "@/lib/overview-tasks";
 import { isTaskOverdue } from "@/lib/task-dates";
 import { SortableTaskList } from "@/components/sortable-task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
@@ -29,7 +31,7 @@ import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut, ListChecks } fr
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
-type View = 'today' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
+type View = 'overview' | 'today' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('today');
@@ -168,6 +170,9 @@ const Index = () => {
     () => todaysTasks.filter(t => !isTaskOverdue(t)),
     [todaysTasks]
   );
+
+  // Cross-workspace badge count (Overdue + Today), same detection logic as the Overview page
+  const overviewAlertCount = useMemo(() => getOverviewAlertCount(tasks), [tasks]);
 
   if (loading) {
     return (
@@ -322,8 +327,33 @@ const Index = () => {
     setNavigationStack([]);
   };
 
+  // Open a task from the cross-workspace Overview: switch into its workspace first
+  const handleOverviewTaskOpen = (task: Task) => {
+    if (task.workspaceId !== currentWorkspace?.id) {
+      const ws = workspaces.find(w => w.id === task.workspaceId);
+      if (ws) switchWorkspace(ws);
+    }
+    setCurrentView('today');
+    setNavigationStack([]);
+    setViewingTheme(null);
+    setViewingPillar(null);
+    setViewingDomain(null);
+    setViewingTask(task);
+  };
+
   const renderContent = () => {
     switch (currentView) {
+      case 'overview':
+        return (
+          <OverviewView
+            tasks={tasks}
+            themes={themes}
+            workspaces={workspaces}
+            onTaskOpen={handleOverviewTaskOpen}
+            onTaskToggleStatus={toggleTaskStatus}
+          />
+        );
+
       case 'today':
         return (
           <div className="space-y-8">
@@ -549,6 +579,7 @@ const Index = () => {
             domainsCount={filteredDomains.length}
             pillarsCount={filteredPillars.length}
             themesCount={filteredThemes.length}
+            overviewAlertCount={overviewAlertCount}
           />
         </div>
 
