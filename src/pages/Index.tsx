@@ -327,8 +327,33 @@ const Index = () => {
     setNavigationStack([]);
   };
 
+  // Open a task from the cross-workspace Overview: switch into its workspace first
+  const handleOverviewTaskOpen = (task: Task) => {
+    if (task.workspaceId !== currentWorkspace?.id) {
+      const ws = workspaces.find(w => w.id === task.workspaceId);
+      if (ws) switchWorkspace(ws);
+    }
+    setCurrentView('today');
+    setNavigationStack([]);
+    setViewingTheme(null);
+    setViewingPillar(null);
+    setViewingDomain(null);
+    setViewingTask(task);
+  };
+
   const renderContent = () => {
     switch (currentView) {
+      case 'overview':
+        return (
+          <OverviewView
+            tasks={tasks}
+            themes={themes}
+            workspaces={workspaces}
+            onTaskOpen={handleOverviewTaskOpen}
+            onTaskToggleStatus={toggleTaskStatus}
+          />
+        );
+
       case 'today':
         return (
           <div className="space-y-8">
@@ -554,6 +579,7 @@ const Index = () => {
             domainsCount={filteredDomains.length}
             pillarsCount={filteredPillars.length}
             themesCount={filteredThemes.length}
+            overviewAlertCount={overviewAlertCount}
           />
         </div>
 
