@@ -549,7 +549,6 @@ const Index = () => {
           tasks={filteredTasks}
           onTaskUpdate={updateTask}
           onTaskCreate={createTask}
-          onApplyChecklist={applyChecklistToTask}
           onClose={handleCloseAllDialogs}
           onBack={navigationStack.length > 0 ? handleBack : undefined}
           onTaskView={handleTaskView}
@@ -564,6 +563,7 @@ const Index = () => {
         strategicPillars={strategicPillars}
         tasks={tasks}
         onThemeUpdate={updateTheme}
+        onApplyChecklist={applyChecklistToTheme}
         onClose={handleCloseAllDialogs}
         onBack={navigationStack.length > 0 ? handleBack : undefined}
         onTaskView={handleTaskView}
