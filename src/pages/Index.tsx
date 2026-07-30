@@ -325,9 +325,24 @@ const Index = () => {
     switch (currentView) {
       case 'today':
         return (
+          <div className="space-y-8">
+            {overdueTasks.length > 0 && (
+              <TaskList
+                title="Overdue"
+                tasks={overdueTasks}
+                allTasks={filteredTasks}
+                themes={filteredThemes}
+                strategicPillars={filteredPillars}
+                domains={filteredDomains}
+                onTaskEdit={handleTaskView}
+                onTaskToggleStatus={toggleTaskStatus}
+                onTaskReopen={reopenTask}
+                onCreateSubtask={handleCreateSubtask}
+              />
+            )}
             <SortableTaskList
               title="Today's Priorities"
-              tasks={todaysTasks}
+              tasks={todayOnlyTasks}
               allTasks={filteredTasks}
               themes={filteredThemes}
               strategicPillars={filteredPillars}
@@ -339,6 +354,7 @@ const Index = () => {
               onTaskReorder={updateTaskOrder}
               emptyMessage="No tasks prioritized for today. Add some priorities to get started!"
             />
+          </div>
         );
 
       case 'calendar':
