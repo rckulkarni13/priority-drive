@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays } from "lucide-react";
 import { format, isSameDay, startOfDay, isBefore } from "date-fns";
+import { isTaskOverdue } from "@/lib/task-dates";
 
 interface TaskListProps {
   title: string;
@@ -72,8 +73,8 @@ export function TaskList({
       if (!dateB) return -1;
       
       // Show overdue tasks first
-      const isOverdueA = isBefore(dateA, today);
-      const isOverdueB = isBefore(dateB, today);
+      const isOverdueA = isTaskOverdue(a);
+      const isOverdueB = isTaskOverdue(b);
       
       if (isOverdueA && !isOverdueB) return -1;
       if (!isOverdueA && isOverdueB) return 1;
@@ -87,9 +88,8 @@ export function TaskList({
       let section = 'no-date';
       
       if (date) {
-        // Only consider tasks overdue if they have NO priority date and due date is past
-        // Tasks with priority date ranges are never "overdue"
-        if (!task.prioritizedDate && task.dueDate && isBefore(task.dueDate, today)) {
+        // Overdue = effective end date (priority end or due date) is in the past
+        if (isTaskOverdue(task)) {
           section = 'overdue';
         } else if (isSameDay(date, today)) {
           section = 'today';
