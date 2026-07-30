@@ -125,7 +125,9 @@ export function ThemeDetailDialog({
   if (!theme) return null;
 
   const associatedPillars = strategicPillars.filter(pillar => theme.strategicPillarIds.includes(pillar.id));
-  const themeTasks = tasks.filter(task => task.themeIds.includes(theme.id));
+  const themeTasks = tasks
+    .filter(task => task.themeIds.includes(theme.id))
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
     <Dialog open={!!theme} onOpenChange={() => onClose()}>
