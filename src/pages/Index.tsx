@@ -159,6 +159,15 @@ const Index = () => {
   );
   const todaysPrioritizedIds = getTodaysPrioritizedTaskIds();
 
+  const overdueTasks = useMemo(
+    () => todaysTasks.filter(t => isTaskOverdue(t)),
+    [todaysTasks]
+  );
+  const todayOnlyTasks = useMemo(
+    () => todaysTasks.filter(t => !isTaskOverdue(t)),
+    [todaysTasks]
+  );
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
