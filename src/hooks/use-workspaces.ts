@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Workspace, WorkspaceType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
+const LAST_WORKSPACE_KEY = 'lastVisitedWorkspaceId';
+
 export function useWorkspaces() {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null);
@@ -33,9 +35,11 @@ export function useWorkspaces() {
 
       setWorkspaces(formattedWorkspaces);
       
-      // Set first workspace as default if none selected
+      // Land on the last-visited workspace, falling back to the first one
       if (!currentWorkspace && formattedWorkspaces.length > 0) {
-        setCurrentWorkspace(formattedWorkspaces[0]);
+        const lastId = localStorage.getItem(LAST_WORKSPACE_KEY);
+        const last = lastId ? formattedWorkspaces.find(w => w.id === lastId) : undefined;
+        setCurrentWorkspace(last ?? formattedWorkspaces[0]);
       }
     } catch (error) {
       console.error('Error fetching workspaces:', error);
@@ -51,6 +55,11 @@ export function useWorkspaces() {
 
   const switchWorkspace = (workspace: Workspace) => {
     setCurrentWorkspace(workspace);
+    try {
+      localStorage.setItem(LAST_WORKSPACE_KEY, workspace.id);
+    } catch {
+      // ignore storage failures (private mode, etc.)
+    }
   };
 
   return {

@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/navigation";
 import { TaskList } from "@/components/task-list";
+import { OverviewView } from "@/components/overview-view";
+import { getOverviewAlertCount } from "@/lib/overview-tasks";
 import { isTaskOverdue } from "@/lib/task-dates";
 import { SortableTaskList } from "@/components/sortable-task-list";
 import { HierarchyView } from "@/components/hierarchy-view";
@@ -29,7 +31,7 @@ import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut, ListChecks } fr
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
-type View = 'today' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
+type View = 'overview' | 'today' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('today');
@@ -168,6 +170,9 @@ const Index = () => {
     () => todaysTasks.filter(t => !isTaskOverdue(t)),
     [todaysTasks]
   );
+
+  // Cross-workspace badge count (Overdue + Today), same detection logic as the Overview page
+  const overviewAlertCount = useMemo(() => getOverviewAlertCount(tasks), [tasks]);
 
   if (loading) {
     return (
