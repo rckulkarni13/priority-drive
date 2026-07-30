@@ -34,7 +34,7 @@ import { useToast } from "@/hooks/use-toast";
 type View = 'overview' | 'today' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
 const Index = () => {
-  const [currentView, setCurrentView] = useState<View>('today');
+  const [currentView, setCurrentView] = useState<View>('overview');
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
   const [checklistsOpen, setChecklistsOpen] = useState(false);
