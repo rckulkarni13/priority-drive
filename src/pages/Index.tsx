@@ -468,17 +468,23 @@ const Index = () => {
               </div>
               
               <div className="flex items-center gap-2">
-                {currentWorkspace && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1"
-                    onClick={() => setChecklistsOpen(true)}
-                  >
-                    <ListChecks className="w-4 h-4" />
-                    <span className="hidden sm:inline">Checklists</span>
-                  </Button>
-                )}
+              {currentWorkspace && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="secondary"
+                      className="gap-2 shadow-sm hover:shadow-md transition-shadow"
+                      onClick={() => setChecklistsOpen(true)}
+                    >
+                      <ListChecks className="w-4 h-4" />
+                      Checklists
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p className="text-sm">Manage reusable subtask checklists for this workspace</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
 
                 {currentWorkspace && (
                   <QuickCreateMenu
