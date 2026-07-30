@@ -157,7 +157,7 @@ export function ChecklistsManagerDialog({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete "{pendingDelete?.title}"?</AlertDialogTitle>
             <AlertDialogDescription>
-              This removes the checklist definition. Subtasks already created from it stay on
+              This removes the checklist definition. Tasks already created from it stay on
               their tasks and are not affected.
             </AlertDialogDescription>
           </AlertDialogHeader>

@@ -77,8 +77,8 @@ export function ChecklistFormDialog({
           <DialogTitle>{checklist ? "Edit Checklist" : "New Checklist"}</DialogTitle>
           <DialogDescription>
             {checklist
-              ? "Saving creates a new version. Tasks that already used an earlier version keep their subtasks unchanged."
-              : "Define the steps once, then apply them to any task to create the subtasks automatically."}
+              ? "Saving creates a new version. Tasks already created from an earlier version stay unchanged."
+              : "Define the steps once, then apply them to a theme to create those tasks automatically."}
           </DialogDescription>
         </DialogHeader>
 

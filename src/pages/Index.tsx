@@ -481,7 +481,7 @@ const Index = () => {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
-                    <p className="text-sm">Manage reusable subtask checklists for this workspace</p>
+                    <p className="text-sm">Manage reusable checklists — apply one to a theme to create its tasks</p>
                   </TooltipContent>
                 </Tooltip>
               )}
