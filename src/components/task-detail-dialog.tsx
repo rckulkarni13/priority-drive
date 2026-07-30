@@ -63,7 +63,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useChecklists } from "@/hooks/use-checklists";
 
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -84,7 +83,6 @@ interface TaskDetailDialogProps {
   tasks: Task[];
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
   onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order'>) => void;
-  onApplyChecklist?: (parentTask: Task, itemTitles: string[]) => void;
   onClose: () => void;
   onBack?: () => void;
   onTaskView?: (task: Task) => void;
@@ -98,7 +96,6 @@ export function TaskDetailDialog({
   tasks, 
   onTaskUpdate,
   onTaskCreate, 
-  onApplyChecklist,
   onClose,
   onBack,
   onTaskView,
@@ -107,8 +104,6 @@ export function TaskDetailDialog({
 }: TaskDetailDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'comments' | 'subtasks'>('overview');
-  // Checklists apply to top-level tasks only — they create subtasks.
-  const { checklists } = useChecklists(task && task.type !== 'subtask' ? workspaceId : undefined);
   
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
@@ -703,38 +698,6 @@ export function TaskDetailDialog({
                     Subtasks ({subtasks.length})
                   </h3>
                   <div className="flex items-center gap-2">
-                    {onApplyChecklist && task.type !== 'subtask' && checklists.length > 0 && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button size="sm" variant="outline">
-                            <ListChecks className="w-4 h-4 mr-1" />
-                            Apply Checklist
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-64 bg-popover z-50">
-                          <DropdownMenuLabel>Add steps as subtasks</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          {checklists.map((checklist) => (
-                            <DropdownMenuItem
-                              key={checklist.id}
-                              onClick={() =>
-                                onApplyChecklist(
-                                  task,
-                                  checklist.items.map((item) => item.title)
-                                )
-                              }
-                            >
-                              <div className="flex flex-col">
-                                <span>{checklist.title}</span>
-                                <span className="text-xs text-muted-foreground">
-                                  v{checklist.versionNumber} · {checklist.items.length} steps
-                                </span>
-                              </div>
-                            </DropdownMenuItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
                     <SubtaskFormDialog
                       themes={themes}
                       tasks={tasks}

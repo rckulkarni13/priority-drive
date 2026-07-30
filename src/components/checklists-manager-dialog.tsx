@@ -63,7 +63,7 @@ export function ChecklistsManagerDialog({
               Checklists — {workspaceName}
             </DialogTitle>
             <DialogDescription>
-              Reusable sets of steps. Apply one to a task and its steps become subtasks.
+              Reusable sets of steps. Apply one to a theme and its steps become tasks.
             </DialogDescription>
           </DialogHeader>
 
@@ -157,7 +157,7 @@ export function ChecklistsManagerDialog({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete "{pendingDelete?.title}"?</AlertDialogTitle>
             <AlertDialogDescription>
-              This removes the checklist definition. Subtasks already created from it stay on
+              This removes the checklist definition. Tasks already created from it stay on
               their tasks and are not affected.
             </AlertDialogDescription>
           </AlertDialogHeader>

@@ -56,7 +56,7 @@ const Index = () => {
     toggleTaskStatus,
     reopenTask,
     createTask,
-    applyChecklistToTask,
+    applyChecklistToTheme,
     updateTask,
     updateTaskOrder,
     createDomain,
@@ -481,7 +481,7 @@ const Index = () => {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
-                    <p className="text-sm">Manage reusable subtask checklists for this workspace</p>
+                    <p className="text-sm">Manage reusable checklists — apply one to a theme to create its tasks</p>
                   </TooltipContent>
                 </Tooltip>
               )}
@@ -549,7 +549,6 @@ const Index = () => {
           tasks={filteredTasks}
           onTaskUpdate={updateTask}
           onTaskCreate={createTask}
-          onApplyChecklist={applyChecklistToTask}
           onClose={handleCloseAllDialogs}
           onBack={navigationStack.length > 0 ? handleBack : undefined}
           onTaskView={handleTaskView}
@@ -564,6 +563,7 @@ const Index = () => {
         strategicPillars={strategicPillars}
         tasks={tasks}
         onThemeUpdate={updateTheme}
+        onApplyChecklist={applyChecklistToTheme}
         onClose={handleCloseAllDialogs}
         onBack={navigationStack.length > 0 ? handleBack : undefined}
         onTaskView={handleTaskView}
