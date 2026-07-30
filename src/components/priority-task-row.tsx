@@ -1,6 +1,7 @@
 import { Task, Theme, StrategicPillar, Domain } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { isTaskOverdue } from "@/lib/task-dates";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { 
@@ -58,13 +59,22 @@ export function PriorityTaskRow({
   // Determine badge type and status
   const today = startOfDay(new Date());
   const effectiveDate = task.prioritizedDate || task.dueDate;
-  const isOverdue = effectiveDate && isBefore(effectiveDate, today) && task.status !== 'completed';
+  const isOverdue = isTaskOverdue(task);
   const isDueToday = effectiveDate && format(effectiveDate, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd');
   
   const getBadges = () => {
     const badges = [];
     
-    if (task.prioritizedDate) {
+    if (isOverdue) {
+      badges.push(
+        <Badge key="overdue" variant="destructive" className="gap-1">
+          <AlertTriangle className="w-3 h-3" />
+          Overdue
+        </Badge>
+      );
+    }
+
+    if (task.prioritizedDate && !isOverdue) {
       badges.push(
         <Badge key="prioritized" variant="default" className="gap-1">
           <Target className="w-3 h-3" />
@@ -73,22 +83,13 @@ export function PriorityTaskRow({
       );
     }
     
-    if (effectiveDate && !task.prioritizedDate) {
-      if (isOverdue) {
-        badges.push(
-          <Badge key="overdue" variant="destructive" className="gap-1">
-            <AlertTriangle className="w-3 h-3" />
-            Overdue
-          </Badge>
-        );
-      } else {
-        badges.push(
-          <Badge key="due" variant="secondary" className="gap-1">
-            <Clock className="w-3 h-3" />
-            Due {isDueToday ? 'Today' : format(effectiveDate, 'MMM d')}
-          </Badge>
-        );
-      }
+    if (effectiveDate && !task.prioritizedDate && !isOverdue) {
+      badges.push(
+        <Badge key="due" variant="secondary" className="gap-1">
+          <Clock className="w-3 h-3" />
+          Due {isDueToday ? 'Today' : format(effectiveDate, 'MMM d')}
+        </Badge>
+      );
     }
     
     return badges;
