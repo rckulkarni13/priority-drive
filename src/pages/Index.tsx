@@ -56,7 +56,7 @@ const Index = () => {
     toggleTaskStatus,
     reopenTask,
     createTask,
-    applyChecklistToTask,
+    applyChecklistToTheme,
     updateTask,
     updateTaskOrder,
     createDomain,
