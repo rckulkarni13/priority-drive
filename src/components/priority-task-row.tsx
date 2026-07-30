@@ -1,6 +1,7 @@
 import { Task, Theme, StrategicPillar, Domain } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { isTaskOverdue } from "@/lib/task-dates";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { 
