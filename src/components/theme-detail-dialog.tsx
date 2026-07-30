@@ -36,8 +36,18 @@ import {
   Target,
   Calendar as CalendarIcon,
   ArrowLeft,
-  Package
+  Package,
+  ListChecks
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useChecklists } from "@/hooks/use-checklists";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Theme, StrategicPillar, Task } from "@/types";
@@ -56,6 +66,7 @@ interface ThemeDetailDialogProps {
   strategicPillars: StrategicPillar[];
   tasks: Task[];
   onThemeUpdate?: (themeId: string, updates: Partial<Theme>) => void;
+  onApplyChecklist?: (theme: { id: string; workspaceId: string }, itemTitles: string[]) => void;
   onClose: () => void;
   onBack?: () => void;
   onTaskView?: (task: Task) => void;
@@ -67,12 +78,14 @@ export function ThemeDetailDialog({
   strategicPillars, 
   tasks,
   onThemeUpdate,
+  onApplyChecklist,
   onClose,
   onBack,
   onTaskView,
   onPillarView
 }: ThemeDetailDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const { checklists } = useChecklists(theme?.workspaceId);
   
   const form = useForm<ThemeFormData>({
     resolver: zodResolver(themeSchema),
@@ -344,10 +357,44 @@ export function ThemeDetailDialog({
 
               {/* Associated Tasks */}
               <div>
-                <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-                  <CalendarIcon className="w-4 h-4" />
-                  Tasks ({themeTasks.length})
-                </h3>
+                <div className="flex items-center justify-between mb-3 gap-2">
+                  <h3 className="text-sm font-medium flex items-center gap-2">
+                    <CalendarIcon className="w-4 h-4" />
+                    Tasks ({themeTasks.length})
+                  </h3>
+                  {onApplyChecklist && checklists.length > 0 && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="sm" variant="outline">
+                          <ListChecks className="w-4 h-4 mr-1" />
+                          Apply Checklist
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-64 bg-popover z-50">
+                        <DropdownMenuLabel>Create steps as tasks</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {checklists.map((checklist) => (
+                          <DropdownMenuItem
+                            key={checklist.id}
+                            onClick={() =>
+                              onApplyChecklist(
+                                { id: theme.id, workspaceId: theme.workspaceId },
+                                checklist.items.map((item) => item.title)
+                              )
+                            }
+                          >
+                            <div className="flex flex-col">
+                              <span>{checklist.title}</span>
+                              <span className="text-xs text-muted-foreground">
+                                v{checklist.versionNumber} · {checklist.items.length} steps
+                              </span>
+                            </div>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </div>
                 {themeTasks.length > 0 ? (
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {themeTasks.map((task) => (
