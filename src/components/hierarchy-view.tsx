@@ -14,7 +14,8 @@ import {
   Trash2, 
   Plus,
   Building2,
-  Circle
+  Circle,
+  ListChecks
 } from "lucide-react";
 import { PriorityTaskRow } from "./priority-task-row";
 import { getWorkspaceTerminology } from "@/lib/workspace-terminology";
@@ -293,6 +294,19 @@ export function HierarchyView({
                                               </div>
                                             </div>
                                             <div className="flex items-center gap-2">
+                                              <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  onThemeView?.(theme);
+                                                }}
+                                                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                                title="Open details / Apply checklist"
+                                              >
+                                                <ListChecks className="w-3 h-3 mr-1" />
+                                                Open
+                                              </Button>
                                               <Button
                                                 variant="ghost"
                                                 size="sm"
