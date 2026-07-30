@@ -63,7 +63,7 @@ export function ChecklistsManagerDialog({
               Checklists — {workspaceName}
             </DialogTitle>
             <DialogDescription>
-              Reusable sets of steps. Apply one to a task and its steps become subtasks.
+              Reusable sets of steps. Apply one to a theme and its steps become tasks.
             </DialogDescription>
           </DialogHeader>
 
