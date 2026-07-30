@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Task, Domain, StrategicPillar, Theme, Priority, Status, TaskType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
+import { isTaskOverdue } from '@/lib/task-dates';
 
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
