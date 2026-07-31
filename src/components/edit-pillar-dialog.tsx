@@ -86,7 +86,7 @@ export function EditPillarDialog({ pillar, domains, open, onOpenChange, onPillar
         <DialogHeader>
           <DialogTitle>Edit {label}</DialogTitle>
           <DialogDescription>
-            Update the strategic pillar details.
+            Update the {label.toLowerCase()} details.
           </DialogDescription>
         </DialogHeader>
         
