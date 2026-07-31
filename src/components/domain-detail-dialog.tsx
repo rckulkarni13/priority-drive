@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { Domain, StrategicPillar } from "@/types";
+import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 
 const domainSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -57,6 +58,8 @@ export function DomainDetailDialog({
   onPillarView
 }: DomainDetailDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const terms = useWorkspaceTerms(domain?.workspaceId);
+  const label = terms.domain.singular;
   
   const form = useForm<DomainFormData>({
     resolver: zodResolver(domainSchema),
@@ -95,7 +98,7 @@ export function DomainDetailDialog({
     <Dialog open={!!domain} onOpenChange={() => onClose()}>
       <DialogContent className="sm:max-w-[800px] max-h-[95vh] p-0 overflow-hidden">
         <DialogHeader className="sr-only">
-          <DialogTitle>Domain Details</DialogTitle>
+          <DialogTitle>{label} Details</DialogTitle>
         </DialogHeader>
         <div className="p-6 border-b bg-background/50">
           <div className="flex items-start justify-between gap-4">
@@ -114,7 +117,7 @@ export function DomainDetailDialog({
                 )}
                 <Badge variant="default" className="text-xs">
                   <Globe className="w-3 h-3 mr-1" />
-                  Domain
+                  {label}
                 </Badge>
                 <span className="text-xs text-muted-foreground">
                   Created {format(domain.createdDate, 'MMM d, yyyy')}
@@ -133,7 +136,7 @@ export function DomainDetailDialog({
                           <Input 
                             {...field} 
                             className="text-xl font-semibold border-0 px-0 h-auto bg-transparent focus-visible:ring-0"
-                            placeholder="Enter domain title..."
+                            placeholder={`Enter ${label.toLowerCase()} title...`}
                           />
                         </FormControl>
                         <FormMessage />
@@ -229,7 +232,7 @@ export function DomainDetailDialog({
           <div>
             <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
               <Target className="w-4 h-4" />
-              Strategic Pillars ({domainPillars.length})
+              {terms.pillar.plural} ({domainPillars.length})
             </h3>
             {domainPillars.length > 0 ? (
               <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -257,7 +260,7 @@ export function DomainDetailDialog({
               </div>
             ) : (
               <div className="text-sm text-muted-foreground italic bg-muted/30 rounded-lg p-4">
-                No strategic pillars associated with this domain yet
+                No {terms.pillar.plural.toLowerCase()} associated with this {label.toLowerCase()} yet
               </div>
             )}
           </div>

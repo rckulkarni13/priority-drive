@@ -21,12 +21,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { StrategicPillar, Domain } from "@/types";
+import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 
 const pillarSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   targetTimeFrame: z.string().min(1, "Target timeframe is required"),
-  domainIds: z.array(z.string()).min(1, "Please select at least one domain"),
+  domainIds: z.array(z.string()).min(1, "Please select at least one"),
   color: z.string().min(1, "Color is required"),
 });
 
@@ -41,6 +42,8 @@ interface EditPillarDialogProps {
 }
 
 export function EditPillarDialog({ pillar, domains, open, onOpenChange, onPillarUpdate }: EditPillarDialogProps) {
+  const terms = useWorkspaceTerms(pillar?.workspaceId);
+  const label = terms.pillar.singular;
   const form = useForm<PillarFormData>({
     resolver: zodResolver(pillarSchema),
     defaultValues: {
@@ -81,9 +84,9 @@ export function EditPillarDialog({ pillar, domains, open, onOpenChange, onPillar
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Edit Strategic Pillar</DialogTitle>
+          <DialogTitle>Edit {label}</DialogTitle>
           <DialogDescription>
-            Update the strategic pillar details.
+            Update the {label.toLowerCase()} details.
           </DialogDescription>
         </DialogHeader>
         
@@ -94,9 +97,9 @@ export function EditPillarDialog({ pillar, domains, open, onOpenChange, onPillar
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pillar Title</FormLabel>
+                  <FormLabel>{label} Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter pillar title..." {...field} />
+                    <Input placeholder={`Enter ${label.toLowerCase()} title...`} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -111,7 +114,7 @@ export function EditPillarDialog({ pillar, domains, open, onOpenChange, onPillar
                   <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe the strategic pillar..."
+                      placeholder={`Describe the ${label.toLowerCase()}...`}
                       className="min-h-[80px]"
                       {...field}
                     />
@@ -158,7 +161,7 @@ export function EditPillarDialog({ pillar, domains, open, onOpenChange, onPillar
               name="domainIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Associated Domains</FormLabel>
+                  <FormLabel>Associated {terms.domain.plural}</FormLabel>
                   <div className="space-y-2">
                     {domains.map((domain) => (
                       <div key={domain.id} className="flex items-center space-x-2">

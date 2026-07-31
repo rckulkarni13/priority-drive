@@ -51,6 +51,7 @@ import { useChecklists } from "@/hooks/use-checklists";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Theme, StrategicPillar, Task } from "@/types";
+import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 
 const themeSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -86,6 +87,8 @@ export function ThemeDetailDialog({
 }: ThemeDetailDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
   const { checklists } = useChecklists(theme?.workspaceId);
+  const terms = useWorkspaceTerms(theme?.workspaceId);
+  const label = terms.theme.singular;
   
   const form = useForm<ThemeFormData>({
     resolver: zodResolver(themeSchema),
@@ -133,7 +136,7 @@ export function ThemeDetailDialog({
     <Dialog open={!!theme} onOpenChange={() => onClose()}>
       <DialogContent className="sm:max-w-[800px] max-h-[95vh] p-0 overflow-hidden">
         <DialogHeader className="sr-only">
-          <DialogTitle>Theme Details</DialogTitle>
+          <DialogTitle>{label} Details</DialogTitle>
         </DialogHeader>
         <div className="p-6 border-b bg-background/50">
           <div className="flex items-start justify-between gap-4">
@@ -152,7 +155,7 @@ export function ThemeDetailDialog({
                 )}
                 <Badge variant="default" className="text-xs">
                   <Tag className="w-3 h-3 mr-1" />
-                  Theme
+                  {label}
                 </Badge>
                 <span className="text-xs text-muted-foreground">
                   Created {format(theme.createdDate, 'MMM d, yyyy')}
@@ -171,7 +174,7 @@ export function ThemeDetailDialog({
                           <Input 
                             {...field} 
                             className="text-xl font-semibold border-0 px-0 h-auto bg-transparent focus-visible:ring-0"
-                            placeholder="Enter theme title..."
+                            placeholder={`Enter ${label.toLowerCase()} title...`}
                           />
                         </FormControl>
                         <FormMessage />
@@ -266,7 +269,7 @@ export function ThemeDetailDialog({
                   name="strategicPillarIds"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">Strategic Pillars</FormLabel>
+                      <FormLabel className="text-sm font-medium">{terms.pillar.plural}</FormLabel>
                       <div className="space-y-2 max-h-32 overflow-y-auto">
                         {strategicPillars.map((pillar) => (
                           <div key={pillar.id} className="flex items-center space-x-2">
@@ -334,7 +337,7 @@ export function ThemeDetailDialog({
               <div>
                 <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
                   <Target className="w-4 h-4" />
-                  Strategic Pillars
+                  {terms.pillar.plural}
                 </h3>
                 {associatedPillars.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
@@ -351,7 +354,7 @@ export function ThemeDetailDialog({
                     ))}
                   </div>
                 ) : (
-                  <span className="text-sm text-muted-foreground italic">No pillars assigned</span>
+                  <span className="text-sm text-muted-foreground italic">No {terms.pillar.plural.toLowerCase()} assigned</span>
                 )}
               </div>
 
@@ -423,7 +426,7 @@ export function ThemeDetailDialog({
                   </div>
                 ) : (
                   <div className="text-sm text-muted-foreground italic bg-muted/30 rounded-lg p-4">
-                    No tasks associated with this theme yet
+                    No tasks associated with this {label.toLowerCase()} yet
                   </div>
                 )}
               </div>

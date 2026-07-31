@@ -29,11 +29,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Theme, StrategicPillar } from "@/types";
+import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 
 const themeSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  strategicPillarIds: z.array(z.string()).min(1, "Please select at least one strategic pillar"),
+  strategicPillarIds: z.array(z.string()).min(1, "Please select at least one"),
   color: z.string().min(1, "Color is required"),
 });
 
@@ -50,6 +51,9 @@ interface ThemeFormDialogProps {
 
 export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, onThemeCreate, onOpenChange, workspaceId }: ThemeFormDialogProps) {
   const [open, setOpen] = useState(false);
+  const terms = useWorkspaceTerms(workspaceId);
+  const label = terms.theme.singular;
+  const pillarTerms = terms.pillar;
 
   const form = useForm<ThemeFormData>({
     resolver: zodResolver(themeSchema),
@@ -81,9 +85,9 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Create New Theme</DialogTitle>
+          <DialogTitle>Create New {label}</DialogTitle>
           <DialogDescription>
-            Add a theme to group related tasks under a strategic pillar.
+            Add a {label.toLowerCase()} to group related tasks under a {pillarTerms.singular.toLowerCase()}.
           </DialogDescription>
         </DialogHeader>
         
@@ -94,9 +98,9 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Theme Title</FormLabel>
+                  <FormLabel>{label} Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter theme title..." {...field} />
+                    <Input placeholder={`Enter ${label.toLowerCase()} title...`} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -111,7 +115,7 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
                   <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe the theme..."
+                      placeholder={`Describe the ${label.toLowerCase()}...`}
                       className="min-h-[80px]"
                       {...field}
                     />
@@ -144,7 +148,7 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
               name="strategicPillarIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Strategic Pillars</FormLabel>
+                  <FormLabel>{pillarTerms.plural}</FormLabel>
                   <div className="space-y-2">
                     {strategicPillars.map((pillar) => (
                       <div key={pillar.id} className="flex items-center space-x-2">
@@ -184,7 +188,7 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
                 Cancel
               </Button
               >
-              <Button type="submit">Create Theme</Button>
+              <Button type="submit">Create {label}</Button>
             </div>
           </form>
         </Form>
