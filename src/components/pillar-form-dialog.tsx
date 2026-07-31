@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { StrategicPillar, Domain } from "@/types";
+import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 
 const pillarSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -50,6 +51,10 @@ interface PillarFormDialogProps {
 
 export function PillarFormDialog({ children, domains, defaultDomainId, onPillarCreate, workspaceId }: PillarFormDialogProps) {
   const [open, setOpen] = useState(false);
+  const terms = useWorkspaceTerms(workspaceId);
+  const label = terms.pillar.singular;
+  const domainLabel = terms.domain;
+  const themeLabel = terms.theme;
 
   const form = useForm<PillarFormData>({
     resolver: zodResolver(pillarSchema),
@@ -82,9 +87,9 @@ export function PillarFormDialog({ children, domains, defaultDomainId, onPillarC
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Create New Strategic Pillar</DialogTitle>
+          <DialogTitle>Create New {label}</DialogTitle>
           <DialogDescription>
-            Add a strategic pillar to organize your themes and initiatives.
+            Add a {label.toLowerCase()} to organize your {themeLabel.plural.toLowerCase()}.
           </DialogDescription>
         </DialogHeader>
         
@@ -95,9 +100,9 @@ export function PillarFormDialog({ children, domains, defaultDomainId, onPillarC
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pillar Title</FormLabel>
+                  <FormLabel>{label} Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter pillar title..." {...field} />
+                    <Input placeholder={`Enter ${label.toLowerCase()} title...`} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -112,7 +117,7 @@ export function PillarFormDialog({ children, domains, defaultDomainId, onPillarC
                   <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe the strategic pillar..."
+                      placeholder={`Describe the ${label.toLowerCase()}...`}
                       className="min-h-[80px]"
                       {...field}
                     />
@@ -159,7 +164,7 @@ export function PillarFormDialog({ children, domains, defaultDomainId, onPillarC
               name="domainIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Associated Domains</FormLabel>
+                  <FormLabel>Associated {domainLabel.plural}</FormLabel>
                   <div className="space-y-2">
                     {domains.map((domain) => (
                       <div key={domain.id} className="flex items-center space-x-2">
@@ -198,7 +203,7 @@ export function PillarFormDialog({ children, domains, defaultDomainId, onPillarC
               >
                 Cancel
               </Button>
-              <Button type="submit">Create Pillar</Button>
+              <Button type="submit">Create {label}</Button>
             </div>
           </form>
         </Form>
