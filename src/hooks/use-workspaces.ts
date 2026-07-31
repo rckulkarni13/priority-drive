@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Workspace, WorkspaceType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
+import { registerWorkspaceTypes } from '@/hooks/use-workspace-terms';
 
 const LAST_WORKSPACE_KEY = 'lastVisitedWorkspaceId';
 
@@ -34,6 +35,7 @@ export function useWorkspaces() {
       }));
 
       setWorkspaces(formattedWorkspaces);
+      registerWorkspaceTypes(formattedWorkspaces.map(w => ({ id: w.id, type: w.type })));
       
       // Land on the last-visited workspace, falling back to the first one
       if (!currentWorkspace && formattedWorkspaces.length > 0) {
