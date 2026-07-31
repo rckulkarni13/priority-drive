@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import { TaskFormDialog } from "./task-form-dialog";
 import { Theme, Task } from "@/types";
 
@@ -21,19 +20,13 @@ export function ControlledTaskDialog({
   onClose,
   workspaceId
 }: ControlledTaskDialogProps) {
-  const triggerRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (isOpen && triggerRef.current) {
-      triggerRef.current.click();
-    }
-  }, [isOpen, themeId]);
-
   if (!isOpen) return null;
 
   return (
     <TaskFormDialog
       key={themeId || 'new-task'}
+      defaultOpen
+      onOpenChange={(o) => { if (!o) onClose(); }}
       themes={themes}
       tasks={tasks}
       defaultThemeId={themeId}
@@ -42,8 +35,6 @@ export function ControlledTaskDialog({
         onClose();
       }}
       workspaceId={workspaceId}
-    >
-      <button ref={triggerRef} style={{ display: 'none' }} />
-    </TaskFormDialog>
+    />
   );
 }

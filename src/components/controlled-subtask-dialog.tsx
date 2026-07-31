@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import { SubtaskFormDialog } from "./subtask-form-dialog";
 import { Theme, Task } from "@/types";
 
@@ -21,14 +20,6 @@ export function ControlledSubtaskDialog({
   onClose,
   workspaceId
 }: ControlledSubtaskDialogProps) {
-  const triggerRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (isOpen && triggerRef.current) {
-      triggerRef.current.click();
-    }
-  }, [isOpen, parentTaskId]);
-
   if (!isOpen) return null;
 
   const parentTask = tasks.find(t => t.id === parentTaskId);
@@ -36,6 +27,8 @@ export function ControlledSubtaskDialog({
 
   return (
     <SubtaskFormDialog
+      defaultOpen
+      onOpenChange={(o) => { if (!o) onClose(); }}
       themes={themes}
       tasks={tasks}
       parentTaskId={parentTaskId}
@@ -45,8 +38,6 @@ export function ControlledSubtaskDialog({
         onClose();
       }}
       workspaceId={workspaceId}
-    >
-      <button ref={triggerRef} style={{ display: 'none' }} />
-    </SubtaskFormDialog>
+    />
   );
 }
