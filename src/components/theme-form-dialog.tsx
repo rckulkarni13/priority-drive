@@ -90,7 +90,7 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
 
       if (selectedChecklist && onApplyChecklist) {
         await onApplyChecklist(
-          themeId,
+          { id: themeId, workspaceId },
           selectedChecklist.items.map((item) => item.title)
         );
       }
