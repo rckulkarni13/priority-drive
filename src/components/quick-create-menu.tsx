@@ -136,19 +136,18 @@ export function QuickCreateMenu({
             <button ref={triggerRef} style={{ display: 'none' }} />
           </SubtaskFormDialog>
         ) : null;
-      case 'theme':
-        return (
-          <ThemeFormDialog
-            strategicPillars={strategicPillars}
-            onThemeCreate={(data) => {
-              onThemeCreate(data);
-              setOpenDialog(null);
-            }}
-            workspaceId={workspaceId}
-          >
-            <button ref={triggerRef} style={{ display: 'none' }} />
-          </ThemeFormDialog>
-        );
+        case 'theme':
+          return (
+            <ThemeFormDialog
+              strategicPillars={strategicPillars}
+              onThemeCreate={onThemeCreate}
+              onApplyChecklist={onApplyChecklist}
+              onOpenChange={() => setOpenDialog(null)}
+              workspaceId={workspaceId}
+            >
+              <button ref={triggerRef} style={{ display: 'none' }} />
+            </ThemeFormDialog>
+          );
       case 'pillar':
         return (
           <PillarFormDialog
