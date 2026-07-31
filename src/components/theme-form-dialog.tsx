@@ -48,7 +48,7 @@ interface ThemeFormDialogProps {
   strategicPillars: StrategicPillar[];
   defaultPillarId?: string;
   onThemeCreate: (themeData: Omit<Theme, "id" | "createdDate">) => Promise<string>;
-  onApplyChecklist?: (themeId: string, itemTitles: string[]) => void | Promise<void>;
+  onApplyChecklist?: (theme: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   onOpenChange?: (open: boolean) => void;
   workspaceId: string;
 }
