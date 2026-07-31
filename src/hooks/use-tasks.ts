@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Task, Domain, StrategicPillar, Theme, Priority, Status, TaskType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { isTaskOverdue } from '@/lib/task-dates';
+import { getWorkspaceTerminology } from '@/lib/workspace-terminology';
+import { WorkspaceType } from '@/types';
 
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -398,6 +400,17 @@ export function useTasks() {
     }
   }, [toast]);
 
+  // Resolve workspace-specific terminology (e.g. "Goal" in Home, "Learning Goal" in School)
+  const getTerms = async (workspaceId?: string) => {
+    if (!workspaceId) return getWorkspaceTerminology('custom');
+    const { data } = await supabase
+      .from('workspaces')
+      .select('type')
+      .eq('id', workspaceId)
+      .maybeSingle();
+    return getWorkspaceTerminology((data?.type as WorkspaceType) || 'custom');
+  };
+
   const createDomain = useCallback(async (domainData: Omit<Domain, "id" | "createdDate">) => {
     try {
       const { data: user } = await supabase.auth.getUser();
@@ -416,10 +429,11 @@ export function useTasks() {
       if (error) throw error;
 
       await fetchDomains();
-      
+
+      const terms = await getTerms(domainData.workspaceId);
       toast({
         title: "Success",
-        description: "Domain created successfully"
+        description: `${terms.domain.singular} created successfully`
       });
     } catch (error) {
       console.error('Error creating domain:', error);
@@ -466,10 +480,11 @@ export function useTasks() {
       }
 
       await fetchStrategicPillars();
-      
+
+      const terms = await getTerms(pillarData.workspaceId);
       toast({
         title: "Success",
-        description: "Strategic pillar created successfully"
+        description: `${terms.pillar.singular} created successfully`
       });
     } catch (error) {
       console.error('Error creating strategic pillar:', error);
@@ -516,10 +531,11 @@ export function useTasks() {
       }
 
       await fetchThemes();
-      
+
+      const terms = await getTerms(themeData.workspaceId);
       toast({
         title: "Success",
-        description: "Theme created successfully"
+        description: `${terms.theme.singular} created successfully`
       });
     } catch (error) {
       console.error('Error creating theme:', error);
@@ -663,6 +679,8 @@ export function useTasks() {
   // Deletion functions
   const deleteDomain = useCallback(async (domainId: string) => {
     try {
+      const workspaceId = domains.find(item => item.id === domainId)?.workspaceId;
+
       const { error } = await supabase
         .from('domains')
         .delete()
@@ -671,10 +689,11 @@ export function useTasks() {
       if (error) throw error;
 
       await fetchAllData();
-      
+
+      const terms = await getTerms(workspaceId);
       toast({
         title: "Success",
-        description: "Domain deleted successfully"
+        description: `${terms.domain.singular} deleted successfully`
       });
     } catch (error) {
       console.error('Error deleting domain:', error);
@@ -684,10 +703,12 @@ export function useTasks() {
         variant: "destructive"
       });
     }
-  }, [toast]);
+  }, [toast, domains]);
 
   const deleteStrategicPillar = useCallback(async (pillarId: string) => {
     try {
+      const workspaceId = strategicPillars.find(item => item.id === pillarId)?.workspaceId;
+
       const { error } = await supabase
         .from('strategic_pillars')
         .delete()
@@ -696,10 +717,11 @@ export function useTasks() {
       if (error) throw error;
 
       await fetchAllData();
-      
+
+      const terms = await getTerms(workspaceId);
       toast({
         title: "Success",
-        description: "Strategic pillar deleted successfully"
+        description: `${terms.pillar.singular} deleted successfully`
       });
     } catch (error) {
       console.error('Error deleting strategic pillar:', error);
@@ -709,10 +731,12 @@ export function useTasks() {
         variant: "destructive"
       });
     }
-  }, [toast]);
+  }, [toast, strategicPillars]);
 
   const deleteTheme = useCallback(async (themeId: string) => {
     try {
+      const workspaceId = themes.find(item => item.id === themeId)?.workspaceId;
+
       const { error } = await supabase
         .from('themes')
         .delete()
@@ -721,10 +745,11 @@ export function useTasks() {
       if (error) throw error;
 
       await fetchAllData();
-      
+
+      const terms = await getTerms(workspaceId);
       toast({
         title: "Success",
-        description: "Theme deleted successfully"
+        description: `${terms.theme.singular} deleted successfully`
       });
     } catch (error) {
       console.error('Error deleting theme:', error);
@@ -734,7 +759,7 @@ export function useTasks() {
         variant: "destructive"
       });
     }
-  }, [toast]);
+  }, [toast, themes]);
 
   const updateTaskOrder = useCallback(async (taskOrders: { id: string; order: number }[]) => {
     try {
@@ -785,10 +810,12 @@ export function useTasks() {
       if (error) throw error;
 
       await fetchAllData();
-      
+
+      const workspaceId = domains.find(item => item.id === domainId)?.workspaceId;
+      const terms = await getTerms(workspaceId);
       toast({
         title: "Success",
-        description: "Domain updated successfully"
+        description: `${terms.domain.singular} updated successfully`
       });
     } catch (error) {
       console.error('Error updating domain:', error);
@@ -798,7 +825,7 @@ export function useTasks() {
         variant: "destructive"
       });
     }
-  }, [toast]);
+  }, [toast, domains]);
 
   const updateStrategicPillar = useCallback(async (pillarId: string, updates: Partial<StrategicPillar>) => {
     try {
@@ -839,10 +866,12 @@ export function useTasks() {
       }
 
       await fetchAllData();
-      
+
+      const workspaceId = strategicPillars.find(item => item.id === pillarId)?.workspaceId;
+      const terms = await getTerms(workspaceId);
       toast({
         title: "Success",
-        description: "Strategic pillar updated successfully"
+        description: `${terms.pillar.singular} updated successfully`
       });
     } catch (error) {
       console.error('Error updating strategic pillar:', error);
@@ -852,7 +881,7 @@ export function useTasks() {
         variant: "destructive"
       });
     }
-  }, [toast]);
+  }, [toast, strategicPillars]);
 
   const updateTheme = useCallback(async (themeId: string, updates: Partial<Theme>) => {
     try {
@@ -893,10 +922,12 @@ export function useTasks() {
       }
 
       await fetchAllData();
-      
+
+      const workspaceId = themes.find(item => item.id === themeId)?.workspaceId;
+      const terms = await getTerms(workspaceId);
       toast({
         title: "Success",
-        description: "Theme updated successfully"
+        description: `${terms.theme.singular} updated successfully`
       });
     } catch (error) {
       console.error('Error updating theme:', error);
@@ -906,7 +937,7 @@ export function useTasks() {
         variant: "destructive"
       });
     }
-  }, [toast]);
+  }, [toast, themes]);
 
   return {
     tasks,
