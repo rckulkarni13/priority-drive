@@ -229,19 +229,20 @@ export function CalendarView({
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Select a Date</CardTitle>
-              <QuickCreateMenu
-                themes={themes}
-                tasks={allTasks}
-                strategicPillars={strategicPillars}
-                domains={domains}
-                onTaskCreate={onTaskCreate}
-                onThemeCreate={onThemeCreate}
-                onPillarCreate={onPillarCreate}
-                onDomainCreate={onDomainCreate}
-                workspaceId={workspaceId}
-                workspaceType={workspaceType}
-                variant="compact"
-              />
+                <QuickCreateMenu
+                  themes={themes}
+                  tasks={allTasks}
+                  strategicPillars={strategicPillars}
+                  domains={domains}
+                  onTaskCreate={onTaskCreate}
+                  onThemeCreate={onThemeCreate}
+                  onApplyChecklist={onApplyChecklist}
+                  onPillarCreate={onPillarCreate}
+                  onDomainCreate={onDomainCreate}
+                  workspaceId={workspaceId}
+                  workspaceType={workspaceType}
+                  variant="compact"
+                />
             </div>
           </CardHeader>
           <CardContent className="flex justify-center py-6">
