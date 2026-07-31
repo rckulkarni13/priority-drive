@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Domain } from "@/types";
+import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 
 const domainSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -39,6 +40,8 @@ interface DomainFormDialogProps {
 
 export function DomainFormDialog({ children, onDomainCreate, workspaceId }: DomainFormDialogProps) {
   const [open, setOpen] = useState(false);
+  const terms = useWorkspaceTerms(workspaceId);
+  const label = terms.domain.singular;
 
   const form = useForm<DomainFormData>({
     resolver: zodResolver(domainSchema),
@@ -67,9 +70,9 @@ export function DomainFormDialog({ children, onDomainCreate, workspaceId }: Doma
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Create New Domain</DialogTitle>
+          <DialogTitle>Create New {label}</DialogTitle>
           <DialogDescription>
-            Add a new domain to organize your strategic initiatives.
+            Add a new {label.toLowerCase()} to organize your work.
           </DialogDescription>
         </DialogHeader>
         
@@ -80,9 +83,9 @@ export function DomainFormDialog({ children, onDomainCreate, workspaceId }: Doma
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Domain Name</FormLabel>
+                  <FormLabel>{label} Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter domain name..." {...field} />
+                    <Input placeholder={`Enter ${label.toLowerCase()} name...`} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -97,7 +100,7 @@ export function DomainFormDialog({ children, onDomainCreate, workspaceId }: Doma
                   <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe the domain..."
+                      placeholder={`Describe the ${label.toLowerCase()}...`}
                       className="min-h-[80px]"
                       {...field}
                     />
@@ -133,7 +136,7 @@ export function DomainFormDialog({ children, onDomainCreate, workspaceId }: Doma
               >
                 Cancel
               </Button>
-              <Button type="submit">Create Domain</Button>
+              <Button type="submit">Create {label}</Button>
             </div>
           </form>
         </Form>
