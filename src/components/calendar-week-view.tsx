@@ -289,6 +289,7 @@ export function CalendarWeekView({
               domains={domains}
               onTaskCreate={onTaskCreate}
               onThemeCreate={onThemeCreate}
+              onApplyChecklist={onApplyChecklist}
               onPillarCreate={onPillarCreate}
               onDomainCreate={onDomainCreate}
               workspaceId={workspaceId}
