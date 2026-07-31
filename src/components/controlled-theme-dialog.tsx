@@ -6,7 +6,8 @@ interface ControlledThemeDialogProps {
   isOpen: boolean;
   pillarId?: string;
   strategicPillars: StrategicPillar[];
-  onThemeCreate: (themeData: Omit<Theme, "id" | "createdDate">) => void;
+  onThemeCreate: (themeData: Omit<Theme, "id" | "createdDate">) => Promise<string>;
+  onApplyChecklist?: (themeId: string, itemTitles: string[]) => void | Promise<void>;
   onClose: () => void;
   workspaceId: string;
 }
@@ -16,6 +17,7 @@ export function ControlledThemeDialog({
   pillarId,
   strategicPillars,
   onThemeCreate,
+  onApplyChecklist,
   onClose,
   workspaceId
 }: ControlledThemeDialogProps) {
@@ -34,10 +36,8 @@ export function ControlledThemeDialog({
       key={pillarId || 'new-theme'}
       strategicPillars={strategicPillars}
       defaultPillarId={pillarId}
-      onThemeCreate={(themeData) => {
-        onThemeCreate(themeData);
-        onClose();
-      }}
+      onThemeCreate={onThemeCreate}
+      onApplyChecklist={onApplyChecklist}
       onOpenChange={(open) => {
         if (!open) onClose();
       }}
