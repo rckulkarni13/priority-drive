@@ -105,7 +105,7 @@ export function EditDomainDialog({ domain, open, onOpenChange, onDomainUpdate }:
                   <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe the domain..."
+                      placeholder={`Describe the ${label.toLowerCase()}...`}
                       className="min-h-[80px]"
                       {...field}
                     />
