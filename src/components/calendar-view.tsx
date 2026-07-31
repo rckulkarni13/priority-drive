@@ -81,7 +81,8 @@ interface CalendarViewProps {
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
   onTaskCreate: (taskData: any) => void;
-  onThemeCreate: (themeData: any) => void;
+  onThemeCreate: (themeData: any) => Promise<string>;
+  onApplyChecklist?: (theme: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   onPillarCreate: (pillarData: any) => void;
   onDomainCreate: (domainData: any) => void;
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
@@ -102,6 +103,7 @@ export function CalendarView({
   onCreateSubtask,
   onTaskCreate,
   onThemeCreate,
+  onApplyChecklist,
   onPillarCreate,
   onDomainCreate,
   onTaskUpdate,
@@ -227,19 +229,20 @@ export function CalendarView({
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Select a Date</CardTitle>
-              <QuickCreateMenu
-                themes={themes}
-                tasks={allTasks}
-                strategicPillars={strategicPillars}
-                domains={domains}
-                onTaskCreate={onTaskCreate}
-                onThemeCreate={onThemeCreate}
-                onPillarCreate={onPillarCreate}
-                onDomainCreate={onDomainCreate}
-                workspaceId={workspaceId}
-                workspaceType={workspaceType}
-                variant="compact"
-              />
+                <QuickCreateMenu
+                  themes={themes}
+                  tasks={allTasks}
+                  strategicPillars={strategicPillars}
+                  domains={domains}
+                  onTaskCreate={onTaskCreate}
+                  onThemeCreate={onThemeCreate}
+                  onApplyChecklist={onApplyChecklist}
+                  onPillarCreate={onPillarCreate}
+                  onDomainCreate={onDomainCreate}
+                  workspaceId={workspaceId}
+                  workspaceType={workspaceType}
+                  variant="compact"
+                />
             </div>
           </CardHeader>
           <CardContent className="flex justify-center py-6">

@@ -24,7 +24,8 @@ interface QuickCreateMenuProps {
   strategicPillars: StrategicPillar[];
   domains: Domain[];
   onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order' | 'status' | 'type'>) => void;
-  onThemeCreate: (themeData: Omit<Theme, 'id' | 'createdDate'>) => void;
+  onThemeCreate: (themeData: Omit<Theme, 'id' | 'createdDate'>) => Promise<string>;
+  onApplyChecklist?: (theme: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   onPillarCreate: (pillarData: Omit<StrategicPillar, 'id' | 'createdDate'>) => void;
   onDomainCreate: (domainData: Omit<Domain, 'id' | 'createdDate'>) => void;
   defaultParentTaskId?: string;
@@ -41,6 +42,7 @@ export function QuickCreateMenu({
   domains,
   onTaskCreate,
   onThemeCreate,
+  onApplyChecklist,
   onPillarCreate,
   onDomainCreate,
   defaultParentTaskId,
@@ -134,19 +136,18 @@ export function QuickCreateMenu({
             <button ref={triggerRef} style={{ display: 'none' }} />
           </SubtaskFormDialog>
         ) : null;
-      case 'theme':
-        return (
-          <ThemeFormDialog
-            strategicPillars={strategicPillars}
-            onThemeCreate={(data) => {
-              onThemeCreate(data);
-              setOpenDialog(null);
-            }}
-            workspaceId={workspaceId}
-          >
-            <button ref={triggerRef} style={{ display: 'none' }} />
-          </ThemeFormDialog>
-        );
+        case 'theme':
+          return (
+            <ThemeFormDialog
+              strategicPillars={strategicPillars}
+              onThemeCreate={onThemeCreate}
+              onApplyChecklist={onApplyChecklist}
+              onOpenChange={() => setOpenDialog(null)}
+              workspaceId={workspaceId}
+            >
+              <button ref={triggerRef} style={{ display: 'none' }} />
+            </ThemeFormDialog>
+          );
       case 'pillar':
         return (
           <PillarFormDialog

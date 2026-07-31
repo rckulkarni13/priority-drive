@@ -401,6 +401,7 @@ const Index = () => {
             onTaskClick={handleTaskView}
             onTaskCreate={createTask}
             onThemeCreate={createTheme}
+            onApplyChecklist={applyChecklistToTheme}
             onPillarCreate={createStrategicPillar}
             onDomainCreate={createDomain}
             onTaskUpdate={updateTask}
@@ -550,6 +551,7 @@ const Index = () => {
                     domains={filteredDomains}
                     onTaskCreate={createTask}
                     onThemeCreate={createTheme}
+                    onApplyChecklist={applyChecklistToTheme}
                     onPillarCreate={createStrategicPillar}
                     onDomainCreate={createDomain}
                     workspaceId={currentWorkspace.id}
@@ -687,17 +689,18 @@ const Index = () => {
         />
       )}
 
-      {/* Create Theme Dialog */}
-      {currentWorkspace && (
-        <ControlledThemeDialog
-          isOpen={!!showCreateTheme && showCreateTheme !== ''}
-          pillarId={showCreateTheme && showCreateTheme !== 'new-theme' ? showCreateTheme : undefined}
-          strategicPillars={filteredPillars}
-          onThemeCreate={createTheme}
-          onClose={() => setShowCreateTheme('')}
-          workspaceId={currentWorkspace.id}
-        />
-      )}
+        {/* Create Theme Dialog */}
+        {currentWorkspace && (
+          <ControlledThemeDialog
+            isOpen={!!showCreateTheme && showCreateTheme !== ''}
+            pillarId={showCreateTheme && showCreateTheme !== 'new-theme' ? showCreateTheme : undefined}
+            strategicPillars={filteredPillars}
+            onThemeCreate={createTheme}
+            onApplyChecklist={applyChecklistToTheme}
+            onClose={() => setShowCreateTheme('')}
+            workspaceId={currentWorkspace.id}
+          />
+        )}
 
       {/* Create Pillar Dialog */}
       {currentWorkspace && (
