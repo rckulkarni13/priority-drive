@@ -95,7 +95,7 @@ export function DomainDetailDialog({
     <Dialog open={!!domain} onOpenChange={() => onClose()}>
       <DialogContent className="sm:max-w-[800px] max-h-[95vh] p-0 overflow-hidden">
         <DialogHeader className="sr-only">
-          <DialogTitle>Domain Details</DialogTitle>
+          <DialogTitle>{label} Details</DialogTitle>
         </DialogHeader>
         <div className="p-6 border-b bg-background/50">
           <div className="flex items-start justify-between gap-4">
