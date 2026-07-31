@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Domain } from "@/types";
+import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 
 const domainSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -38,6 +39,8 @@ interface EditDomainDialogProps {
 }
 
 export function EditDomainDialog({ domain, open, onOpenChange, onDomainUpdate }: EditDomainDialogProps) {
+  const terms = useWorkspaceTerms(domain?.workspaceId);
+  const label = terms.domain.singular;
   const form = useForm<DomainFormData>({
     resolver: zodResolver(domainSchema),
     defaultValues: {
@@ -72,9 +75,9 @@ export function EditDomainDialog({ domain, open, onOpenChange, onDomainUpdate }:
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Edit Domain</DialogTitle>
+          <DialogTitle>Edit {label}</DialogTitle>
           <DialogDescription>
-            Update the domain details.
+            Update the {label.toLowerCase()} details.
           </DialogDescription>
         </DialogHeader>
         
@@ -85,9 +88,9 @@ export function EditDomainDialog({ domain, open, onOpenChange, onDomainUpdate }:
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Domain Name</FormLabel>
+                  <FormLabel>{label} Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter domain name..." {...field} />
+                    <Input placeholder={`Enter ${label.toLowerCase()} name...`} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
