@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { StrategicPillar, Domain, Theme } from "@/types";
+import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 
 const pillarSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -64,6 +65,8 @@ export function PillarDetailDialog({
   onDomainView
 }: PillarDetailDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const terms = useWorkspaceTerms(pillar?.workspaceId);
+  const label = terms.pillar.singular;
   
   const form = useForm<PillarFormData>({
     resolver: zodResolver(pillarSchema),
@@ -109,7 +112,7 @@ export function PillarDetailDialog({
     <Dialog open={!!pillar} onOpenChange={() => onClose()}>
       <DialogContent className="sm:max-w-[800px] max-h-[95vh] p-0 overflow-hidden">
         <DialogHeader className="sr-only">
-          <DialogTitle>Strategic Pillar Details</DialogTitle>
+          <DialogTitle>{label} Details</DialogTitle>
         </DialogHeader>
         <div className="p-6 border-b bg-background/50">
           <div className="flex items-start justify-between gap-4">
@@ -128,7 +131,7 @@ export function PillarDetailDialog({
                 )}
                 <Badge variant="default" className="text-xs">
                   <Target className="w-3 h-3 mr-1" />
-                  Strategic Pillar
+                  {label}
                 </Badge>
                 <span className="text-xs text-muted-foreground">
                   Created {format(pillar.createdDate, 'MMM d, yyyy')}
@@ -147,7 +150,7 @@ export function PillarDetailDialog({
                           <Input 
                             {...field} 
                             className="text-xl font-semibold border-0 px-0 h-auto bg-transparent focus-visible:ring-0"
-                            placeholder="Enter pillar title..."
+                            placeholder={`Enter ${label.toLowerCase()} title...`}
                           />
                         </FormControl>
                         <FormMessage />
@@ -253,7 +256,7 @@ export function PillarDetailDialog({
                   name="domainIds"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">Domains</FormLabel>
+                      <FormLabel className="text-sm font-medium">{terms.domain.plural}</FormLabel>
                       <div className="space-y-2 max-h-32 overflow-y-auto">
                         {domains.map((domain) => (
                           <div key={domain.id} className="flex items-center space-x-2">
@@ -308,7 +311,7 @@ export function PillarDetailDialog({
               <div>
                 <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
                   <Globe className="w-4 h-4" />
-                  Domains
+                  {terms.domain.plural}
                 </h3>
                 {associatedDomains.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
@@ -325,7 +328,7 @@ export function PillarDetailDialog({
                     ))}
                   </div>
                 ) : (
-                  <span className="text-sm text-muted-foreground italic">No domains assigned</span>
+                  <span className="text-sm text-muted-foreground italic">No {terms.domain.plural.toLowerCase()} assigned</span>
                 )}
               </div>
 
@@ -335,7 +338,7 @@ export function PillarDetailDialog({
               <div>
                 <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
                   <Tag className="w-4 h-4" />
-                  Themes ({pillarThemes.length})
+                  {terms.theme.plural} ({pillarThemes.length})
                 </h3>
                 {pillarThemes.length > 0 ? (
                   <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -365,7 +368,7 @@ export function PillarDetailDialog({
                   </div>
                 ) : (
                   <div className="text-sm text-muted-foreground italic bg-muted/30 rounded-lg p-4">
-                    No themes associated with this pillar yet
+                    No {terms.theme.plural.toLowerCase()} associated with this {label.toLowerCase()} yet
                   </div>
                 )}
               </div>
