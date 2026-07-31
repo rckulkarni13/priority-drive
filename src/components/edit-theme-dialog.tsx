@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Theme, StrategicPillar } from "@/types";
+import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 
 const themeSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -40,6 +41,8 @@ interface EditThemeDialogProps {
 }
 
 export function EditThemeDialog({ theme, strategicPillars, open, onOpenChange, onThemeUpdate }: EditThemeDialogProps) {
+  const terms = useWorkspaceTerms(theme?.workspaceId);
+  const label = terms.theme.singular;
   const form = useForm<ThemeFormData>({
     resolver: zodResolver(themeSchema),
     defaultValues: {
@@ -77,9 +80,9 @@ export function EditThemeDialog({ theme, strategicPillars, open, onOpenChange, o
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Edit Theme</DialogTitle>
+          <DialogTitle>Edit {label}</DialogTitle>
           <DialogDescription>
-            Update the theme details.
+            Update the {label.toLowerCase()} details.
           </DialogDescription>
         </DialogHeader>
         
@@ -90,9 +93,9 @@ export function EditThemeDialog({ theme, strategicPillars, open, onOpenChange, o
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Theme Title</FormLabel>
+                  <FormLabel>{label} Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter theme title..." {...field} />
+                    <Input placeholder={`Enter ${label.toLowerCase()} title...`} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -107,7 +110,7 @@ export function EditThemeDialog({ theme, strategicPillars, open, onOpenChange, o
                   <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe the theme..."
+                      placeholder={`Describe the ${label.toLowerCase()}...`}
                       className="min-h-[80px]"
                       {...field}
                     />
@@ -140,7 +143,7 @@ export function EditThemeDialog({ theme, strategicPillars, open, onOpenChange, o
               name="strategicPillarIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Strategic Pillars</FormLabel>
+                  <FormLabel>{terms.pillar.plural}</FormLabel>
                   <div className="space-y-2">
                     {strategicPillars.map((pillar) => (
                       <div key={pillar.id} className="flex items-center space-x-2">
