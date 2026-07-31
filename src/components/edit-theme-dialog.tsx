@@ -26,7 +26,7 @@ import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 const themeSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  strategicPillarIds: z.array(z.string()).min(1, "Please select at least one strategic pillar"),
+  strategicPillarIds: z.array(z.string()).min(1, "Please select at least one"),
   color: z.string().min(1, "Color is required"),
 });
 
