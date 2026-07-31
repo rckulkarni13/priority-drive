@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import { PillarFormDialog } from "./pillar-form-dialog";
 import { Domain, StrategicPillar } from "@/types";
 
@@ -19,19 +18,13 @@ export function ControlledPillarDialog({
   onClose,
   workspaceId
 }: ControlledPillarDialogProps) {
-  const triggerRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (isOpen && triggerRef.current) {
-      triggerRef.current.click();
-    }
-  }, [isOpen, domainId]);
-
   if (!isOpen) return null;
 
   return (
     <PillarFormDialog
       key={domainId || 'new-pillar'}
+      defaultOpen
+      onOpenChange={(o) => { if (!o) onClose(); }}
       domains={domains}
       defaultDomainId={domainId}
       onPillarCreate={(pillarData) => {
@@ -39,8 +32,6 @@ export function ControlledPillarDialog({
         onClose();
       }}
       workspaceId={workspaceId}
-    >
-      <button ref={triggerRef} style={{ display: 'none' }} />
-    </PillarFormDialog>
+    />
   );
 }

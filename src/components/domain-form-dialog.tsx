@@ -33,13 +33,20 @@ const domainSchema = z.object({
 type DomainFormData = z.infer<typeof domainSchema>;
 
 interface DomainFormDialogProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
   onDomainCreate: (domainData: Omit<Domain, "id" | "createdDate">) => void;
   workspaceId: string;
 }
 
-export function DomainFormDialog({ children, onDomainCreate, workspaceId }: DomainFormDialogProps) {
-  const [open, setOpen] = useState(false);
+export function DomainFormDialog({ children, defaultOpen = false, onOpenChange, onDomainCreate, workspaceId }: DomainFormDialogProps) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  const handleOpenChange = (o: boolean) => {
+    setOpen(o);
+    onOpenChange?.(o);
+  };
   const terms = useWorkspaceTerms(workspaceId);
   const label = terms.domain.singular;
 
@@ -60,14 +67,12 @@ export function DomainFormDialog({ children, onDomainCreate, workspaceId }: Doma
       color: data.color
     });
     form.reset();
-    setOpen(false);
+    handleOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      {children ? <DialogTrigger asChild>{children}</DialogTrigger> : null}
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Create New {label}</DialogTitle>
@@ -132,7 +137,7 @@ export function DomainFormDialog({ children, onDomainCreate, workspaceId }: Doma
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={() => handleOpenChange(false)}
               >
                 Cancel
               </Button>

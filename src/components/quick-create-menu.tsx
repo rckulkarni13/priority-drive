@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -52,14 +52,7 @@ export function QuickCreateMenu({
   workspaceType
 }: QuickCreateMenuProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
   const terminology = getWorkspaceTerminology(workspaceType);
-
-  useEffect(() => {
-    if (openDialog && triggerRef.current) {
-      triggerRef.current.click();
-    }
-  }, [openDialog]);
 
   // Organize options by hierarchy level
   const hierarchyOptions = [
@@ -110,6 +103,8 @@ export function QuickCreateMenu({
       case 'task':
         return (
           <TaskFormDialog
+            defaultOpen
+            onOpenChange={(o) => { if (!o) setOpenDialog(null); }}
             themes={themes}
             tasks={tasks}
             onTaskCreate={(data) => {
@@ -117,13 +112,13 @@ export function QuickCreateMenu({
               setOpenDialog(null);
             }}
             workspaceId={workspaceId}
-          >
-            <button ref={triggerRef} style={{ display: 'none' }} />
-          </TaskFormDialog>
+          />
         );
       case 'subtask':
         return defaultParentTaskId ? (
           <SubtaskFormDialog
+            defaultOpen
+            onOpenChange={(o) => { if (!o) setOpenDialog(null); }}
             themes={themes}
             tasks={tasks}
             parentTaskId={defaultParentTaskId}
@@ -132,46 +127,43 @@ export function QuickCreateMenu({
               setOpenDialog(null);
             }}
             workspaceId={workspaceId}
-          >
-            <button ref={triggerRef} style={{ display: 'none' }} />
-          </SubtaskFormDialog>
+          />
         ) : null;
         case 'theme':
           return (
             <ThemeFormDialog
+              defaultOpen
               strategicPillars={strategicPillars}
               onThemeCreate={onThemeCreate}
               onApplyChecklist={onApplyChecklist}
-              onOpenChange={() => setOpenDialog(null)}
+              onOpenChange={(o) => { if (!o) setOpenDialog(null); }}
               workspaceId={workspaceId}
-            >
-              <button ref={triggerRef} style={{ display: 'none' }} />
-            </ThemeFormDialog>
+            />
           );
       case 'pillar':
         return (
           <PillarFormDialog
+            defaultOpen
+            onOpenChange={(o) => { if (!o) setOpenDialog(null); }}
             domains={domains}
             onPillarCreate={(data) => {
               onPillarCreate(data);
               setOpenDialog(null);
             }}
             workspaceId={workspaceId}
-          >
-            <button ref={triggerRef} style={{ display: 'none' }} />
-          </PillarFormDialog>
+          />
         );
       case 'domain':
         return (
           <DomainFormDialog
+            defaultOpen
+            onOpenChange={(o) => { if (!o) setOpenDialog(null); }}
             onDomainCreate={(data) => {
               onDomainCreate(data);
               setOpenDialog(null);
             }}
             workspaceId={workspaceId}
-          >
-            <button ref={triggerRef} style={{ display: 'none' }} />
-          </DomainFormDialog>
+          />
         );
       default:
         return null;

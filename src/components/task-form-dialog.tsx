@@ -50,7 +50,9 @@ const taskSchema = z.object({
 type TaskFormData = z.infer<typeof taskSchema>;
 
 interface TaskFormDialogProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
   themes: Theme[];
   tasks: Task[];
   onTaskCreate: (
@@ -62,9 +64,14 @@ interface TaskFormDialogProps {
   workspaceId: string;
 }
 
-export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultParentTaskId, defaultThemeId, defaultType = 'task', workspaceId }: TaskFormDialogProps) {
+export function TaskFormDialog({ children, defaultOpen = false, onOpenChange, themes, tasks, onTaskCreate, defaultParentTaskId, defaultThemeId, defaultType = 'task', workspaceId }: TaskFormDialogProps) {
   const themeLabel = useWorkspaceTerms(workspaceId).theme.singular;
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
+
+  const handleOpenChange = (o: boolean) => {
+    setOpen(o);
+    onOpenChange?.(o);
+  };
 
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
@@ -90,14 +97,12 @@ export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultP
       workspaceId,
     });
     form.reset();
-    setOpen(false);
+    handleOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      {children ? <DialogTrigger asChild>{children}</DialogTrigger> : null}
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
         <DialogTitle>
