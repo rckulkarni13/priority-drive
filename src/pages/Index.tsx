@@ -551,6 +551,7 @@ const Index = () => {
                     domains={filteredDomains}
                     onTaskCreate={createTask}
                     onThemeCreate={createTheme}
+                    onApplyChecklist={applyChecklistToTheme}
                     onPillarCreate={createStrategicPillar}
                     onDomainCreate={createDomain}
                     workspaceId={currentWorkspace.id}
