@@ -731,7 +731,7 @@ export function useTasks() {
         variant: "destructive"
       });
     }
-  }, [toast]);
+  }, [toast, strategicPillars]);
 
   const deleteTheme = useCallback(async (themeId: string) => {
     try {
@@ -759,7 +759,7 @@ export function useTasks() {
         variant: "destructive"
       });
     }
-  }, [toast]);
+  }, [toast, themes]);
 
   const updateTaskOrder = useCallback(async (taskOrders: { id: string; order: number }[]) => {
     try {
@@ -825,7 +825,7 @@ export function useTasks() {
         variant: "destructive"
       });
     }
-  }, [toast]);
+  }, [toast, domains]);
 
   const updateStrategicPillar = useCallback(async (pillarId: string, updates: Partial<StrategicPillar>) => {
     try {
@@ -881,7 +881,7 @@ export function useTasks() {
         variant: "destructive"
       });
     }
-  }, [toast]);
+  }, [toast, strategicPillars]);
 
   const updateTheme = useCallback(async (themeId: string, updates: Partial<Theme>) => {
     try {
@@ -937,7 +937,7 @@ export function useTasks() {
         variant: "destructive"
       });
     }
-  }, [toast]);
+  }, [toast, themes]);
 
   return {
     tasks,
