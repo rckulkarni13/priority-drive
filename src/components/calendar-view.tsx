@@ -81,7 +81,8 @@ interface CalendarViewProps {
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
   onTaskCreate: (taskData: any) => void;
-  onThemeCreate: (themeData: any) => void;
+  onThemeCreate: (themeData: any) => Promise<string>;
+  onApplyChecklist?: (themeId: string, itemTitles: string[]) => void | Promise<void>;
   onPillarCreate: (pillarData: any) => void;
   onDomainCreate: (domainData: any) => void;
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
@@ -102,6 +103,7 @@ export function CalendarView({
   onCreateSubtask,
   onTaskCreate,
   onThemeCreate,
+  onApplyChecklist,
   onPillarCreate,
   onDomainCreate,
   onTaskUpdate,
