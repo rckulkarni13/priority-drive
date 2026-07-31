@@ -44,7 +44,8 @@ const themeSchema = z.object({
 type ThemeFormData = z.infer<typeof themeSchema>;
 
 interface ThemeFormDialogProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  defaultOpen?: boolean;
   strategicPillars: StrategicPillar[];
   defaultPillarId?: string;
   onThemeCreate: (themeData: Omit<Theme, "id" | "createdDate">) => Promise<string>;
@@ -53,8 +54,8 @@ interface ThemeFormDialogProps {
   workspaceId: string;
 }
 
-export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, onThemeCreate, onApplyChecklist, onOpenChange, workspaceId }: ThemeFormDialogProps) {
-  const [open, setOpen] = useState(false);
+export function ThemeFormDialog({ children, defaultOpen = false, strategicPillars, defaultPillarId, onThemeCreate, onApplyChecklist, onOpenChange, workspaceId }: ThemeFormDialogProps) {
+  const [open, setOpen] = useState(defaultOpen);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const terms = useWorkspaceTerms(workspaceId);
   const label = terms.theme.singular;
@@ -107,9 +108,7 @@ export function ThemeFormDialog({ children, strategicPillars, defaultPillarId, o
 
   return (
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); onOpenChange?.(o); }}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      {children ? <DialogTrigger asChild>{children}</DialogTrigger> : null}
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Create New {label}</DialogTitle>

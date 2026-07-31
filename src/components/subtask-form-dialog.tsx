@@ -2,7 +2,9 @@ import { TaskFormDialog } from "./task-form-dialog";
 import { Theme, Task } from "@/types";
 
 interface SubtaskFormDialogProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
   themes: Theme[];
   tasks: Task[];
   parentTaskId: string;
@@ -12,7 +14,9 @@ interface SubtaskFormDialogProps {
 }
 
 export function SubtaskFormDialog({ 
-  children, 
+  children,
+  defaultOpen = false,
+  onOpenChange,
   themes, 
   tasks, 
   parentTaskId, 
@@ -22,6 +26,8 @@ export function SubtaskFormDialog({
 }: SubtaskFormDialogProps) {
   return (
     <TaskFormDialog
+      defaultOpen={defaultOpen}
+      onOpenChange={onOpenChange}
       themes={themes}
       tasks={tasks}
       onTaskCreate={onTaskCreate}

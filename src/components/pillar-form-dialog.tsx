@@ -42,15 +42,22 @@ const pillarSchema = z.object({
 type PillarFormData = z.infer<typeof pillarSchema>;
 
 interface PillarFormDialogProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
   domains: Domain[];
   defaultDomainId?: string;
   onPillarCreate: (pillarData: Omit<StrategicPillar, "id" | "createdDate">) => void;
   workspaceId: string;
 }
 
-export function PillarFormDialog({ children, domains, defaultDomainId, onPillarCreate, workspaceId }: PillarFormDialogProps) {
-  const [open, setOpen] = useState(false);
+export function PillarFormDialog({ children, defaultOpen = false, onOpenChange, domains, defaultDomainId, onPillarCreate, workspaceId }: PillarFormDialogProps) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  const handleOpenChange = (o: boolean) => {
+    setOpen(o);
+    onOpenChange?.(o);
+  };
   const terms = useWorkspaceTerms(workspaceId);
   const label = terms.pillar.singular;
   const domainLabel = terms.domain;
@@ -77,14 +84,12 @@ export function PillarFormDialog({ children, domains, defaultDomainId, onPillarC
       color: data.color
     });
     form.reset();
-    setOpen(false);
+    handleOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      {children ? <DialogTrigger asChild>{children}</DialogTrigger> : null}
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Create New {label}</DialogTitle>
