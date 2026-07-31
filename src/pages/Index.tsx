@@ -401,6 +401,7 @@ const Index = () => {
             onTaskClick={handleTaskView}
             onTaskCreate={createTask}
             onThemeCreate={createTheme}
+            onApplyChecklist={applyChecklistToTheme}
             onPillarCreate={createStrategicPillar}
             onDomainCreate={createDomain}
             onTaskUpdate={updateTask}
