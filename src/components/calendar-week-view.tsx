@@ -163,7 +163,7 @@ interface CalendarWeekViewProps {
   onTaskClick?: (task: Task) => void;
   onTaskCreate: (taskData: any) => void;
   onThemeCreate: (themeData: any) => Promise<string>;
-  onApplyChecklist?: (themeId: string, itemTitles: string[]) => void | Promise<void>;
+  onApplyChecklist?: (theme: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   onPillarCreate: (pillarData: any) => void;
   onDomainCreate: (domainData: any) => void;
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
