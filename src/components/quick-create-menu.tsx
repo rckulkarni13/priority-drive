@@ -25,7 +25,7 @@ interface QuickCreateMenuProps {
   domains: Domain[];
   onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order' | 'status' | 'type'>) => void;
   onThemeCreate: (themeData: Omit<Theme, 'id' | 'createdDate'>) => Promise<string>;
-  onApplyChecklist?: (themeId: string, itemTitles: string[]) => void | Promise<void>;
+  onApplyChecklist?: (theme: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   onPillarCreate: (pillarData: Omit<StrategicPillar, 'id' | 'createdDate'>) => void;
   onDomainCreate: (domainData: Omit<Domain, 'id' | 'createdDate'>) => void;
   defaultParentTaskId?: string;
