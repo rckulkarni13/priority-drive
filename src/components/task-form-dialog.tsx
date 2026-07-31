@@ -63,6 +63,7 @@ interface TaskFormDialogProps {
 }
 
 export function TaskFormDialog({ children, themes, tasks, onTaskCreate, defaultParentTaskId, defaultThemeId, defaultType = 'task', workspaceId }: TaskFormDialogProps) {
+  const themeLabel = useWorkspaceTerms(workspaceId).theme.singular;
   const [open, setOpen] = useState(false);
 
   const form = useForm<TaskFormData>({
