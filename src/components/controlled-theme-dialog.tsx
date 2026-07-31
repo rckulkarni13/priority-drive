@@ -7,7 +7,7 @@ interface ControlledThemeDialogProps {
   pillarId?: string;
   strategicPillars: StrategicPillar[];
   onThemeCreate: (themeData: Omit<Theme, "id" | "createdDate">) => Promise<string>;
-  onApplyChecklist?: (themeId: string, itemTitles: string[]) => void | Promise<void>;
+  onApplyChecklist?: (theme: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   onClose: () => void;
   workspaceId: string;
 }
