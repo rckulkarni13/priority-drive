@@ -33,6 +33,7 @@ import { CalendarIcon, X } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Task, Theme } from "@/types";
+import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -62,6 +63,7 @@ export function EditTaskDialog({
   onTaskUpdate, 
   onClose 
 }: EditTaskDialogProps) {
+  const themeLabel = useWorkspaceTerms(task?.workspaceId).theme.singular;
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
@@ -194,18 +196,18 @@ export function EditTaskDialog({
                 name="themeIds"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Theme (Optional)</FormLabel>
+                    <FormLabel>{themeLabel} (Optional)</FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(value === "none" ? [] : [value])}
                       value={field.value?.[0] || "none"}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select theme" />
+                          <SelectValue placeholder={`Select ${themeLabel.toLowerCase()}`} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="none">No Theme</SelectItem>
+                        <SelectItem value="none">No {themeLabel}</SelectItem>
                         {themes.map((theme) => (
                           <SelectItem key={theme.id} value={theme.id}>
                             {theme.title}
