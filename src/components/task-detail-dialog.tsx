@@ -51,6 +51,7 @@ import {
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Task, Theme } from "@/types";
+import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 import { PriorityBadge } from "@/components/ui/priority-badge";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { TaskComments } from "@/components/task-comments";
@@ -104,6 +105,7 @@ export function TaskDetailDialog({
 }: TaskDetailDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'comments' | 'subtasks'>('overview');
+  const themeTerms = useWorkspaceTerms(workspaceId).theme;
   
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
@@ -390,7 +392,7 @@ export function TaskDetailDialog({
                     <div className="space-y-3">
                       <h3 className="text-sm font-medium flex items-center gap-2">
                         <Tag className="w-4 h-4" />
-                        Themes
+                        {themeTerms.plural}
                       </h3>
                       {selectedThemes.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
@@ -407,7 +409,7 @@ export function TaskDetailDialog({
                           ))}
                         </div>
                       ) : (
-                        <span className="text-sm text-muted-foreground italic">No themes assigned</span>
+                        <span className="text-sm text-muted-foreground italic">No {themeTerms.plural.toLowerCase()} assigned</span>
                       )}
                     </div>
                   </div>
@@ -453,7 +455,7 @@ export function TaskDetailDialog({
                               <FormItem>
                                 <FormLabel className="text-sm font-medium flex items-center gap-2">
                                   <Tag className="w-4 h-4" />
-                                  Theme
+                                  {themeTerms.singular}
                                 </FormLabel>
                                 <Select
                                   onValueChange={(value) => field.onChange(value === "none" ? [] : [value])}
@@ -461,11 +463,11 @@ export function TaskDetailDialog({
                                 >
                                   <FormControl>
                                     <SelectTrigger>
-                                      <SelectValue placeholder="Select theme" />
+                                      <SelectValue placeholder={`Select ${themeTerms.singular.toLowerCase()}`} />
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    <SelectItem value="none">No theme</SelectItem>
+                                    <SelectItem value="none">No {themeTerms.singular.toLowerCase()}</SelectItem>
                                     {themes.map((theme) => (
                                       <SelectItem key={theme.id} value={theme.id}>
                                         {theme.title}
