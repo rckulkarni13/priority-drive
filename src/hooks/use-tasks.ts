@@ -496,7 +496,7 @@ export function useTasks() {
     }
   }, [toast]);
 
-  const createTheme = useCallback(async (themeData: Omit<Theme, "id" | "createdDate">) => {
+  const createTheme = useCallback(async (themeData: Omit<Theme, "id" | "createdDate">): Promise<string> => {
     try {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
@@ -537,6 +537,8 @@ export function useTasks() {
         title: "Success",
         description: `${terms.theme.singular} created successfully`
       });
+
+      return theme.id;
     } catch (error) {
       console.error('Error creating theme:', error);
       toast({
@@ -544,6 +546,7 @@ export function useTasks() {
         description: "Failed to create theme",
         variant: "destructive"
       });
+      throw error;
     }
   }, [toast]);
 
