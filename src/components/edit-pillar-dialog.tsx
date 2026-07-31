@@ -41,6 +41,8 @@ interface EditPillarDialogProps {
 }
 
 export function EditPillarDialog({ pillar, domains, open, onOpenChange, onPillarUpdate }: EditPillarDialogProps) {
+  const terms = useWorkspaceTerms(pillar?.workspaceId);
+  const label = terms.pillar.singular;
   const form = useForm<PillarFormData>({
     resolver: zodResolver(pillarSchema),
     defaultValues: {
@@ -81,7 +83,7 @@ export function EditPillarDialog({ pillar, domains, open, onOpenChange, onPillar
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Edit Strategic Pillar</DialogTitle>
+          <DialogTitle>Edit {label}</DialogTitle>
           <DialogDescription>
             Update the strategic pillar details.
           </DialogDescription>
@@ -94,9 +96,9 @@ export function EditPillarDialog({ pillar, domains, open, onOpenChange, onPillar
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pillar Title</FormLabel>
+                  <FormLabel>{label} Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter pillar title..." {...field} />
+                    <Input placeholder={`Enter ${label.toLowerCase()} title...`} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -111,7 +113,7 @@ export function EditPillarDialog({ pillar, domains, open, onOpenChange, onPillar
                   <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe the strategic pillar..."
+                      placeholder={`Describe the ${label.toLowerCase()}...`}
                       className="min-h-[80px]"
                       {...field}
                     />
@@ -158,7 +160,7 @@ export function EditPillarDialog({ pillar, domains, open, onOpenChange, onPillar
               name="domainIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Associated Domains</FormLabel>
+                  <FormLabel>Associated {terms.domain.plural}</FormLabel>
                   <div className="space-y-2">
                     {domains.map((domain) => (
                       <div key={domain.id} className="flex items-center space-x-2">
