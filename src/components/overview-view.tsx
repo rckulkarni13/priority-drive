@@ -236,7 +236,7 @@ export function OverviewView({
         themes={themes}
         onTaskOpen={onTaskOpen}
         onTaskToggleStatus={onTaskToggleStatus}
-        emptyMessage="Nothing overdue. Nice work."
+        emptyMessage="Nothing overdue."
       />
 
       <Section
@@ -249,7 +249,7 @@ export function OverviewView({
         themes={themes}
         onTaskOpen={onTaskOpen}
         onTaskToggleStatus={onTaskToggleStatus}
-        emptyMessage="Nothing scheduled for today."
+        emptyMessage="Nothing due today."
       />
 
       <Section
@@ -262,7 +262,7 @@ export function OverviewView({
         themes={themes}
         onTaskOpen={onTaskOpen}
         onTaskToggleStatus={onTaskToggleStatus}
-        emptyMessage="Nothing coming up in the next 7 days."
+        emptyMessage="Nothing coming up — add a task to get started."
       />
     </div>
   );
