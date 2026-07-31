@@ -167,6 +167,18 @@ export function HierarchyView({
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
+                          onDomainView?.(domain);
+                        }}
+                        title={`Open ${terminology.domain.singular.toLowerCase()} details`}
+                      >
+                        <ListChecks className="w-4 h-4 mr-1" />
+                        Open
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
                           onCreatePillar?.(domain.id);
                         }}
                         className="opacity-0 group-hover:opacity-100 transition-opacity"
@@ -228,6 +240,18 @@ export function HierarchyView({
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onPillarView?.(pillar);
+                                    }}
+                                    title={`Open ${terminology.pillar.singular.toLowerCase()} details`}
+                                  >
+                                    <ListChecks className="w-3 h-3 mr-1" />
+                                    Open
+                                  </Button>
                                   <Button
                                     variant="ghost"
                                     size="sm"
@@ -301,8 +325,7 @@ export function HierarchyView({
                                                   e.stopPropagation();
                                                   onThemeView?.(theme);
                                                 }}
-                                                className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                                title="Open details / Apply checklist"
+                                                title={`Open ${terminology.theme.singular.toLowerCase()} details / Apply checklist`}
                                               >
                                                 <ListChecks className="w-3 h-3 mr-1" />
                                                 Open
