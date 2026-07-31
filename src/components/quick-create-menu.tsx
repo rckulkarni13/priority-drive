@@ -181,11 +181,20 @@ export function QuickCreateMenu({
     return (
       <>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-6 w-6 p-0">
-              <Plus className="w-3 h-3" />
-            </Button>
-          </DropdownMenuTrigger>
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-6 w-6 p-0">
+                    <Plus className="w-3 h-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p className="text-xs">Quick create {terminology.domain.singular.toLowerCase()}, {terminology.pillar.singular.toLowerCase()}, {terminology.theme.singular.toLowerCase()}, or task</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <DropdownMenuContent align="end" className="w-64">
             <DropdownMenuLabel className="flex items-center gap-2">
               <span>Quick Create</span>
