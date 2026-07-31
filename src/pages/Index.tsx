@@ -689,17 +689,18 @@ const Index = () => {
         />
       )}
 
-      {/* Create Theme Dialog */}
-      {currentWorkspace && (
-        <ControlledThemeDialog
-          isOpen={!!showCreateTheme && showCreateTheme !== ''}
-          pillarId={showCreateTheme && showCreateTheme !== 'new-theme' ? showCreateTheme : undefined}
-          strategicPillars={filteredPillars}
-          onThemeCreate={createTheme}
-          onClose={() => setShowCreateTheme('')}
-          workspaceId={currentWorkspace.id}
-        />
-      )}
+        {/* Create Theme Dialog */}
+        {currentWorkspace && (
+          <ControlledThemeDialog
+            isOpen={!!showCreateTheme && showCreateTheme !== ''}
+            pillarId={showCreateTheme && showCreateTheme !== 'new-theme' ? showCreateTheme : undefined}
+            strategicPillars={filteredPillars}
+            onThemeCreate={createTheme}
+            onApplyChecklist={applyChecklistToTheme}
+            onClose={() => setShowCreateTheme('')}
+            workspaceId={currentWorkspace.id}
+          />
+        )}
 
       {/* Create Pillar Dialog */}
       {currentWorkspace && (
