@@ -1,27 +1,42 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { WorkspaceType } from '@/types';
 import { getWorkspaceTerminology, WorkspaceTerminology } from '@/lib/workspace-terminology';
 
 const typeCache = new Map<string, WorkspaceType>();
+const listeners = new Set<() => void>();
+
+/**
+ * Primes the workspace-type cache (called once workspaces are loaded) so every
+ * open dialog immediately renders the right terminology.
+ */
+export function registerWorkspaceTypes(list: { id: string; type: WorkspaceType }[]) {
+  let changed = false;
+  for (const ws of list) {
+    if (typeCache.get(ws.id) !== ws.type) {
+      typeCache.set(ws.id, ws.type);
+      changed = true;
+    }
+  }
+  if (changed) listeners.forEach((notify) => notify());
+}
 
 /**
  * Resolves workspace-specific terminology for a given workspace id.
  * Types are cached across dialogs so we only hit the network once per workspace.
  */
 export function useWorkspaceTerms(workspaceId?: string): WorkspaceTerminology {
-  const [type, setType] = useState<WorkspaceType>(
-    (workspaceId && typeCache.get(workspaceId)) || 'custom'
-  );
+  const [, forceUpdate] = useReducer((n: number) => n + 1, 0);
 
   useEffect(() => {
-    if (!workspaceId) return;
+    listeners.add(forceUpdate);
+    return () => {
+      listeners.delete(forceUpdate);
+    };
+  }, [forceUpdate]);
 
-    const cached = typeCache.get(workspaceId);
-    if (cached) {
-      setType(cached);
-      return;
-    }
+  useEffect(() => {
+    if (!workspaceId || typeCache.has(workspaceId)) return;
 
     let cancelled = false;
     (async () => {
@@ -31,9 +46,8 @@ export function useWorkspaceTerms(workspaceId?: string): WorkspaceTerminology {
         .eq('id', workspaceId)
         .maybeSingle();
 
-      const resolved = (data?.type as WorkspaceType) || 'custom';
-      typeCache.set(workspaceId, resolved);
-      if (!cancelled) setType(resolved);
+      if (cancelled || !data?.type) return;
+      registerWorkspaceTypes([{ id: workspaceId, type: data.type as WorkspaceType }]);
     })();
 
     return () => {
@@ -41,5 +55,6 @@ export function useWorkspaceTerms(workspaceId?: string): WorkspaceTerminology {
     };
   }, [workspaceId]);
 
+  const type = (workspaceId ? typeCache.get(workspaceId) : undefined) ?? 'custom';
   return getWorkspaceTerminology(type);
 }
