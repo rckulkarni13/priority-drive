@@ -10,6 +10,8 @@ export interface Workspace {
   icon: string;
   color: string;
   createdDate: Date;
+  /** Optional per-workspace display-label overrides for the three tiers above Task. */
+  tierLabels?: TierLabelOverrides;
 }
 
 export interface Domain {
