@@ -1,70 +1,41 @@
-# MCP task creation for Priority Drive — feasibility and effort
+# Custom Hierarchy Labels (per workspace)
 
-## Verdict
+Let each workspace define its own display names for the three tiers above Task. Defaults stay exactly as today, so nobody who ignores the setting sees a change.
 
-This is a good fit and a small-to-medium build. The scope you defined (read hierarchy, create one task, no on-the-fly structure creation, no updates/queries) is close to the minimum viable MCP server, and Lovable has first-class support for exposing this app as an MCP server that agents like Claude, ChatGPT, Cursor and Codex can connect to.
+## What the user gets
 
-The single biggest thing your requirements get right: keeping placement decisions with the user. That maps cleanly onto MCP — the read tools give the agent the real structure, and the create tool rejects anything it can't resolve to an existing Theme/Topic/Project, so ambiguity naturally bounces back as a question.
+- A **Labels** section in the workspace's settings (reached from the Manage view, and from the workspace switcher's gear action), listing the three tiers in order: top tier (today "Domain"), middle tier (today "Strategic Pillar" / "Learning Goal" / "Goal"), bottom tier above Task (today "Theme" / "Topic" / "Project").
+- For each tier: a **singular** and a **plural** field, pre-filled with the current workspace default, plus a "Reset to default" action per tier and for the whole set.
+- Saving updates the wording everywhere in that workspace immediately: hierarchy view, Manage view, create/edit/detail modals, Quick Create, Overview, Checklists modal, toasts, tooltips, empty states.
+- "Task" is not editable and is not shown as an editable row.
+- Labels are per workspace and independent: renaming in Work does not affect School or Home.
 
-The one requirement I'd push back on is the personal access token.
+Two fields per tier (rather than auto-pluralizing) because auto-pluralization mangles real words users pick; the fields are pre-filled so it stays a one-line edit.
 
-## Prerequisites
+## Validation
 
-1. **Enable OAuth Server in your Supabase dashboard.** The OAuth Apps page shows the feature is present but currently disabled. Click **OAuth Server Settings** → enable it. This is the only manual dependency.
-2. **Confirm the published app has a `/favicon.ico`** (so the connector list shows the app icon). If not, we'll add one.
+- Trimmed, 1-40 characters, required if edited; empty means "fall back to default".
+- Duplicate labels across the three tiers in the same workspace are rejected (they'd make the hierarchy unreadable).
+- Displayed casing is handled where it already is today (e.g. lowercase inside sentences), so any input casing renders sensibly.
 
-## Auth: use OAuth 2.1 instead of a personal access token
+## Technical approach
 
-Your instinct is right that the server must act as *you*, never with elevated access. It does not need a hand-rolled token screen. Supabase can act as an OAuth 2.1 authorization server with dynamic client registration; the MCP server then verifies the caller's token and every database call runs as that signed-in user, with existing RLS untouched.
+**Data**: one migration adding a nullable `tier_labels jsonb` column to `public.workspaces` (shape: `{ domain: {singular, plural}, pillar: {...}, theme: {...} }`, any missing key falls back to the type default). No new table, no changes to `domains` / `strategic_pillars` / `themes` / `tasks`. Existing RLS on `workspaces` already scopes reads/writes to the owner, so no new policies.
 
-What that buys us:
-- No new tokens table, no hashing, no rotation/revoke UI, no settings screen to build and maintain.
-- No long-lived secret pasted into third-party agent configs.
-- Connecting is a normal "sign in and approve" flow in the calling agent.
+**Terminology resolution**: `src/lib/workspace-terminology.ts` keeps `getWorkspaceTerminology(type)` as the defaults source and gains a merge helper that overlays overrides onto defaults. `src/hooks/use-workspace-terms.ts` caches `{ type, tier_labels }` per workspace id instead of just `type` and returns the merged terminology; `registerWorkspaceTypes` (called from `use-workspaces.ts` once workspaces load) is extended to carry the overrides, and its existing listener broadcast makes every mounted dialog re-render after a save. Because all ~19 call sites already read from these two modules, no per-component copy changes are needed.
 
-What it costs: one consent screen route in the app (`/.lovable/oauth/consent`) and making the sign-in page carry a redirect target through password/social login. That is less work than the token screen it replaces.
+**Types**: `Workspace` in `src/types/index.ts` gains an optional `tierLabels` field, mapped in `use-workspaces.ts`.
 
-Because your Supabase project already shows OAuth Apps / OAuth Server (disabled), enabling it is the resolution. If you can't enable it for some reason (plan restriction, feature not available), we will fall back to the personal-access-token design you described — roughly a day of extra work (table, generate/revoke UI, token verification in the server) and a weaker security posture.
+**UI**: new `src/components/workspace-labels-dialog.tsx` (form + validation + reset), opened from a "Customize labels" entry in `manage-view.tsx` and the workspace switcher. Saving writes `tier_labels` on the workspace row, refreshes the workspaces list, and re-primes the cache.
 
-## Scope
+**Server-side wording** (`use-tasks.ts` toasts) resolves labels from the same merged source rather than the type-only default.
 
-**Three MCP tools**
+## Impact on the MCP plan
 
-| Tool | Behavior |
-| --- | --- |
-| `list_workspaces` | Returns the signed-in user's workspaces with id, name, type, and the workspace's own terminology (Domain/Subject/Area etc.) so the agent speaks the user's language. |
-| `list_structure` | Given a workspace, returns its Domains, Pillars and Themes with parent links, so the agent can match against what exists. Read-only. |
-| `create_task` | Requires workspace, target Theme, title. Optional priority (default medium), status (default open), due date, prioritized date range. Rejects unknown/mismatched IDs with a message telling the agent to ask the user. |
+No structural change, but the MCP spec needs one wording update: `list_workspaces` must return the workspace's **effective** labels (overrides merged over defaults), not the hard-coded type map. The tool names, arguments and the fixed three-tier-plus-Task contract stay identical, so effort is unchanged. I'll fold that line into the MCP plan when we build it.
 
-**Placement guardrails, enforced server-side (not just prompt text)**
-- The target Theme must exist, belong to the named workspace, and belong to the calling user.
-- `create_task` accepts an ID, never a free-text theme name — so the agent must have called `list_structure` and made a real match.
-- No fuzzy matching and no "create it if missing." A miss returns an error the agent surfaces as a question.
+## Out of scope
 
-**Reused as-is:** existing `tasks` / `task_themes` schema, `task_order` ordering, priority/status enums, workspace terminology map. No migration needed for v1.
-
-**Explicitly out (as you specified):** creating Domains/Pillars/Themes, updating/completing/reading tasks, applying Checklists, any Asana/email/Station One integration.
-
-## Effort
-
-| Piece | Effort |
-| --- | --- |
-| MCP server scaffold + 3 tools + Supabase-as-user client | ~half a day |
-| OAuth wiring: enable authorization server, consent route, redirect-preserving sign-in | ~half a day |
-| Favicon/branding for the connector listing, manifest, deploy | small |
-| Manual verification from a real MCP client (list → create → confirm task shows in app) | ~half a day |
-
-Ballpark: **1–1.5 days of build**, assuming you enable the OAuth Server in your Supabase dashboard. Add ~1 day if we have to fall back to personal access tokens.
-
-## Challenges worth knowing about
-
-1. **OAuth Server must be enabled in the dashboard first** — the feature is present (you see OAuth Apps in the left sidebar) but currently disabled. Clicking **OAuth Server Settings** is the one manual step before the build can begin.
-2. **Terminology leakage** — an agent told to file under "Health" in Home is talking about a Project, not a Theme. Returning per-workspace terminology from `list_workspaces` avoids the agent guessing wrong vocabulary back at the user.
-3. **Tool descriptions are the product** — with no UI, the tool names, descriptions and error strings *are* how the agent behaves. The "ask, don't guess" rule has to be stated in the tool description and reinforced by strict server-side validation, because prompt guidance alone gets ignored under pressure.
-4. **Date extraction quality** — "due Friday" resolved by the calling agent can land in the wrong week across timezones. v1 should accept explicit ISO dates only and let the agent do the resolution, so a wrong date is visibly the agent's interpretation.
-5. **Ordering** — new tasks need a sensible `task_order` within the Theme; append-to-end matching current app behavior.
-6. **Every MCP change needs a redeploy** — connected clients keep seeing the old tool list until the function is redeployed. Just an operational habit, not a blocker.
-
-## Recommendation
-
-Build v1 exactly as scoped, with OAuth rather than a PAT. The read-query use case ("what's overdue") is correctly deferred — it overlaps Overview and would double the surface area. Once creation is proven in daily use, applying a Checklist via MCP is the natural next addition, since it reuses the same Theme-resolution logic.
+- Changing the number of hierarchy tiers.
+- Renaming "Task".
+- Any change to how Checklists, Overview or MCP reference tiers internally.
