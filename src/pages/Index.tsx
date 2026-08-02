@@ -28,7 +28,8 @@ import { Button } from "@/components/ui/button";
 import { QuickCreateMenu } from "@/components/quick-create-menu";
 import { ChecklistsManagerDialog } from "@/components/checklists-manager-dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut, ListChecks, Tags } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut, ListChecks, Tags, MoreHorizontal } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
