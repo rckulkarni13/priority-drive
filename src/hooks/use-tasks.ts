@@ -405,10 +405,13 @@ export function useTasks() {
     if (!workspaceId) return getWorkspaceTerminology('custom');
     const { data } = await supabase
       .from('workspaces')
-      .select('type')
+      .select('type, tier_labels')
       .eq('id', workspaceId)
       .maybeSingle();
-    return getWorkspaceTerminology((data?.type as WorkspaceType) || 'custom');
+    return resolveWorkspaceTerminology(
+      (data?.type as WorkspaceType) || 'custom',
+      parseTierLabels(data?.tier_labels)
+    );
   };
 
   const createDomain = useCallback(async (domainData: Omit<Domain, "id" | "createdDate">) => {

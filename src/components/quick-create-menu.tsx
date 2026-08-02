@@ -16,7 +16,7 @@ import { ThemeFormDialog } from "./theme-form-dialog";
 import { PillarFormDialog } from "./pillar-form-dialog";
 import { DomainFormDialog } from "./domain-form-dialog";
 import { Theme, Task, StrategicPillar, Domain, WorkspaceType } from "@/types";
-import { getWorkspaceTerminology } from "@/lib/workspace-terminology";
+import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 
 interface QuickCreateMenuProps {
   themes: Theme[];
@@ -52,7 +52,7 @@ export function QuickCreateMenu({
   workspaceType
 }: QuickCreateMenuProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
-  const terminology = getWorkspaceTerminology(workspaceType);
+  const terminology = useWorkspaceTerms(workspaceId);
 
   // Organize options by hierarchy level
   const hierarchyOptions = [

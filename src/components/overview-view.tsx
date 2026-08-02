@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AlertTriangle, CalendarDays, CalendarClock, Layers } from "lucide-react";
 import { categorizeOverviewTasks } from "@/lib/overview-tasks";
 import { getEffectiveStartDate, getEffectiveEndDate } from "@/lib/task-dates";
-import { getWorkspaceTerminology } from "@/lib/workspace-terminology";
+import { resolveWorkspaceTerminology } from "@/lib/workspace-terminology";
 import { cn } from "@/lib/utils";
 
 interface OverviewViewProps {
@@ -49,7 +49,7 @@ function TaskRow({
   onTaskToggleStatus: (taskId: string) => void;
 }) {
   const themeLabel = workspace
-    ? getWorkspaceTerminology(workspace.type).theme.singular
+    ? resolveWorkspaceTerminology(workspace.type, workspace.tierLabels).theme.singular
     : "Theme";
   const taskThemes = themes.filter(t => task.themeIds.includes(t.id));
 
