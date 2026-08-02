@@ -508,15 +508,6 @@ const Index = () => {
                   Organize your work with strategic precision
                 </p>
               </div>
-              
-              <Button
-                onClick={handleSignOut}
-                variant="ghost"
-                size="sm"
-                className="gap-1 sm:hidden"
-              >
-                <LogOut className="w-4 h-4" />
-              </Button>
             </div>
             
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
@@ -546,24 +537,6 @@ const Index = () => {
               </div>
               
               <div className="flex items-center gap-2">
-              {currentWorkspace && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="secondary"
-                      className="gap-2 shadow-sm hover:shadow-md transition-shadow"
-                      onClick={() => setChecklistsOpen(true)}
-                    >
-                      <ListChecks className="w-4 h-4" />
-                      Checklists
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom">
-                    <p className="text-sm">Manage reusable checklists — apply one to a theme to create its tasks</p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-
                 {currentWorkspace && (
                   <QuickCreateMenu
                     themes={filteredThemes}
@@ -580,15 +553,31 @@ const Index = () => {
                   />
                 )}
                 
-                <Button
-                  onClick={handleSignOut}
-                  variant="ghost"
-                  size="sm"
-                  className="gap-1 hidden sm:flex"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign Out
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-9 w-9 p-0"
+                      aria-label="More options"
+                    >
+                      <MoreHorizontal className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {currentWorkspace && (
+                      <DropdownMenuItem onClick={() => setChecklistsOpen(true)}>
+                        <ListChecks className="w-4 h-4 mr-2" />
+                        Checklists
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
