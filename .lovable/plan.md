@@ -1,88 +1,65 @@
-## Feature: Reusable Checklists
+# MCP task creation for Priority Drive — feasibility and effort
 
-Define a Checklist once (a named list of subtask titles), then apply it to any task to auto-create those subtasks. Scoped per workspace. Uses versioning so edits don't retroactively change tasks that already applied an earlier version.
+## Verdict
 
-### Placement (updated per feedback)
+This is a good fit and a small-to-medium build. The scope you defined (read hierarchy, create one task, no on-the-fly structure creation, no updates/queries) is close to the minimum viable MCP server, and Lovable has first-class support for exposing this app as an MCP server that agents like Claude, ChatGPT, Cursor and Codex can connect to.
 
-Checklists are a **parallel management surface to tasks**, not a view of tasks — so they get their own **"Checklists" button in the header, directly next to Quick Create**, rather than being buried in the More dropdown.
+The single biggest thing your requirements get right: keeping placement decisions with the user. That maps cleanly onto MCP — the read tools give the agent the real structure, and the create tool rejects anything it can't resolve to an existing Theme/Topic/Project, so ambiguity naturally bounces back as a question.
 
-```text
-Workspace: [🏢 Work ▾]        [ Checklists ]  [ + Quick Create ▾ ]
-─────────────────────────────────────────────────────────────────
-  Today   Calendar   More ▾
-```
+The one requirement I'd push back on is the personal access token.
 
-Clicking it opens a **Checklists manager dialog** (not a route) — consistent with how Quick Create and the other management dialogs behave, and it keeps the user in place while they're mid-task. The dialog lists the current workspace's checklists with create/edit/delete.
+## Auth: use OAuth instead of a personal access token
 
-### Data model
+Your instinct is right that the server must act as *you*, never with elevated access. But it does not need a hand-rolled token screen. Supabase can act as an OAuth 2.1 authorization server with dynamic client registration; the MCP server then verifies the caller's token and every database call runs as that signed-in user, with existing RLS untouched.
 
-Two new tables in `public`:
+What that buys us:
+- No new tokens table, no hashing, no rotation/revoke UI, no settings screen to build and maintain.
+- No long-lived secret pasted into third-party agent configs.
+- Connecting is a normal "sign in and approve" flow in the calling agent.
 
-- `checklists` — `id`, `user_id`, `workspace_id`, `title`, `description` (nullable), `current_version_id` (nullable), `created_date`
-- `checklist_versions` — `id`, `checklist_id`, `version_number` (int), `items` (jsonb array of `{ title, order }`), `created_date`
+What it costs: one consent screen route in the app (`/.lovable/oauth/consent`) and making the sign-in page carry a redirect target through password/social login. That is less work than the token screen it replaces.
 
-Each edit inserts a NEW `checklist_versions` row and repoints `checklists.current_version_id`. Old versions are retained for history.
+One dependency to verify early: this project uses an external Supabase project, not Lovable Cloud. The OAuth 2.1 authorization server has to be enabled on that Supabase project. If it can't be, the fallback is the personal-access-token design you described — roughly a day of extra work (table, generate/revoke UI, token verification in the server) and a weaker security posture.
 
-RLS: `auth.uid() = user_id` on `checklists`; `checklist_versions` policies check ownership through the parent `checklists` row. GRANTs for `authenticated` + `service_role`.
+## Scope
 
-Terminology: the word "Checklist" is used in all three workspaces — universally understood, no dynamic label mapping needed.
+**Three MCP tools**
 
-### Behavior
+| Tool | Behavior |
+| --- | --- |
+| `list_workspaces` | Returns the signed-in user's workspaces with id, name, type, and the workspace's own terminology (Domain/Subject/Area etc.) so the agent speaks the user's language. |
+| `list_structure` | Given a workspace, returns its Domains, Pillars and Themes with parent links, so the agent can match against what exists. Read-only. |
+| `create_task` | Requires workspace, target Theme, title. Optional priority (default medium), status (default open), due date, prioritized date range. Rejects unknown/mismatched IDs with a message telling the agent to ask the user. |
 
-- **Scope**: checklists are filtered by `currentWorkspace.id`; only same-workspace checklists are selectable on a task.
-- **Apply on create**: in `TaskFormDialog`, an optional "Apply Checklist" select. After the parent task is created, insert one subtask per item:
-  - `parent_task_id` = new task id, `type` = 'subtask'
-  - `title` = item title
-  - `priority` = parent's priority (default, editable later)
-  - themes inherited from parent (matching manual subtask behavior)
-  - no `due_date`, no `prioritized_date`
-  - sequential `task_order`
-- **Apply to existing task**: "Apply Checklist" action in `TaskDetailDialog` next to Add Subtask; appends after existing subtasks.
-- **Versioning**: editing writes a new version; already-created subtasks are untouched.
-- **Independence**: no checklist reference stored on tasks — created subtasks are ordinary subtasks.
+**Placement guardrails, enforced server-side (not just prompt text)**
+- The target Theme must exist, belong to the named workspace, and belong to the calling user.
+- `create_task` accepts an ID, never a free-text theme name — so the agent must have called `list_structure` and made a real match.
+- No fuzzy matching and no "create it if missing." A miss returns an error the agent surfaces as a question.
 
-### UI
+**Reused as-is:** existing `tasks` / `task_themes` schema, `task_order` ordering, priority/status enums, workspace terminology map. No migration needed for v1.
 
-Checklists manager dialog:
+**Explicitly out (as you specified):** creating Domains/Pillars/Themes, updating/completing/reading tasks, applying Checklists, any Asana/email/Station One integration.
 
-```text
-Checklists — Work                          [+ New Checklist]
-────────────────────────────────────────────────────────────
-▸ Feature Launch                    v3    [Edit] [Delete]
-    • Create Context Seed
-    • Create Product Spec
-    • Create UX Mocks
-    ...
-```
+## Effort
 
-Components:
-- `src/components/checklists-manager-dialog.tsx` — header-button-triggered list view
-- `src/components/checklist-form-dialog.tsx` — title + dynamic item rows (add/remove/reorder); save writes a new version
-- `src/components/apply-checklist-select.tsx` — reused in task create + task detail
-- `src/hooks/use-checklists.ts` — fetch/create/update/delete, joined with current version
+| Piece | Effort |
+| --- | --- |
+| MCP server scaffold + 3 tools + Supabase-as-user client | ~half a day |
+| OAuth wiring: enable authorization server, consent route, redirect-preserving sign-in | ~half a day |
+| Favicon/branding for the connector listing, manifest, deploy | small |
+| Manual verification from a real MCP client (list → create → confirm task shows in app) | ~half a day |
 
-### Files touched
+Ballpark: **1–1.5 days of build**, assuming Supabase OAuth 2.1 is available on the connected project. Add ~1 day if we have to fall back to personal access tokens.
 
-New:
-- `src/components/checklists-manager-dialog.tsx`
-- `src/components/checklist-form-dialog.tsx`
-- `src/components/apply-checklist-select.tsx`
-- `src/hooks/use-checklists.ts`
+## Challenges worth knowing about
 
-Modified:
-- `src/types/index.ts` — add `Checklist`, `ChecklistVersion`, `ChecklistItem`
-- `src/pages/Index.tsx` — render the Checklists button next to `QuickCreateMenu` in the header; wire subtask batch creation
-- `src/components/task-form-dialog.tsx` — optional Apply Checklist on create
-- `src/components/task-detail-dialog.tsx` — Apply Checklist action
+1. **External Supabase + OAuth availability** — the one real gating risk; worth checking before anything else is built.
+2. **Terminology leakage** — an agent told to file under "Health" in Home is talking about a Project, not a Theme. Returning per-workspace terminology from `list_workspaces` avoids the agent guessing wrong vocabulary back at the user.
+3. **Tool descriptions are the product** — with no UI, the tool names, descriptions and error strings *are* how the agent behaves. The "ask, don't guess" rule has to be stated in the tool description and reinforced by strict server-side validation, because prompt guidance alone gets ignored under pressure.
+4. **Date extraction quality** — "due Friday" resolved by the calling agent can land in the wrong week across timezones. v1 should accept explicit ISO dates only and let the agent do the resolution, so a wrong date is visibly the agent's interpretation.
+5. **Ordering** — new tasks need a sensible `task_order` within the Theme; append-to-end matching current app behavior.
+6. **Every MCP change needs a redeploy** — connected clients keep seeing the old tool list until the function is redeployed. Just an operational habit, not a blocker.
 
-No changes to `navigation.tsx` — Checklists deliberately stays out of the view tabs since it isn't a task view.
+## Recommendation
 
-### Migration (schema only)
-
-Create `checklists` and `checklist_versions` with GRANTs + RLS + policies. No backfill.
-
-### Out of scope
-
-- Retroactive syncing of subtasks when a checklist is edited (explicitly rejected).
-- Cross-workspace sharing of checklists.
-- Per-item priorities or dates (an item is just a title in v1).
+Build v1 exactly as scoped, with OAuth rather than a PAT. The read-query use case ("what's overdue") is correctly deferred — it overlaps Overview and would double the surface area. Once creation is proven in daily use, applying a Checklist via MCP is the natural next addition, since it reuses the same Theme-resolution logic.
