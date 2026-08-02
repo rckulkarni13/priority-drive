@@ -6,6 +6,8 @@ This is a good fit and a small-to-medium build. The scope you defined (read hier
 
 The single biggest thing your requirements get right: keeping placement decisions with the user. That maps cleanly onto MCP — the read tools give the agent the real structure, and the create tool rejects anything it can't resolve to an existing Theme/Topic/Project, so ambiguity naturally bounces back as a question.
 
+The one requirement I'd push back on is the personal access token.
+
 ## Prerequisites
 
 1. **Enable OAuth Server in your Supabase dashboard.** The OAuth Apps page shows the feature is present but currently disabled. Click **OAuth Server Settings** → enable it. This is the only manual dependency.
