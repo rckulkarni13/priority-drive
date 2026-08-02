@@ -1,16 +1,13 @@
 # MCP task creation for Priority Drive — feasibility and effort
 
-## Verdict
+## Prerequisites
 
-This is a good fit and a small-to-medium build. The scope you defined (read hierarchy, create one task, no on-the-fly structure creation, no updates/queries) is close to the minimum viable MCP server, and Lovable has first-class support for exposing this app as an MCP server that agents like Claude, ChatGPT, Cursor and Codex can connect to.
+1. **Enable OAuth Server in your Supabase dashboard.** The OAuth Apps page shows the feature is present but currently disabled. Click **OAuth Server Settings** → enable it. This is the only manual dependency.
+2. **Confirm the published app has a `/favicon.ico`** (so the connector list shows the app icon). If not, we'll add one.
 
-The single biggest thing your requirements get right: keeping placement decisions with the user. That maps cleanly onto MCP — the read tools give the agent the real structure, and the create tool rejects anything it can't resolve to an existing Theme/Topic/Project, so ambiguity naturally bounces back as a question.
+## Auth: use OAuth 2.1 instead of a personal access token
 
-The one requirement I'd push back on is the personal access token.
-
-## Auth: use OAuth instead of a personal access token
-
-Your instinct is right that the server must act as *you*, never with elevated access. But it does not need a hand-rolled token screen. Supabase can act as an OAuth 2.1 authorization server with dynamic client registration; the MCP server then verifies the caller's token and every database call runs as that signed-in user, with existing RLS untouched.
+Your instinct is right that the server must act as *you*, never with elevated access. It does not need a hand-rolled token screen. Supabase can act as an OAuth 2.1 authorization server with dynamic client registration; the MCP server then verifies the caller's token and every database call runs as that signed-in user, with existing RLS untouched.
 
 What that buys us:
 - No new tokens table, no hashing, no rotation/revoke UI, no settings screen to build and maintain.
@@ -19,7 +16,7 @@ What that buys us:
 
 What it costs: one consent screen route in the app (`/.lovable/oauth/consent`) and making the sign-in page carry a redirect target through password/social login. That is less work than the token screen it replaces.
 
-One dependency to verify early: this project uses an external Supabase project, not Lovable Cloud. The OAuth 2.1 authorization server has to be enabled on that Supabase project. If it can't be, the fallback is the personal-access-token design you described — roughly a day of extra work (table, generate/revoke UI, token verification in the server) and a weaker security posture.
+Because your Supabase project already shows OAuth Apps / OAuth Server (disabled), enabling it is the resolution. If you can't enable it for some reason (plan restriction, feature not available), we will fall back to the personal-access-token design you described — roughly a day of extra work (table, generate/revoke UI, token verification in the server) and a weaker security posture.
 
 ## Scope
 
