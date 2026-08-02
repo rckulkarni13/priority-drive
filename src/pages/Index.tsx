@@ -477,7 +477,6 @@ const Index = () => {
             themes={filteredThemes}
             workspaceType={currentWorkspace?.type || 'work'}
             workspaceId={currentWorkspace?.id}
-            onCustomizeLabels={currentWorkspace ? () => setLabelsDialogOpen(true) : undefined}
             onDomainDelete={deleteDomain}
             onPillarDelete={deleteStrategicPillar}
             onThemeDelete={deleteTheme}
