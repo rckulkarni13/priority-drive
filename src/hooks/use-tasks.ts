@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Task, Domain, StrategicPillar, Theme, Priority, Status, TaskType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { isTaskOverdue } from '@/lib/task-dates';
-import { getWorkspaceTerminology } from '@/lib/workspace-terminology';
+import { getWorkspaceTerminology, parseTierLabels, resolveWorkspaceTerminology } from '@/lib/workspace-terminology';
 import { WorkspaceType } from '@/types';
 
 export function useTasks() {
