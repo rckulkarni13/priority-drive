@@ -29,7 +29,6 @@ export function ManageView({
   themes, 
   workspaceType,
   workspaceId,
-  onCustomizeLabels,
   onDomainDelete, 
   onPillarDelete, 
   onThemeDelete,
@@ -45,18 +44,9 @@ export function ManageView({
   
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
-          <Settings className="w-5 h-5" />
-          Manage Items
-        </h2>
-        {onCustomizeLabels && (
-          <Button variant="outline" size="sm" onClick={onCustomizeLabels}>
-            <Tags className="w-4 h-4 mr-2" />
-            Customize labels
-          </Button>
-        )}
-      </div>
+      <h2 className="text-xl font-semibold flex items-center gap-2">
+        Manage Items
+      </h2>
 
       {/* Domains Section */}
       <Card>
