@@ -18,7 +18,7 @@ import {
   ListChecks
 } from "lucide-react";
 import { PriorityTaskRow } from "./priority-task-row";
-import { getWorkspaceTerminology } from "@/lib/workspace-terminology";
+import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 
 interface HierarchyViewProps {
   domains: Domain[];
@@ -26,6 +26,7 @@ interface HierarchyViewProps {
   themes: Theme[];
   tasks: Task[];
   workspaceType: WorkspaceType;
+  workspaceId?: string;
   onTaskView?: (task: Task) => void;
   onTaskEdit?: (task: Task) => void;
   onTaskToggleStatus?: (taskId: string) => void;
@@ -48,6 +49,7 @@ export function HierarchyView({
   themes, 
   tasks,
   workspaceType,
+  workspaceId,
   onTaskView,
   onTaskEdit, 
   onTaskToggleStatus, 
@@ -67,7 +69,7 @@ export function HierarchyView({
   const [expandedPillars, setExpandedPillars] = useState<Set<string>>(new Set());
   const [expandedThemes, setExpandedThemes] = useState<Set<string>>(new Set());
   
-  const terminology = getWorkspaceTerminology(workspaceType);
+  const terminology = useWorkspaceTerms(workspaceId);
 
   const toggleExpanded = (id: string, type: 'domain' | 'pillar' | 'theme') => {
     const setters = {

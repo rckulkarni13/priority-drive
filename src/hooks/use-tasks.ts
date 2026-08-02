@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Task, Domain, StrategicPillar, Theme, Priority, Status, TaskType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { isTaskOverdue } from '@/lib/task-dates';
-import { getWorkspaceTerminology } from '@/lib/workspace-terminology';
+import { getWorkspaceTerminology, parseTierLabels, resolveWorkspaceTerminology } from '@/lib/workspace-terminology';
 import { WorkspaceType } from '@/types';
 
 export function useTasks() {
@@ -405,10 +405,13 @@ export function useTasks() {
     if (!workspaceId) return getWorkspaceTerminology('custom');
     const { data } = await supabase
       .from('workspaces')
-      .select('type')
+      .select('type, tier_labels')
       .eq('id', workspaceId)
       .maybeSingle();
-    return getWorkspaceTerminology((data?.type as WorkspaceType) || 'custom');
+    return resolveWorkspaceTerminology(
+      (data?.type as WorkspaceType) || 'custom',
+      parseTierLabels(data?.tier_labels)
+    );
   };
 
   const createDomain = useCallback(async (domainData: Omit<Domain, "id" | "createdDate">) => {

@@ -1,3 +1,5 @@
+import type { TierLabelOverrides } from "@/lib/workspace-terminology";
+
 export type Priority = 'critical' | 'high' | 'medium' | 'low';
 export type Status = 'open' | 'hold' | 'completed';
 export type TaskType = 'task' | 'subtask';
@@ -10,6 +12,8 @@ export interface Workspace {
   icon: string;
   color: string;
   createdDate: Date;
+  /** Optional per-workspace display-label overrides for the three tiers above Task. */
+  tierLabels?: TierLabelOverrides;
 }
 
 export interface Domain {

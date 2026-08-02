@@ -23,11 +23,12 @@ import { ControlledPillarDialog } from "@/components/controlled-pillar-dialog";
 import { useTasks } from "@/hooks/use-tasks";
 import { useWorkspaces } from "@/hooks/use-workspaces";
 import { WorkspaceSwitcher } from "@/components/workspace-switcher";
+import { WorkspaceLabelsDialog } from "@/components/workspace-labels-dialog";
 import { Button } from "@/components/ui/button";
 import { QuickCreateMenu } from "@/components/quick-create-menu";
 import { ChecklistsManagerDialog } from "@/components/checklists-manager-dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut, ListChecks } from "lucide-react";
+import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut, ListChecks, Settings2 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
@@ -80,7 +81,8 @@ const Index = () => {
     getAllActiveTasks,
   } = useTasks();
 
-  const { workspaces, currentWorkspace, switchWorkspace, isLoading: workspacesLoading } = useWorkspaces();
+  const { workspaces, currentWorkspace, switchWorkspace, updateWorkspaceLabels, isLoading: workspacesLoading } = useWorkspaces();
+  const [labelsDialogOpen, setLabelsDialogOpen] = useState(false);
 
 
   useEffect(() => {
@@ -416,6 +418,7 @@ const Index = () => {
               themes={filteredThemes}
               tasks={filteredTasks}
               workspaceType={currentWorkspace?.type || 'work'}
+              workspaceId={currentWorkspace?.id}
               onTaskEdit={handleTaskView}
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
@@ -473,6 +476,8 @@ const Index = () => {
             strategicPillars={filteredPillars}
             themes={filteredThemes}
             workspaceType={currentWorkspace?.type || 'work'}
+            workspaceId={currentWorkspace?.id}
+            onCustomizeLabels={currentWorkspace ? () => setLabelsDialogOpen(true) : undefined}
             onDomainDelete={deleteDomain}
             onPillarDelete={deleteStrategicPillar}
             onThemeDelete={deleteTheme}
@@ -522,6 +527,22 @@ const Index = () => {
                   currentWorkspace={currentWorkspace}
                   onWorkspaceChange={switchWorkspace}
                 />
+                {currentWorkspace && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 w-9 p-0"
+                        aria-label="Customize workspace labels"
+                        onClick={() => setLabelsDialogOpen(true)}
+                      >
+                        <Settings2 className="w-4 h-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Customize this workspace's labels</TooltipContent>
+                  </Tooltip>
+                )}
               </div>
               
               <div className="flex items-center gap-2">
@@ -711,6 +732,16 @@ const Index = () => {
           onPillarCreate={createStrategicPillar}
           onClose={() => setShowCreatePillar('')}
           workspaceId={currentWorkspace.id}
+        />
+      )}
+
+      {/* Customize Labels Dialog */}
+      {currentWorkspace && (
+        <WorkspaceLabelsDialog
+          workspace={currentWorkspace}
+          open={labelsDialogOpen}
+          onOpenChange={setLabelsDialogOpen}
+          onSave={updateWorkspaceLabels}
         />
       )}
     </div>

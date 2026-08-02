@@ -421,6 +421,7 @@ export type Database = {
           icon: string
           id: string
           name: string
+          tier_labels: Json | null
           type: Database["public"]["Enums"]["workspace_type"]
           user_id: string
         }
@@ -430,6 +431,7 @@ export type Database = {
           icon: string
           id?: string
           name: string
+          tier_labels?: Json | null
           type: Database["public"]["Enums"]["workspace_type"]
           user_id: string
         }
@@ -439,6 +441,7 @@ export type Database = {
           icon?: string
           id?: string
           name?: string
+          tier_labels?: Json | null
           type?: Database["public"]["Enums"]["workspace_type"]
           user_id?: string
         }
