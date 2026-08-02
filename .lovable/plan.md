@@ -54,11 +54,11 @@ Because your Supabase project already shows OAuth Apps / OAuth Server (disabled)
 | Favicon/branding for the connector listing, manifest, deploy | small |
 | Manual verification from a real MCP client (list → create → confirm task shows in app) | ~half a day |
 
-Ballpark: **1–1.5 days of build**, assuming Supabase OAuth 2.1 is available on the connected project. Add ~1 day if we have to fall back to personal access tokens.
+Ballpark: **1–1.5 days of build**, assuming you enable the OAuth Server in your Supabase dashboard. Add ~1 day if we have to fall back to personal access tokens.
 
 ## Challenges worth knowing about
 
-1. **External Supabase + OAuth availability** — the one real gating risk; worth checking before anything else is built.
+1. **OAuth Server must be enabled in the dashboard first** — the feature is present (you see OAuth Apps in the left sidebar) but currently disabled. Clicking **OAuth Server Settings** is the one manual step before the build can begin.
 2. **Terminology leakage** — an agent told to file under "Health" in Home is talking about a Project, not a Theme. Returning per-workspace terminology from `list_workspaces` avoids the agent guessing wrong vocabulary back at the user.
 3. **Tool descriptions are the product** — with no UI, the tool names, descriptions and error strings *are* how the agent behaves. The "ask, don't guess" rule has to be stated in the tool description and reinforced by strict server-side validation, because prompt guidance alone gets ignored under pressure.
 4. **Date extraction quality** — "due Friday" resolved by the calling agent can land in the wrong week across timezones. v1 should accept explicit ISO dates only and let the agent do the resolution, so a wrong date is visibly the agent's interpretation.
