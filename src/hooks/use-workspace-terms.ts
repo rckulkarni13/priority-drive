@@ -1,20 +1,38 @@
 import { useEffect, useReducer } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { WorkspaceType } from '@/types';
-import { getWorkspaceTerminology, WorkspaceTerminology } from '@/lib/workspace-terminology';
+import {
+  parseTierLabels,
+  resolveWorkspaceTerminology,
+  TierLabelOverrides,
+  WorkspaceTerminology,
+} from '@/lib/workspace-terminology';
 
-const typeCache = new Map<string, WorkspaceType>();
+interface CachedWorkspace {
+  type: WorkspaceType;
+  tierLabels?: TierLabelOverrides;
+}
+
+const typeCache = new Map<string, CachedWorkspace>();
 const listeners = new Set<() => void>();
 
 /**
  * Primes the workspace-type cache (called once workspaces are loaded) so every
  * open dialog immediately renders the right terminology.
  */
-export function registerWorkspaceTypes(list: { id: string; type: WorkspaceType }[]) {
+export function registerWorkspaceTypes(
+  list: { id: string; type: WorkspaceType; tierLabels?: TierLabelOverrides }[]
+) {
   let changed = false;
   for (const ws of list) {
-    if (typeCache.get(ws.id) !== ws.type) {
-      typeCache.set(ws.id, ws.type);
+    const existing = typeCache.get(ws.id);
+    const next: CachedWorkspace = { type: ws.type, tierLabels: ws.tierLabels };
+    if (
+      !existing ||
+      existing.type !== next.type ||
+      JSON.stringify(existing.tierLabels ?? null) !== JSON.stringify(next.tierLabels ?? null)
+    ) {
+      typeCache.set(ws.id, next);
       changed = true;
     }
   }
@@ -42,12 +60,18 @@ export function useWorkspaceTerms(workspaceId?: string): WorkspaceTerminology {
     (async () => {
       const { data } = await supabase
         .from('workspaces')
-        .select('type')
+        .select('type, tier_labels')
         .eq('id', workspaceId)
         .maybeSingle();
 
       if (cancelled || !data?.type) return;
-      registerWorkspaceTypes([{ id: workspaceId, type: data.type as WorkspaceType }]);
+      registerWorkspaceTypes([
+        {
+          id: workspaceId,
+          type: data.type as WorkspaceType,
+          tierLabels: parseTierLabels(data.tier_labels),
+        },
+      ]);
     })();
 
     return () => {
@@ -55,6 +79,6 @@ export function useWorkspaceTerms(workspaceId?: string): WorkspaceTerminology {
     };
   }, [workspaceId]);
 
-  const type = (workspaceId ? typeCache.get(workspaceId) : undefined) ?? 'custom';
-  return getWorkspaceTerminology(type);
+  const cached = workspaceId ? typeCache.get(workspaceId) : undefined;
+  return resolveWorkspaceTerminology(cached?.type ?? 'custom', cached?.tierLabels);
 }

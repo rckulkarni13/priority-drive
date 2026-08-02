@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Workspace, WorkspaceType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { registerWorkspaceTypes } from '@/hooks/use-workspace-terms';
+import { parseTierLabels, TierLabelOverrides } from '@/lib/workspace-terminology';
 
 const LAST_WORKSPACE_KEY = 'lastVisitedWorkspaceId';
 
@@ -31,13 +32,22 @@ export function useWorkspaces() {
         type: ws.type as WorkspaceType,
         icon: ws.icon,
         color: ws.color,
-        createdDate: new Date(ws.created_date)
+        createdDate: new Date(ws.created_date),
+        tierLabels: parseTierLabels((ws as { tier_labels?: unknown }).tier_labels)
       }));
 
       setWorkspaces(formattedWorkspaces);
-      registerWorkspaceTypes(formattedWorkspaces.map(w => ({ id: w.id, type: w.type })));
+      registerWorkspaceTypes(
+        formattedWorkspaces.map(w => ({ id: w.id, type: w.type, tierLabels: w.tierLabels }))
+      );
       
       // Land on the last-visited workspace, falling back to the first one
+      if (formattedWorkspaces.length > 0) {
+        setCurrentWorkspace(prev =>
+          prev ? formattedWorkspaces.find(w => w.id === prev.id) ?? prev : prev
+        );
+      }
+
       if (!currentWorkspace && formattedWorkspaces.length > 0) {
         const lastId = localStorage.getItem(LAST_WORKSPACE_KEY);
         const last = lastId ? formattedWorkspaces.find(w => w.id === lastId) : undefined;
@@ -64,11 +74,40 @@ export function useWorkspaces() {
     }
   };
 
+  const updateWorkspaceLabels = async (
+    workspaceId: string,
+    tierLabels: TierLabelOverrides | null
+  ) => {
+    const { error } = await supabase
+      .from('workspaces')
+      .update({ tier_labels: tierLabels } as never)
+      .eq('id', workspaceId);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save labels",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    // Prime the shared terminology cache so every open dialog re-renders immediately
+    const type = workspaces.find(w => w.id === workspaceId)?.type;
+    if (type) {
+      registerWorkspaceTypes([{ id: workspaceId, type, tierLabels: tierLabels ?? undefined }]);
+    }
+    await fetchWorkspaces();
+    toast({ title: "Labels updated", description: "Your custom labels have been saved." });
+    return true;
+  };
+
   return {
     workspaces,
     currentWorkspace,
     isLoading,
     switchWorkspace,
-    fetchWorkspaces
+    fetchWorkspaces,
+    updateWorkspaceLabels
   };
 }
