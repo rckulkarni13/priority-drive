@@ -3,7 +3,7 @@ import { Domain, StrategicPillar, Theme, WorkspaceType } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Package, Target, Lightbulb, Trash2, Settings, Pencil, Tags } from "lucide-react";
+import { Package, Target, Lightbulb, Trash2, Pencil } from "lucide-react";
 import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 import { EditDomainDialog } from "./edit-domain-dialog";
 import { EditPillarDialog } from "./edit-pillar-dialog";
@@ -15,7 +15,6 @@ interface ManageViewProps {
   themes: Theme[];
   workspaceType: WorkspaceType;
   workspaceId?: string;
-  onCustomizeLabels?: () => void;
   onDomainDelete?: (domainId: string) => void;
   onPillarDelete?: (pillarId: string) => void;
   onThemeDelete?: (themeId: string) => void;
@@ -30,7 +29,6 @@ export function ManageView({
   themes, 
   workspaceType,
   workspaceId,
-  onCustomizeLabels,
   onDomainDelete, 
   onPillarDelete, 
   onThemeDelete,
@@ -46,18 +44,9 @@ export function ManageView({
   
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
-          <Settings className="w-5 h-5" />
-          Manage Items
-        </h2>
-        {onCustomizeLabels && (
-          <Button variant="outline" size="sm" onClick={onCustomizeLabels}>
-            <Tags className="w-4 h-4 mr-2" />
-            Customize labels
-          </Button>
-        )}
-      </div>
+      <h2 className="text-xl font-semibold flex items-center gap-2">
+        Manage Items
+      </h2>
 
       {/* Domains Section */}
       <Card>

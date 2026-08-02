@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import { QuickCreateMenu } from "@/components/quick-create-menu";
 import { ChecklistsManagerDialog } from "@/components/checklists-manager-dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut, ListChecks, Settings2 } from "lucide-react";
+import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut, ListChecks, Tags } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
@@ -477,7 +477,6 @@ const Index = () => {
             themes={filteredThemes}
             workspaceType={currentWorkspace?.type || 'work'}
             workspaceId={currentWorkspace?.id}
-            onCustomizeLabels={currentWorkspace ? () => setLabelsDialogOpen(true) : undefined}
             onDomainDelete={deleteDomain}
             onPillarDelete={deleteStrategicPillar}
             onThemeDelete={deleteTheme}
@@ -537,10 +536,10 @@ const Index = () => {
                         aria-label="Customize workspace labels"
                         onClick={() => setLabelsDialogOpen(true)}
                       >
-                        <Settings2 className="w-4 h-4" />
+                        <Tags className="w-4 h-4" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Customize this workspace's labels</TooltipContent>
+                    <TooltipContent>Rename this workspace's tier labels</TooltipContent>
                   </Tooltip>
                 )}
               </div>
