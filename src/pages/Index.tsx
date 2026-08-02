@@ -524,11 +524,12 @@ const Index = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-9 w-9 p-0"
+                        className="gap-2 h-9 px-2 sm:px-3"
                         aria-label="Customize workspace labels"
                         onClick={() => setLabelsDialogOpen(true)}
                       >
                         <Tags className="w-4 h-4" />
+                        <span className="hidden sm:inline">Rename labels</span>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>Rename this workspace's tier labels</TooltipContent>
