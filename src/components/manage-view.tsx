@@ -3,7 +3,7 @@ import { Domain, StrategicPillar, Theme, WorkspaceType } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Package, Target, Lightbulb, Trash2, Settings, Pencil, Tags } from "lucide-react";
+import { Package, Target, Lightbulb, Trash2, Pencil } from "lucide-react";
 import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 import { EditDomainDialog } from "./edit-domain-dialog";
 import { EditPillarDialog } from "./edit-pillar-dialog";
@@ -15,7 +15,6 @@ interface ManageViewProps {
   themes: Theme[];
   workspaceType: WorkspaceType;
   workspaceId?: string;
-  onCustomizeLabels?: () => void;
   onDomainDelete?: (domainId: string) => void;
   onPillarDelete?: (pillarId: string) => void;
   onThemeDelete?: (themeId: string) => void;
