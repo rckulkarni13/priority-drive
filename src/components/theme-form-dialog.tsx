@@ -70,7 +70,7 @@ export function ThemeFormDialog({ children, defaultOpen = false, strategicPillar
       description: "",
       strategicPillarIds: defaultPillarId ? [defaultPillarId] : [],
       color: "#06b6d4",
-      checklistId: "",
+      checklistId: "none",
     },
   });
 
@@ -85,7 +85,7 @@ export function ThemeFormDialog({ children, defaultOpen = false, strategicPillar
         color: data.color
       });
 
-      const selectedChecklist = data.checklistId
+      const selectedChecklist = data.checklistId && data.checklistId !== "none"
         ? checklists.find((c) => c.id === data.checklistId)
         : undefined;
 
@@ -186,7 +186,7 @@ export function ThemeFormDialog({ children, defaultOpen = false, strategicPillar
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="none">None</SelectItem>
                         {checklists.map((checklist) => (
                           <SelectItem key={checklist.id} value={checklist.id}>
                             {checklist.title} ({checklist.items.length} steps)
