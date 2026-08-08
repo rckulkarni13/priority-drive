@@ -56,6 +56,7 @@ import { PriorityBadge } from "@/components/ui/priority-badge";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { TaskComments } from "@/components/task-comments";
 import { SubtaskFormDialog } from "@/components/subtask-form-dialog";
+import { useChecklists } from "@/hooks/use-checklists";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -108,6 +109,7 @@ export function TaskDetailDialog({
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'comments' | 'subtasks'>('overview');
   const themeTerms = useWorkspaceTerms(workspaceId).theme;
+  const { checklists } = useChecklists(workspaceId);
   
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
@@ -702,6 +704,38 @@ export function TaskDetailDialog({
                     Subtasks ({subtasks.length})
                   </h3>
                   <div className="flex items-center gap-2">
+                    {onApplyChecklist && checklists.length > 0 && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size="sm" variant="outline">
+                            <ListChecks className="w-4 h-4 mr-1" />
+                            Apply Checklist
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-64 bg-popover z-50">
+                          <DropdownMenuLabel>Create steps as subtasks</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          {checklists.map((checklist) => (
+                            <DropdownMenuItem
+                              key={checklist.id}
+                              onClick={() =>
+                                onApplyChecklist(
+                                  { id: task.id, workspaceId },
+                                  checklist.items.map((item) => item.title)
+                                )
+                              }
+                            >
+                              <div className="flex flex-col">
+                                <span>{checklist.title}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  v{checklist.versionNumber} · {checklist.items.length} steps
+                                </span>
+                              </div>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                     <SubtaskFormDialog
                       themes={themes}
                       tasks={tasks}
