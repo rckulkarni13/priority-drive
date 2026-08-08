@@ -32,6 +32,7 @@ interface HierarchyViewProps {
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
   onCreateTask?: (themeId?: string) => void;
   onCreateTheme?: (pillarId?: string) => void;
   onCreatePillar?: (domainId?: string) => void;
