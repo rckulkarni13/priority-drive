@@ -170,6 +170,7 @@ interface CalendarWeekViewProps {
   onPillarCreate: (pillarData: any) => Promise<string>;
   onDomainCreate: (domainData: any) => Promise<string>;
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
+  onTaskDelete?: (taskId: string) => void;
 }
 
 
