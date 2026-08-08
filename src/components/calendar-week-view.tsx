@@ -108,12 +108,26 @@ function DraggableTaskCard({
           <GripVertical className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground" />
         </div>
         <div className="flex-1 min-w-0 space-y-1 sm:space-y-1.5">
-          <p className={cn(
-            "text-[10px] sm:text-xs font-medium leading-snug line-clamp-2",
-            task.status === 'completed' && "line-through text-muted-foreground"
-          )}>
-            {task.title}
-          </p>
+          <div className="flex items-start justify-between gap-1">
+            <p className={cn(
+              "text-[10px] sm:text-xs font-medium leading-snug line-clamp-2",
+              task.status === 'completed' && "line-through text-muted-foreground"
+            )}>
+              {task.title}
+            </p>
+            {onDelete && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+                className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive p-0.5 flex-shrink-0"
+                aria-label="Delete task"
+              >
+                <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              </button>
+            )}
+          </div>
           
           <div className="flex flex-wrap items-center gap-0.5 sm:gap-1">
             {relatedDomain && (
