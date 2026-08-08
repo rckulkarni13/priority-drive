@@ -48,6 +48,7 @@ function SortableTaskItem({
   onTaskToggleStatus,
   onTaskReopen,
   onCreateSubtask,
+  onTaskDelete,
 }: SortableTaskItemProps) {
   const {
     attributes,
