@@ -59,6 +59,7 @@ export function TaskGroup({
               onToggleStatus={onTaskToggleStatus}
               onReopen={onTaskReopen}
               onCreateSubtask={onCreateSubtask}
+              onDelete={onTaskDelete}
             />
             
             {/* Task type and subtask indicator */}
