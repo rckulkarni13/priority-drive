@@ -21,6 +21,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
   Edit, 
   Save, 
@@ -28,11 +36,13 @@ import {
   Target,
   Globe,
   Tag,
-  ArrowLeft
+  ArrowLeft,
+  ListChecks
 } from "lucide-react";
 import { format } from "date-fns";
 import { StrategicPillar, Domain, Theme } from "@/types";
 import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
+import { useChecklists } from "@/hooks/use-checklists";
 
 const pillarSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -48,6 +58,7 @@ interface PillarDetailDialogProps {
   domains: Domain[];
   themes: Theme[];
   onPillarUpdate?: (pillarId: string, updates: Partial<StrategicPillar>) => void;
+  onApplyChecklist?: (pillar: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   onClose: () => void;
   onBack?: () => void;
   onThemeView?: (theme: Theme) => void;
@@ -59,6 +70,7 @@ export function PillarDetailDialog({
   domains, 
   themes,
   onPillarUpdate,
+  onApplyChecklist,
   onClose,
   onBack,
   onThemeView,
@@ -67,6 +79,7 @@ export function PillarDetailDialog({
   const [isEditing, setIsEditing] = useState(false);
   const terms = useWorkspaceTerms(pillar?.workspaceId);
   const label = terms.pillar.singular;
+  const { checklists } = useChecklists(pillar?.workspaceId);
   
   const form = useForm<PillarFormData>({
     resolver: zodResolver(pillarSchema),
@@ -336,10 +349,44 @@ export function PillarDetailDialog({
 
               {/* Associated Themes */}
               <div>
-                <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-                  <Tag className="w-4 h-4" />
-                  {terms.theme.plural} ({pillarThemes.length})
-                </h3>
+                <div className="flex items-center justify-between mb-3 gap-2">
+                  <h3 className="text-sm font-medium flex items-center gap-2">
+                    <Tag className="w-4 h-4" />
+                    {terms.theme.plural} ({pillarThemes.length})
+                  </h3>
+                  {onApplyChecklist && checklists.length > 0 && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="sm" variant="outline">
+                          <ListChecks className="w-4 h-4 mr-1" />
+                          Apply Checklist
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-64 bg-popover z-50">
+                        <DropdownMenuLabel>Create steps as {terms.theme.plural.toLowerCase()}</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {checklists.map((checklist) => (
+                          <DropdownMenuItem
+                            key={checklist.id}
+                            onClick={() =>
+                              onApplyChecklist(
+                                { id: pillar.id, workspaceId: pillar.workspaceId },
+                                checklist.items.map((item) => item.title)
+                              )
+                            }
+                          >
+                            <div className="flex flex-col">
+                              <span>{checklist.title}</span>
+                              <span className="text-xs text-muted-foreground">
+                                v{checklist.versionNumber} · {checklist.items.length} steps
+                              </span>
+                            </div>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </div>
                 {pillarThemes.length > 0 ? (
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {pillarThemes.map((theme) => (
