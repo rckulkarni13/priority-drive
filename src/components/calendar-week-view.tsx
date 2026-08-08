@@ -373,6 +373,7 @@ export function CalendarWeekView({
                         strategicPillars={strategicPillars}
                         domains={domains}
                         onClick={() => onTaskClick?.(task)}
+                        onDelete={() => onTaskDelete?.(task.id)}
                       />
                     ))}
                   </DroppableDay>
