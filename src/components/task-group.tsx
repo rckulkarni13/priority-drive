@@ -184,6 +184,7 @@ interface OrganizedTaskListProps {
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
 }
 
 export function OrganizedTaskList({
