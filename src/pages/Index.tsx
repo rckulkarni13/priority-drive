@@ -523,53 +523,51 @@ const Index = () => {
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-              <div className="flex items-center gap-2">
-                {currentWorkspace && (
-                  <QuickCreateMenu
-                    themes={filteredThemes}
-                    tasks={filteredTasks}
-                    strategicPillars={filteredPillars}
-                    domains={filteredDomains}
-                    onTaskCreate={createTask}
-                    onThemeCreate={createTheme}
-                    onApplyChecklistToTheme={applyChecklistToTheme}
-                    onPillarCreate={createStrategicPillar}
-                    onApplyChecklistToPillar={applyChecklistToPillar}
-                    onDomainCreate={createDomain}
-                    onApplyChecklistToDomain={applyChecklistToDomain}
-                    onApplyChecklistToTask={applyChecklistToTask}
-                    workspaceId={currentWorkspace.id}
-                    workspaceType={currentWorkspace.type}
-                  />
-                )}
-                
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-9 w-9 p-0"
-                      aria-label="More options"
-                    >
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    {currentWorkspace && (
-                      <DropdownMenuItem onClick={() => setChecklistsOpen(true)}>
-                        <ListChecks className="w-4 h-4 mr-2" />
-                        Checklists
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut}>
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Sign Out
+            <div className="flex items-center gap-2 sm:gap-3">
+              {currentWorkspace && (
+                <QuickCreateMenu
+                  themes={filteredThemes}
+                  tasks={filteredTasks}
+                  strategicPillars={filteredPillars}
+                  domains={filteredDomains}
+                  onTaskCreate={createTask}
+                  onThemeCreate={createTheme}
+                  onApplyChecklistToTheme={applyChecklistToTheme}
+                  onPillarCreate={createStrategicPillar}
+                  onApplyChecklistToPillar={applyChecklistToPillar}
+                  onDomainCreate={createDomain}
+                  onApplyChecklistToDomain={applyChecklistToDomain}
+                  onApplyChecklistToTask={applyChecklistToTask}
+                  workspaceId={currentWorkspace.id}
+                  workspaceType={currentWorkspace.type}
+                />
+              )}
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 w-9 p-0"
+                    aria-label="More options"
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {currentWorkspace && (
+                    <DropdownMenuItem onClick={() => setChecklistsOpen(true)}>
+                      <ListChecks className="w-4 h-4 mr-2" />
+                      Checklists
                     </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
