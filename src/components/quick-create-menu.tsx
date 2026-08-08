@@ -46,9 +46,12 @@ export function QuickCreateMenu({
   domains,
   onTaskCreate,
   onThemeCreate,
-  onApplyChecklist,
+  onApplyChecklistToTheme,
   onPillarCreate,
+  onApplyChecklistToPillar,
   onDomainCreate,
+  onApplyChecklistToDomain,
+  onApplyChecklistToTask,
   defaultParentTaskId,
   defaultPillarId,
   variant = "default",
@@ -111,10 +114,8 @@ export function QuickCreateMenu({
             onOpenChange={(o) => { if (!o) setOpenDialog(null); }}
             themes={themes}
             tasks={tasks}
-            onTaskCreate={(data) => {
-              onTaskCreate(data);
-              setOpenDialog(null);
-            }}
+            onTaskCreate={onTaskCreate}
+            onApplyChecklist={onApplyChecklistToTask}
             workspaceId={workspaceId}
           />
         );
@@ -126,10 +127,8 @@ export function QuickCreateMenu({
             themes={themes}
             tasks={tasks}
             parentTaskId={defaultParentTaskId}
-            onTaskCreate={(data) => {
-              onTaskCreate(data);
-              setOpenDialog(null);
-            }}
+            onTaskCreate={onTaskCreate}
+            onApplyChecklist={onApplyChecklistToTask}
             workspaceId={workspaceId}
           />
         ) : null;
@@ -139,7 +138,7 @@ export function QuickCreateMenu({
               defaultOpen
               strategicPillars={strategicPillars}
               onThemeCreate={onThemeCreate}
-              onApplyChecklist={onApplyChecklist}
+              onApplyChecklist={onApplyChecklistToTheme}
               onOpenChange={(o) => { if (!o) setOpenDialog(null); }}
               workspaceId={workspaceId}
             />
@@ -150,10 +149,8 @@ export function QuickCreateMenu({
             defaultOpen
             onOpenChange={(o) => { if (!o) setOpenDialog(null); }}
             domains={domains}
-            onPillarCreate={(data) => {
-              onPillarCreate(data);
-              setOpenDialog(null);
-            }}
+            onPillarCreate={onPillarCreate}
+            onApplyChecklist={onApplyChecklistToPillar}
             workspaceId={workspaceId}
           />
         );
@@ -162,10 +159,8 @@ export function QuickCreateMenu({
           <DomainFormDialog
             defaultOpen
             onOpenChange={(o) => { if (!o) setOpenDialog(null); }}
-            onDomainCreate={(data) => {
-              onDomainCreate(data);
-              setOpenDialog(null);
-            }}
+            onDomainCreate={onDomainCreate}
+            onApplyChecklist={onApplyChecklistToDomain}
             workspaceId={workspaceId}
           />
         );
