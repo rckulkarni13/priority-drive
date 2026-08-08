@@ -23,14 +23,12 @@ import { ControlledPillarDialog } from "@/components/controlled-pillar-dialog";
 import { ControlledDomainDialog } from "@/components/controlled-domain-dialog";
 import { useTasks } from "@/hooks/use-tasks";
 import { useWorkspaces } from "@/hooks/use-workspaces";
-import { WorkspaceSwitcher } from "@/components/workspace-switcher";
 import { WorkspaceLabelsDialog } from "@/components/workspace-labels-dialog";
 import { Button } from "@/components/ui/button";
 import { QuickCreateMenu } from "@/components/quick-create-menu";
 import { ChecklistsManagerDialog } from "@/components/checklists-manager-dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut, ListChecks, Tags, MoreHorizontal } from "lucide-react";
+import { CheckSquare2, LogOut, ListChecks, MoreHorizontal } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
@@ -44,7 +42,7 @@ const Index = () => {
   const [viewingTheme, setViewingTheme] = useState<Theme | null>(null);
   const [viewingPillar, setViewingPillar] = useState<StrategicPillar | null>(null);
   const [viewingDomain, setViewingDomain] = useState<Domain | null>(null);
-  const [navigationStack, setNavigationStack] = useState<Array<{type: 'task' | 'theme' | 'pillar' | 'domain', data: any}>>([]);
+  const [navigationStack, setNavigationStack] = useState<Array<{type: 'task', data: Task} | {type: 'theme', data: Theme} | {type: 'pillar', data: StrategicPillar} | {type: 'domain', data: Domain}>>([]);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCreateSubtask, setShowCreateSubtask] = useState<string>('');
@@ -525,85 +523,61 @@ const Index = () => {
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs sm:text-sm font-medium text-muted-foreground whitespace-nowrap">Workspace:</span>
-                <WorkspaceSwitcher
-                  workspaces={workspaces}
-                  currentWorkspace={currentWorkspace}
-                  onWorkspaceChange={switchWorkspace}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {currentWorkspace && (
+                <QuickCreateMenu
+                  themes={filteredThemes}
+                  tasks={filteredTasks}
+                  strategicPillars={filteredPillars}
+                  domains={filteredDomains}
+                  onTaskCreate={createTask}
+                  onThemeCreate={createTheme}
+                  onApplyChecklistToTheme={applyChecklistToTheme}
+                  onPillarCreate={createStrategicPillar}
+                  onApplyChecklistToPillar={applyChecklistToPillar}
+                  onDomainCreate={createDomain}
+                  onApplyChecklistToDomain={applyChecklistToDomain}
+                  onApplyChecklistToTask={applyChecklistToTask}
+                  workspaceId={currentWorkspace.id}
+                  workspaceType={currentWorkspace.type}
                 />
-                {currentWorkspace && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="gap-2 h-9 px-2 sm:px-3"
-                        aria-label="Customize workspace labels"
-                        onClick={() => setLabelsDialogOpen(true)}
-                      >
-                        <Tags className="w-4 h-4" />
-                        <span className="hidden sm:inline">Rename labels</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Rename this workspace's tier labels</TooltipContent>
-                  </Tooltip>
-                )}
-              </div>
+              )}
               
-              <div className="flex items-center gap-2">
-                {currentWorkspace && (
-                  <QuickCreateMenu
-                    themes={filteredThemes}
-                    tasks={filteredTasks}
-                    strategicPillars={filteredPillars}
-                    domains={filteredDomains}
-                    onTaskCreate={createTask}
-                    onThemeCreate={createTheme}
-                    onApplyChecklistToTheme={applyChecklistToTheme}
-                    onPillarCreate={createStrategicPillar}
-                    onApplyChecklistToPillar={applyChecklistToPillar}
-                    onDomainCreate={createDomain}
-                    onApplyChecklistToDomain={applyChecklistToDomain}
-                    onApplyChecklistToTask={applyChecklistToTask}
-                    workspaceId={currentWorkspace.id}
-                    workspaceType={currentWorkspace.type}
-                  />
-                )}
-                
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-9 w-9 p-0"
-                      aria-label="More options"
-                    >
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    {currentWorkspace && (
-                      <DropdownMenuItem onClick={() => setChecklistsOpen(true)}>
-                        <ListChecks className="w-4 h-4 mr-2" />
-                        Checklists
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut}>
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Sign Out
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 w-9 p-0"
+                    aria-label="More options"
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {currentWorkspace && (
+                    <DropdownMenuItem onClick={() => setChecklistsOpen(true)}>
+                      <ListChecks className="w-4 h-4 mr-2" />
+                      Checklists
                     </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
           <Navigation
             currentView={currentView}
             onViewChange={setCurrentView}
+            workspaces={workspaces}
+            currentWorkspace={currentWorkspace}
+            onWorkspaceChange={switchWorkspace}
+            onRenameLabels={() => setLabelsDialogOpen(true)}
             todayTasksCount={todaysTasks.length}
             completedTasksCount={completedTasks.length}
             allTasksCount={allActiveTasks.length}
