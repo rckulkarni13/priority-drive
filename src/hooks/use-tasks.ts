@@ -1179,6 +1179,7 @@ export function useTasks() {
     applyChecklistToDomain,
     applyChecklistToPillar,
     applyChecklistToTask,
+    deleteTask,
     updateTask,
     updateTaskOrder,
     createDomain,
