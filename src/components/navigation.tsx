@@ -139,8 +139,8 @@ export function Navigation({
       {/* Visual divider between global and workspace-scoped navigation */}
       <div className="hidden sm:block h-6 w-px bg-border mx-1" />
 
-      {/* Workspace-scoped section */}
-      <div className="flex flex-wrap items-center gap-1 p-1 bg-muted/50 rounded-xl border border-border/50">
+      {/* Workspace-scoped container: Workspace → Views */}
+      <div className="flex flex-wrap items-center gap-1 pl-1 pr-1 py-1 bg-muted/50 rounded-xl border border-border/50">
         {currentWorkspace && (
           <>
             <WorkspaceSwitcher
@@ -148,23 +148,8 @@ export function Navigation({
               currentWorkspace={currentWorkspace}
               onWorkspaceChange={onWorkspaceChange}
             />
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="gap-2 h-8 px-2 sm:px-3"
-                  aria-label="Customize workspace labels"
-                  onClick={onRenameLabels}
-                >
-                  <Tags className="w-4 h-4" />
-                  <span className="hidden sm:inline">Rename labels</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Rename this workspace's tier labels</TooltipContent>
-            </Tooltip>
 
-            <div className="hidden sm:block h-5 w-px bg-border/60 mx-1" />
+            <span className="hidden sm:inline text-muted-foreground/60 text-xs px-0.5 select-none">/</span>
           </>
         )}
 
@@ -176,12 +161,12 @@ export function Navigation({
           return (
             <Button
               key={item.id}
-              variant={isActive ? "secondary" : "ghost"}
+              variant={isActive ? "default" : "ghost"}
               size="sm"
               onClick={() => onViewChange(item.id)}
               className={cn(
                 "flex items-center gap-1.5 sm:gap-2 transition-all duration-200 text-xs sm:text-sm px-2 sm:px-3",
-                isActive && "bg-background shadow-sm border border-border/50",
+                isActive && "shadow-sm",
                 !isActive && "hover:bg-background/80"
               )}
             >
@@ -203,11 +188,11 @@ export function Navigation({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              variant={isMoreViewActive ? "secondary" : "ghost"}
+              variant={isMoreViewActive ? "default" : "ghost"}
               size="sm"
               className={cn(
                 "flex items-center gap-1.5 sm:gap-2 transition-all duration-200 text-xs sm:text-sm px-2 sm:px-3",
-                isMoreViewActive && "bg-background shadow-sm border border-border/50"
+                isMoreViewActive && "shadow-sm"
               )}
             >
               <MoreHorizontal className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -242,6 +227,27 @@ export function Navigation({
             })}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Trailing config action, demoted to an icon */}
+        {currentWorkspace && (
+          <>
+            <div className="h-5 w-px bg-border/60 mx-0.5" />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  aria-label="Rename workspace labels"
+                  onClick={onRenameLabels}
+                >
+                  <Tags className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Rename this workspace's tier labels</TooltipContent>
+            </Tooltip>
+          </>
+        )}
       </div>
     </nav>
   );
