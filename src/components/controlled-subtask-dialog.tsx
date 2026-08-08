@@ -6,7 +6,8 @@ interface ControlledSubtaskDialogProps {
   parentTaskId: string;
   themes: Theme[];
   tasks: Task[];
-  onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order'>) => void;
+  onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order'>) => Promise<string>;
+  onApplyChecklist?: (task: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   onClose: () => void;
   workspaceId: string;
 }
@@ -17,6 +18,7 @@ export function ControlledSubtaskDialog({
   themes,
   tasks,
   onTaskCreate,
+  onApplyChecklist,
   onClose,
   workspaceId
 }: ControlledSubtaskDialogProps) {
@@ -33,10 +35,8 @@ export function ControlledSubtaskDialog({
       tasks={tasks}
       parentTaskId={parentTaskId}
       defaultThemeId={parentThemeId}
-      onTaskCreate={(taskData) => {
-        onTaskCreate(taskData);
-        onClose();
-      }}
+      onTaskCreate={onTaskCreate}
+      onApplyChecklist={onApplyChecklist}
       workspaceId={workspaceId}
     />
   );
