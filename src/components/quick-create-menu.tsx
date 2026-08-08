@@ -23,17 +23,21 @@ interface QuickCreateMenuProps {
   tasks: Task[];
   strategicPillars: StrategicPillar[];
   domains: Domain[];
-  onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order' | 'status' | 'type'>) => void;
+  onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order' | 'status' | 'type'>) => Promise<string>;
   onThemeCreate: (themeData: Omit<Theme, 'id' | 'createdDate'>) => Promise<string>;
-  onApplyChecklist?: (theme: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
-  onPillarCreate: (pillarData: Omit<StrategicPillar, 'id' | 'createdDate'>) => void;
-  onDomainCreate: (domainData: Omit<Domain, 'id' | 'createdDate'>) => void;
+  onApplyChecklistToTheme?: (theme: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
+  onPillarCreate: (pillarData: Omit<StrategicPillar, 'id' | 'createdDate'>) => Promise<string>;
+  onApplyChecklistToPillar?: (pillar: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
+  onDomainCreate: (domainData: Omit<Domain, 'id' | 'createdDate'>) => Promise<string>;
+  onApplyChecklistToDomain?: (domain: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
+  onApplyChecklistToTask?: (task: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   defaultParentTaskId?: string;
   defaultPillarId?: string;
   variant?: "default" | "compact";
   workspaceId: string;
   workspaceType: WorkspaceType;
 }
+
 
 export function QuickCreateMenu({
   themes,
