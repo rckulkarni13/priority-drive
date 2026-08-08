@@ -739,6 +739,7 @@ const Index = () => {
           domainId={showCreatePillar && showCreatePillar !== 'new-pillar' ? showCreatePillar : undefined}
           domains={filteredDomains}
           onPillarCreate={createStrategicPillar}
+          onApplyChecklist={applyChecklistToPillar}
           onClose={() => setShowCreatePillar('')}
           workspaceId={currentWorkspace.id}
         />
