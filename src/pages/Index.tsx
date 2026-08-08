@@ -627,6 +627,7 @@ const Index = () => {
           onTaskView={handleTaskView}
           onThemeView={handleThemeView}
           onApplyChecklist={applyChecklistToTask}
+          onTaskDelete={handleTaskDelete}
           workspaceId={currentWorkspace.id}
         />
       )}
