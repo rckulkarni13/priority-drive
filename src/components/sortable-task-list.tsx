@@ -191,6 +191,7 @@ export function SortableTaskList({
                   onTaskToggleStatus={onTaskToggleStatus}
                   onTaskReopen={onTaskReopen}
                   onCreateSubtask={onCreateSubtask}
+                  onTaskDelete={onTaskDelete}
                 />
               ))}
             </div>
