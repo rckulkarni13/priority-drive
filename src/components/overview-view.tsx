@@ -57,6 +57,7 @@ function TaskCard({
   domains,
   onTaskOpen,
   onTaskToggleStatus,
+  onTaskDelete,
 }: {
   task: Task;
   workspace?: Workspace;
@@ -65,6 +66,7 @@ function TaskCard({
   domains: Domain[];
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
 }) {
   const terminology = workspace
     ? resolveWorkspaceTerminology(workspace.type, workspace.tierLabels)
