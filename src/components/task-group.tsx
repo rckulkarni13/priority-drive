@@ -282,6 +282,7 @@ export function OrganizedTaskList({
               onToggleStatus={onTaskToggleStatus}
               onReopen={onTaskReopen}
               onCreateSubtask={onCreateSubtask}
+              onDelete={onTaskDelete}
             />
             <div className="absolute top-2 left-2 flex items-center gap-1">
               <Badge 
