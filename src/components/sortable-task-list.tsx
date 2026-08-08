@@ -125,6 +125,7 @@ export function SortableTaskList({
   onTaskToggleStatus,
   onTaskReopen,
   onCreateSubtask,
+  onTaskDelete,
   onTaskReorder,
   emptyMessage = "No tasks found",
 }: SortableTaskListProps) {
