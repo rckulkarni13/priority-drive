@@ -46,7 +46,8 @@ import {
   Calendar as CalendarDays,
   Plus,
   List,
-  ListChecks
+  ListChecks,
+  Trash2
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -57,6 +58,17 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { TaskComments } from "@/components/task-comments";
 import { SubtaskFormDialog } from "@/components/subtask-form-dialog";
 import { useChecklists } from "@/hooks/use-checklists";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
