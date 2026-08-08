@@ -429,6 +429,7 @@ const Index = () => {
             onApplyChecklistToDomain={applyChecklistToDomain}
             onApplyChecklistToTask={applyChecklistToTask}
             onTaskUpdate={updateTask}
+            onTaskDelete={handleTaskDelete}
           />
         );
       
