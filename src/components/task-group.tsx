@@ -119,6 +119,7 @@ export function TaskGroup({
                       onToggleStatus={onTaskToggleStatus}
                       onReopen={onTaskReopen}
                       onCreateSubtask={onCreateSubtask}
+                      onDelete={onTaskDelete}
                     />
                     {/* Enhanced subtask indicator with better highlighting */}
                     <div className="absolute top-2 left-2">
