@@ -664,6 +664,7 @@ const Index = () => {
         domains={domains}
         themes={themes}
         onPillarUpdate={updateStrategicPillar}
+        onApplyChecklist={applyChecklistToPillar}
         onClose={handleCloseAllDialogs}
         onBack={navigationStack.length > 0 ? handleBack : undefined}
         onThemeView={handleThemeView}
@@ -675,6 +676,7 @@ const Index = () => {
         domain={viewingDomain}
         strategicPillars={strategicPillars}
         onDomainUpdate={updateDomain}
+        onApplyChecklist={applyChecklistToDomain}
         onClose={handleCloseAllDialogs}
         onBack={navigationStack.length > 0 ? handleBack : undefined}
         onPillarView={handlePillarView}

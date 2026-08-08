@@ -27,11 +27,21 @@ import {
   X, 
   Globe,
   Target,
-  ArrowLeft
+  ArrowLeft,
+  ListChecks
 } from "lucide-react";
 import { format } from "date-fns";
 import { Domain, StrategicPillar } from "@/types";
 import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
+import { useChecklists } from "@/hooks/use-checklists";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const domainSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -44,6 +54,7 @@ interface DomainDetailDialogProps {
   domain: Domain | null;
   strategicPillars: StrategicPillar[];
   onDomainUpdate?: (domainId: string, updates: Partial<Domain>) => void;
+  onApplyChecklist?: (domain: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   onClose: () => void;
   onBack?: () => void;
   onPillarView?: (pillar: StrategicPillar) => void;
@@ -53,11 +64,13 @@ export function DomainDetailDialog({
   domain, 
   strategicPillars,
   onDomainUpdate,
+  onApplyChecklist,
   onClose,
   onBack,
   onPillarView
 }: DomainDetailDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const { checklists } = useChecklists(domain?.workspaceId);
   const terms = useWorkspaceTerms(domain?.workspaceId);
   const label = terms.domain.singular;
   
@@ -230,10 +243,44 @@ export function DomainDetailDialog({
 
           {/* Associated Strategic Pillars */}
           <div>
-            <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-              <Target className="w-4 h-4" />
-              {terms.pillar.plural} ({domainPillars.length})
-            </h3>
+            <div className="flex items-center justify-between mb-3 gap-2">
+              <h3 className="text-sm font-medium flex items-center gap-2">
+                <Target className="w-4 h-4" />
+                {terms.pillar.plural} ({domainPillars.length})
+              </h3>
+              {onApplyChecklist && checklists.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="sm" variant="outline">
+                      <ListChecks className="w-4 h-4 mr-1" />
+                      Apply Checklist
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-64 bg-popover z-50">
+                    <DropdownMenuLabel>Create steps as {terms.pillar.plural.toLowerCase()}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {checklists.map((checklist) => (
+                      <DropdownMenuItem
+                        key={checklist.id}
+                        onClick={() =>
+                          onApplyChecklist(
+                            { id: domain.id, workspaceId: domain.workspaceId },
+                            checklist.items.map((item) => item.title)
+                          )
+                        }
+                      >
+                        <div className="flex flex-col">
+                          <span>{checklist.title}</span>
+                          <span className="text-xs text-muted-foreground">
+                            v{checklist.versionNumber} · {checklist.items.length} steps
+                          </span>
+                        </div>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
             {domainPillars.length > 0 ? (
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {domainPillars.map((pillar) => (
