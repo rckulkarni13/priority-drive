@@ -43,6 +43,7 @@ export function PriorityTaskRow({
   onTaskToggleStatus,
   onTaskReopen,
   onCreateSubtask,
+  onTaskDelete,
 }: PriorityTaskRowProps) {
   // Find parent task if this is a subtask
   const parentTask = task.parentTaskId 
