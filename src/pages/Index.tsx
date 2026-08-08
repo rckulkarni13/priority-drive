@@ -20,6 +20,7 @@ import { ControlledSubtaskDialog } from "@/components/controlled-subtask-dialog"
 import { ControlledTaskDialog } from "@/components/controlled-task-dialog";
 import { ControlledThemeDialog } from "@/components/controlled-theme-dialog";
 import { ControlledPillarDialog } from "@/components/controlled-pillar-dialog";
+import { ControlledDomainDialog } from "@/components/controlled-domain-dialog";
 import { useTasks } from "@/hooks/use-tasks";
 import { useWorkspaces } from "@/hooks/use-workspaces";
 import { WorkspaceSwitcher } from "@/components/workspace-switcher";
