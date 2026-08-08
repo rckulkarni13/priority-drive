@@ -227,6 +227,37 @@ export function PillarFormDialog({ children, defaultOpen = false, onOpenChange, 
               )}
             />
 
+            {hasChecklists && (
+              <FormField
+                control={form.control}
+                name="checklistId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <ListChecks className="w-4 h-4" />
+                      Apply Checklist (Optional)
+                    </FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a checklist to create its children..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {checklists.map((checklist) => (
+                          <SelectItem key={checklist.id} value={checklist.id}>
+                            {checklist.title} ({checklist.items.length} steps)
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             <div className="flex justify-end gap-3">
               <Button
                 type="button"
@@ -235,7 +266,9 @@ export function PillarFormDialog({ children, defaultOpen = false, onOpenChange, 
               >
                 Cancel
               </Button>
-              <Button type="submit">Create {label}</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Creating..." : `Create ${label}`}
+              </Button>
             </div>
           </form>
         </Form>
