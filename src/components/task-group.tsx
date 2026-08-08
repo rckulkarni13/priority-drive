@@ -317,6 +317,7 @@ export function OrganizedTaskList({
           onTaskToggleStatus={onTaskToggleStatus}
           onTaskReopen={onTaskReopen}
           onCreateSubtask={onCreateSubtask}
+          onTaskDelete={onTaskDelete}
         />
       ))}
     </div>
