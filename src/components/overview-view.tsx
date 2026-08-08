@@ -306,6 +306,7 @@ function UpcomingGroups({
   domains,
   onTaskOpen,
   onTaskToggleStatus,
+  onTaskDelete,
 }: {
   tasks: Task[];
   workspaces: Workspace[];
@@ -314,6 +315,7 @@ function UpcomingGroups({
   domains: Domain[];
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
 }) {
   const today = new Date();
   const groups = useMemo(() => {
