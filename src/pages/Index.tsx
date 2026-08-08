@@ -470,6 +470,7 @@ const Index = () => {
               onTaskEdit={handleTaskView}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
+              onTaskDelete={handleTaskDelete}
               emptyMessage="No completed tasks yet. Complete some tasks to see them here!"
             />
         );
