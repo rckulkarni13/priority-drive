@@ -419,6 +419,50 @@ export function TaskDetailDialog({
                   </div>
                 )}
 
+                {/* Apply checklist */}
+                {task.type !== 'subtask' && onApplyChecklist && checklists.length > 0 && (
+                  <div className="space-y-3 border-t pt-4">
+                    <h3 className="text-sm font-medium flex items-center gap-2">
+                      <ListChecks className="w-4 h-4" />
+                      Checklists
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Apply a reusable checklist to create its steps as subtasks of this task.
+                    </p>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="sm" variant="outline">
+                          <ListChecks className="w-4 h-4 mr-1" />
+                          Apply Checklist
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-64 bg-popover z-50">
+                        <DropdownMenuLabel>Create steps as subtasks</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {checklists.map((checklist) => (
+                          <DropdownMenuItem
+                            key={checklist.id}
+                            onClick={async () => {
+                              await onApplyChecklist(
+                                { id: task.id, workspaceId },
+                                checklist.items.map((item) => item.title)
+                              );
+                              setActiveTab('subtasks');
+                            }}
+                          >
+                            <div className="flex flex-col">
+                              <span>{checklist.title}</span>
+                              <span className="text-xs text-muted-foreground">
+                                v{checklist.versionNumber} · {checklist.items.length} steps
+                              </span>
+                            </div>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                )}
+
                 {/* Edit form fields */}
                 {isEditing && (
                   <Form {...form}>
