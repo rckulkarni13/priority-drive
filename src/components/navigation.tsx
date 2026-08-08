@@ -9,20 +9,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { 
-  Calendar, 
-  FolderTree, 
-  CheckSquare, 
-  Plus,
-  Target,
+import {
   CalendarDays,
-  CalendarRange,
+  FolderTree,
+  CheckSquare,
+  Target,
   CalendarX2,
   Settings,
   MoreHorizontal,
-  LayoutDashboard
+  LayoutDashboard,
+  Tags,
+  Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { WorkspaceSwitcher } from "@/components/workspace-switcher";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Workspace } from "@/types";
 
 type View = 'overview' | 'today' | 'calendar' | 'hierarchy' | 'completed' | 'all-tasks' | 'manage';
 
