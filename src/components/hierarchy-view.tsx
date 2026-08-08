@@ -56,6 +56,7 @@ export function HierarchyView({
   onTaskToggleStatus, 
   onTaskReopen,
   onCreateSubtask,
+  onTaskDelete,
   onCreateTask,
   onCreateTheme,
   onCreatePillar,
