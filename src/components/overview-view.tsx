@@ -224,6 +224,7 @@ function Column({
   domains,
   onTaskOpen,
   onTaskToggleStatus,
+  onTaskDelete,
   emptyMessage,
   groupByDate = false,
 }: {
