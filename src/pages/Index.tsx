@@ -51,6 +51,7 @@ const Index = () => {
   const [showCreateTask, setShowCreateTask] = useState<string>('');
   const [showCreateTheme, setShowCreateTheme] = useState<string>('');
   const [showCreatePillar, setShowCreatePillar] = useState<string>('');
+  const [showCreateDomain, setShowCreateDomain] = useState<string>('');
   const navigate = useNavigate();
   const { toast } = useToast();
 
