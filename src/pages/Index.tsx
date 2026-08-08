@@ -383,6 +383,7 @@ const Index = () => {
                 onTaskToggleStatus={toggleTaskStatus}
                 onTaskReopen={reopenTask}
                 onCreateSubtask={handleCreateSubtask}
+                onTaskDelete={handleTaskDelete}
               />
             )}
             <SortableTaskList
