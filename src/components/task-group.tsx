@@ -197,7 +197,8 @@ export function OrganizedTaskList({
   onTaskEdit,
   onTaskToggleStatus,
   onTaskReopen,
-  onCreateSubtask
+  onCreateSubtask,
+  onTaskDelete
 }: OrganizedTaskListProps) {
   // Organize tasks into parent-child groups
   const organizeTasksWithContext = (taskList: Task[]) => {
