@@ -88,6 +88,7 @@ function SortableTaskItem({
             onTaskToggleStatus={onTaskToggleStatus}
             onTaskReopen={onTaskReopen}
             onCreateSubtask={onCreateSubtask}
+            onTaskDelete={onTaskDelete}
           />
         </div>
       </div>
