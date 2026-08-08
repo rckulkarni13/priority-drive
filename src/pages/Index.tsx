@@ -23,14 +23,12 @@ import { ControlledPillarDialog } from "@/components/controlled-pillar-dialog";
 import { ControlledDomainDialog } from "@/components/controlled-domain-dialog";
 import { useTasks } from "@/hooks/use-tasks";
 import { useWorkspaces } from "@/hooks/use-workspaces";
-import { WorkspaceSwitcher } from "@/components/workspace-switcher";
 import { WorkspaceLabelsDialog } from "@/components/workspace-labels-dialog";
 import { Button } from "@/components/ui/button";
 import { QuickCreateMenu } from "@/components/quick-create-menu";
 import { ChecklistsManagerDialog } from "@/components/checklists-manager-dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut, ListChecks, Tags, MoreHorizontal } from "lucide-react";
+import { Plus, CheckSquare2, Package, Target, Lightbulb, LogOut, ListChecks, MoreHorizontal } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
