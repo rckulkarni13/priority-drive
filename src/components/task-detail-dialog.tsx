@@ -113,6 +113,7 @@ export function TaskDetailDialog({
   onTaskUpdate,
   onTaskCreate, 
   onApplyChecklist,
+  onTaskDelete,
   onClose,
   onBack,
   onTaskView,
