@@ -745,7 +745,16 @@ const Index = () => {
         />
       )}
 
-      {/* Customize Labels Dialog */}
+      {/* Create Domain Dialog */}
+      {currentWorkspace && (
+        <ControlledDomainDialog
+          isOpen={!!showCreateDomain && showCreateDomain !== ''}
+          onDomainCreate={createDomain}
+          onApplyChecklist={applyChecklistToDomain}
+          onClose={() => setShowCreateDomain('')}
+          workspaceId={currentWorkspace.id}
+        />
+      )}
       {currentWorkspace && (
         <WorkspaceLabelsDialog
           workspace={currentWorkspace}
