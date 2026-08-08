@@ -243,7 +243,10 @@ export function CalendarView({
                   domains={domains}
                   onTaskCreate={onTaskCreate}
                   onThemeCreate={onThemeCreate}
-                  onApplyChecklist={onApplyChecklist}
+                  onApplyChecklistToTheme={onApplyChecklistToTheme}
+                  onApplyChecklistToPillar={onApplyChecklistToPillar}
+                  onApplyChecklistToDomain={onApplyChecklistToDomain}
+                  onApplyChecklistToTask={onApplyChecklistToTask}
                   onPillarCreate={onPillarCreate}
                   onDomainCreate={onDomainCreate}
                   workspaceId={workspaceId}
