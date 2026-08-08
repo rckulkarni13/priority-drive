@@ -369,6 +369,7 @@ const Index = () => {
             workspaces={workspaces}
             onTaskOpen={handleOverviewTaskOpen}
             onTaskToggleStatus={toggleTaskStatus}
+            onTaskDelete={handleTaskDelete}
           />
         );
 
