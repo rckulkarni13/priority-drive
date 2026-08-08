@@ -200,6 +200,7 @@ export function TaskList({
               onTaskToggleStatus={onTaskToggleStatus}
               onTaskReopen={onTaskReopen}
               onCreateSubtask={onCreateSubtask}
+              onTaskDelete={onTaskDelete}
             />
           ))}
         </div>
