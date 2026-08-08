@@ -45,13 +45,15 @@ function DraggableTaskCard({
   themes,
   strategicPillars,
   domains,
-  onClick 
+  onClick,
+  onDelete,
 }: { 
   task: Task; 
   themes: Theme[];
   strategicPillars: StrategicPillar[];
   domains: Domain[];
   onClick: () => void;
+  onDelete?: () => void;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
