@@ -276,6 +276,8 @@ function Section({
 export function OverviewView({
   tasks,
   themes,
+  strategicPillars,
+  domains,
   workspaces,
   onTaskOpen,
   onTaskToggleStatus,
@@ -299,6 +301,8 @@ export function OverviewView({
         tasks={buckets.overdue}
         workspaces={workspaces}
         themes={themes}
+        strategicPillars={strategicPillars}
+        domains={domains}
         onTaskOpen={onTaskOpen}
         onTaskToggleStatus={onTaskToggleStatus}
         emptyMessage="Nothing overdue."
@@ -312,6 +316,8 @@ export function OverviewView({
         tasks={buckets.today}
         workspaces={workspaces}
         themes={themes}
+        strategicPillars={strategicPillars}
+        domains={domains}
         onTaskOpen={onTaskOpen}
         onTaskToggleStatus={onTaskToggleStatus}
         emptyMessage="Nothing due today."
@@ -325,6 +331,8 @@ export function OverviewView({
         tasks={buckets.upcoming}
         workspaces={workspaces}
         themes={themes}
+        strategicPillars={strategicPillars}
+        domains={domains}
         onTaskOpen={onTaskOpen}
         onTaskToggleStatus={onTaskToggleStatus}
         emptyMessage="Nothing coming up — add a task to get started."
