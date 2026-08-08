@@ -27,7 +27,7 @@ import { WorkspaceLabelsDialog } from "@/components/workspace-labels-dialog";
 import { Button } from "@/components/ui/button";
 import { QuickCreateMenu } from "@/components/quick-create-menu";
 import { ChecklistsManagerDialog } from "@/components/checklists-manager-dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { CheckSquare2, LogOut, ListChecks, MoreHorizontal } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
