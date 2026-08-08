@@ -37,6 +37,7 @@ export function TaskList({
   onTaskToggleStatus, 
   onTaskReopen,
   onCreateSubtask,
+  onTaskDelete,
   showDateGroups = false,
   emptyMessage = "No tasks found"
 }: TaskListProps) {
