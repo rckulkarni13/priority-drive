@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { format, isSameDay } from "date-fns";
+import { format, isSameDay, isTomorrow } from "date-fns";
 import { Task, Theme, StrategicPillar, Domain, Workspace } from "@/types";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertTriangle, CalendarDays, CalendarClock, Layers, Target, Package } from "lucide-react";
@@ -20,12 +20,11 @@ interface OverviewViewProps {
   onTaskToggleStatus: (taskId: string) => void;
 }
 
-
 const priorityClass: Record<string, string> = {
-  critical: "border-destructive text-destructive",
-  high: "border-orange-500 text-orange-600",
-  medium: "border-blue-500 text-blue-600",
-  low: "border-muted-foreground text-muted-foreground",
+  critical: "bg-[hsl(var(--priority-critical)/0.1)] text-[hsl(var(--priority-critical))] border-[hsl(var(--priority-critical))]",
+  high: "bg-[hsl(var(--priority-high)/0.1)] text-[hsl(var(--priority-high))] border-[hsl(var(--priority-high))]",
+  medium: "bg-[hsl(var(--priority-medium)/0.1)] text-[hsl(var(--priority-medium))] border-[hsl(var(--priority-medium))]",
+  low: "bg-[hsl(var(--priority-low)/0.1)] text-[hsl(var(--priority-low))] border-[hsl(var(--priority-low))]",
 };
 
 function formatWhen(task: Task): string {
@@ -38,7 +37,18 @@ function formatWhen(task: Task): string {
   return format(end, "MMM d, yyyy");
 }
 
-function TaskRow({
+function getWorkspaceColor(tone: "overdue" | "today" | "upcoming"): string {
+  switch (tone) {
+    case "overdue":
+      return "hsl(var(--destructive))";
+    case "today":
+      return "hsl(var(--primary))";
+    case "upcoming":
+      return "hsl(var(--muted-foreground))";
+  }
+}
+
+function TaskCard({
   task,
   workspace,
   themes,
@@ -66,6 +76,8 @@ function TaskRow({
     relatedPillars.some(pillar => pillar.domainIds.includes(domain.id))
   );
 
+  const leftAccent = workspace?.color || "hsl(var(--border))";
+
   return (
     <div
       role="button"
@@ -77,7 +89,8 @@ function TaskRow({
           onTaskOpen(task);
         }
       }}
-      className="flex items-start gap-3 rounded-md border border-border bg-card p-3 cursor-pointer hover:bg-muted/40 transition-colors"
+      className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 cursor-pointer hover:ring-1 hover:ring-ring/30 transition-all shadow-sm"
+      style={{ borderLeftWidth: 4, borderLeftColor: leftAccent }}
     >
       <div className="pt-0.5" onClick={(e) => e.stopPropagation()}>
         <Checkbox
@@ -88,26 +101,23 @@ function TaskRow({
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="font-medium leading-snug break-words">{task.title}</p>
+        <div className="flex items-start justify-between gap-2">
+          <p className="font-medium leading-snug break-words text-sm">{task.title}</p>
+          {workspace && (
+            <span className="text-[10px] text-muted-foreground whitespace-nowrap flex items-center gap-1">
+              <span>{workspace.icon}</span>
+              {workspace.name}
+            </span>
+          )}
+        </div>
 
         <div className="flex flex-wrap items-center gap-1.5 mt-2">
-          {workspace && (
-            <Badge
-              variant="outline"
-              className="text-xs border-2"
-              style={{ borderColor: workspace.color, color: workspace.color }}
-            >
-              <span className="mr-1">{workspace.icon}</span>
-              {workspace.name}
-            </Badge>
-          )}
-
           {relatedDomains.length > 0 ? (
             relatedDomains.map(domain => (
               <Badge
                 key={domain.id}
                 variant="outline"
-                className="text-xs border-2"
+                className="text-[10px] h-5 px-1.5 border-2"
                 style={{
                   borderColor: domain.color,
                   backgroundColor: `${domain.color}15`,
@@ -119,7 +129,7 @@ function TaskRow({
               </Badge>
             ))
           ) : (
-            <Badge variant="outline" className="text-xs text-muted-foreground">
+            <Badge variant="outline" className="text-[10px] h-5 px-1.5 text-muted-foreground">
               No {terminology.domain.singular}
             </Badge>
           )}
@@ -129,7 +139,7 @@ function TaskRow({
               <Badge
                 key={pillar.id}
                 variant="outline"
-                className="text-xs border-2"
+                className="text-[10px] h-5 px-1.5 border-2"
                 style={{
                   borderColor: pillar.color,
                   backgroundColor: `${pillar.color}15`,
@@ -141,7 +151,7 @@ function TaskRow({
               </Badge>
             ))
           ) : (
-            <Badge variant="outline" className="text-xs text-muted-foreground">
+            <Badge variant="outline" className="text-[10px] h-5 px-1.5 text-muted-foreground">
               No {terminology.pillar.singular}
             </Badge>
           )}
@@ -151,7 +161,7 @@ function TaskRow({
               <Badge
                 key={theme.id}
                 variant="outline"
-                className="text-xs border-2"
+                className="text-[10px] h-5 px-1.5 border-2"
                 style={{
                   borderColor: theme.color,
                   backgroundColor: `${theme.color}15`,
@@ -163,21 +173,21 @@ function TaskRow({
               </Badge>
             ))
           ) : (
-            <Badge variant="outline" className="text-xs text-muted-foreground">
+            <Badge variant="outline" className="text-[10px] h-5 px-1.5 text-muted-foreground">
               No {terminology.theme.singular}
             </Badge>
           )}
 
-          <Badge variant="outline" className={cn("text-xs capitalize border-2", priorityClass[task.priority])}>
+          <Badge variant="outline" className={cn("text-[10px] h-5 px-1.5 capitalize border-2", priorityClass[task.priority])}>
             {task.priority}
           </Badge>
 
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
             {formatWhen(task)}
           </Badge>
 
           {task.status === "hold" && (
-            <Badge variant="outline" className="text-xs">On hold</Badge>
+            <Badge variant="outline" className="text-[10px] h-5 px-1.5">On hold</Badge>
           )}
         </div>
       </div>
@@ -185,8 +195,7 @@ function TaskRow({
   );
 }
 
-
-function Section({
+function Column({
   title,
   description,
   icon: Icon,
@@ -199,11 +208,12 @@ function Section({
   onTaskOpen,
   onTaskToggleStatus,
   emptyMessage,
+  groupByDate = false,
 }: {
   title: string;
   description: string;
   icon: typeof AlertTriangle;
-  tone: string;
+  tone: "overdue" | "today" | "upcoming";
   tasks: Task[];
   workspaces: Workspace[];
   themes: Theme[];
@@ -212,66 +222,119 @@ function Section({
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
   emptyMessage: string;
+  groupByDate?: boolean;
 }) {
-  // Group by workspace, preserving workspace order
-  const groups = workspaces
-    .map(ws => ({ workspace: ws, items: tasks.filter(t => t.workspaceId === ws.id) }))
-    .filter(g => g.items.length > 0);
-
-  const orphans = tasks.filter(t => !workspaces.some(w => w.id === t.workspaceId));
-  if (orphans.length > 0) {
-    groups.push({ workspace: undefined as unknown as Workspace, items: orphans });
-  }
+  const toneColor = getWorkspaceColor(tone);
 
   return (
-    <section className="space-y-3">
-      <div className="flex items-center gap-2">
-        <Icon className={cn("w-5 h-5", tone)} />
-        <h2 className="text-lg font-semibold">{title}</h2>
-        <Badge variant="secondary" className="text-xs">{tasks.length}</Badge>
-        <span className="text-xs text-muted-foreground hidden sm:inline">{description}</span>
+    <div className="flex flex-col bg-muted/50 rounded-2xl border border-border overflow-hidden h-full">
+      <div className="p-4 bg-card border-b border-border flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Icon className="w-5 h-5" style={{ color: toneColor }} />
+          <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: toneColor }}>
+            {title}
+          </h2>
+          <Badge variant="secondary" className="text-xs h-5 px-2">{tasks.length}</Badge>
+        </div>
+        <span className="text-xs text-muted-foreground hidden 2xl:inline">{description}</span>
       </div>
 
       {tasks.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-center text-sm text-muted-foreground">
+        <div className="flex-1 overflow-y-auto p-4">
+          <Card className="h-full flex items-center justify-center p-6 text-center text-sm text-muted-foreground">
             {emptyMessage}
-          </CardContent>
-        </Card>
+          </Card>
+        </div>
       ) : (
-        <div className="space-y-4">
-          {groups.map((group, i) => (
-            <div key={group.workspace?.id ?? `orphan-${i}`} className="space-y-2">
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-medium text-muted-foreground">
-                  {group.workspace ? `${group.workspace.icon} ${group.workspace.name}` : "Other"}
-                </h3>
-                <Badge variant="outline" className="text-[10px] h-4 px-1.5">
-                  {group.items.length}
-                </Badge>
-              </div>
-              <div className="space-y-2">
-                {group.items.map(task => (
-                  <TaskRow
-                    key={task.id}
-                    task={task}
-                    workspace={group.workspace}
-                    themes={themes}
-                    strategicPillars={strategicPillars}
-                    domains={domains}
-                    onTaskOpen={onTaskOpen}
-                    onTaskToggleStatus={onTaskToggleStatus}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {groupByDate ? (
+            <UpcomingGroups
+              tasks={tasks}
+              workspaces={workspaces}
+              themes={themes}
+              strategicPillars={strategicPillars}
+              domains={domains}
+              onTaskOpen={onTaskOpen}
+              onTaskToggleStatus={onTaskToggleStatus}
+            />
+          ) : (
+            tasks.map(task => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                workspace={workspaces.find(w => w.id === task.workspaceId)}
+                themes={themes}
+                strategicPillars={strategicPillars}
+                domains={domains}
+                onTaskOpen={onTaskOpen}
+                onTaskToggleStatus={onTaskToggleStatus}
+              />
+            ))
+          )}
         </div>
       )}
-    </section>
+    </div>
   );
 }
 
+function UpcomingGroups({
+  tasks,
+  workspaces,
+  themes,
+  strategicPillars,
+  domains,
+  onTaskOpen,
+  onTaskToggleStatus,
+}: {
+  tasks: Task[];
+  workspaces: Workspace[];
+  themes: Theme[];
+  strategicPillars: StrategicPillar[];
+  domains: Domain[];
+  onTaskOpen: (task: Task) => void;
+  onTaskToggleStatus: (taskId: string) => void;
+}) {
+  const today = new Date();
+  const groups = useMemo(() => {
+    const map: Record<string, { label: string; tasks: Task[] }> = {};
+    for (const task of tasks) {
+      const end = getEffectiveEndDate(task);
+      if (!end) continue;
+      let label: string;
+      if (isTomorrow(end)) label = "Tomorrow";
+      else label = format(end, "EEEE");
+      if (!map[label]) map[label] = { label, tasks: [] };
+      map[label].tasks.push(task);
+    }
+    return Object.values(map);
+  }, [tasks]);
+
+  return (
+    <div className="space-y-4">
+      {groups.map(group => (
+        <div key={group.label} className="space-y-2">
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">
+            {group.label}
+          </p>
+          <div className="space-y-3">
+            {group.tasks.map(task => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                workspace={workspaces.find(w => w.id === task.workspaceId)}
+                themes={themes}
+                strategicPillars={strategicPillars}
+                domains={domains}
+                onTaskOpen={onTaskOpen}
+                onTaskToggleStatus={onTaskToggleStatus}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function OverviewView({
   tasks,
@@ -285,7 +348,7 @@ export function OverviewView({
   const buckets = useMemo(() => categorizeOverviewTasks(tasks), [tasks]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 h-full flex flex-col">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold">Overview</h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -293,50 +356,53 @@ export function OverviewView({
         </p>
       </div>
 
-      <Section
-        title="Overdue"
-        description="Past their due or end date"
-        icon={AlertTriangle}
-        tone="text-destructive"
-        tasks={buckets.overdue}
-        workspaces={workspaces}
-        themes={themes}
-        strategicPillars={strategicPillars}
-        domains={domains}
-        onTaskOpen={onTaskOpen}
-        onTaskToggleStatus={onTaskToggleStatus}
-        emptyMessage="Nothing overdue."
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-[500px] lg:h-[calc(100vh-14rem)]">
+        <Column
+          title="Overdue"
+          description="Past their due or end date"
+          icon={AlertTriangle}
+          tone="overdue"
+          tasks={buckets.overdue}
+          workspaces={workspaces}
+          themes={themes}
+          strategicPillars={strategicPillars}
+          domains={domains}
+          onTaskOpen={onTaskOpen}
+          onTaskToggleStatus={onTaskToggleStatus}
+          emptyMessage="Nothing overdue."
+        />
 
-      <Section
-        title="Today"
-        description="Due today or in an active date range"
-        icon={CalendarDays}
-        tone="text-blue-600"
-        tasks={buckets.today}
-        workspaces={workspaces}
-        themes={themes}
-        strategicPillars={strategicPillars}
-        domains={domains}
-        onTaskOpen={onTaskOpen}
-        onTaskToggleStatus={onTaskToggleStatus}
-        emptyMessage="Nothing due today."
-      />
+        <Column
+          title="Today"
+          description="Due today or in an active date range"
+          icon={CalendarDays}
+          tone="today"
+          tasks={buckets.today}
+          workspaces={workspaces}
+          themes={themes}
+          strategicPillars={strategicPillars}
+          domains={domains}
+          onTaskOpen={onTaskOpen}
+          onTaskToggleStatus={onTaskToggleStatus}
+          emptyMessage="Nothing due today."
+        />
 
-      <Section
-        title="Upcoming (Next 7 Days)"
-        description="Tomorrow through 7 days out"
-        icon={CalendarClock}
-        tone="text-emerald-600"
-        tasks={buckets.upcoming}
-        workspaces={workspaces}
-        themes={themes}
-        strategicPillars={strategicPillars}
-        domains={domains}
-        onTaskOpen={onTaskOpen}
-        onTaskToggleStatus={onTaskToggleStatus}
-        emptyMessage="Nothing coming up — add a task to get started."
-      />
+        <Column
+          title="Upcoming"
+          description="Tomorrow through 7 days out"
+          icon={CalendarClock}
+          tone="upcoming"
+          tasks={buckets.upcoming}
+          workspaces={workspaces}
+          themes={themes}
+          strategicPillars={strategicPillars}
+          domains={domains}
+          onTaskOpen={onTaskOpen}
+          onTaskToggleStatus={onTaskToggleStatus}
+          emptyMessage="Nothing coming up — add a task to get started."
+          groupByDate
+        />
+      </div>
     </div>
   );
 }
