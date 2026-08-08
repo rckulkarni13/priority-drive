@@ -108,6 +108,7 @@ interface SortableTaskListProps {
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
   onTaskReorder?: (taskOrders: { id: string; order: number }[]) => void;
   emptyMessage?: string;
 }
