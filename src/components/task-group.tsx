@@ -152,6 +152,7 @@ export function TaskGroup({
             onToggleStatus={onTaskToggleStatus}
             onReopen={onTaskReopen}
             onCreateSubtask={onCreateSubtask}
+            onDelete={onTaskDelete}
           />
           {/* Standalone task indicator */}
           <div className="absolute top-2 left-2">
