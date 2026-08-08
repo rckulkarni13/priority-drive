@@ -641,6 +641,7 @@ const Index = () => {
           onBack={navigationStack.length > 0 ? handleBack : undefined}
           onTaskView={handleTaskView}
           onThemeView={handleThemeView}
+          onApplyChecklist={applyChecklistToTask}
           workspaceId={currentWorkspace.id}
         />
       )}
