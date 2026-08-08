@@ -83,7 +83,8 @@ interface TaskDetailDialogProps {
   themes: Theme[];
   tasks: Task[];
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
-  onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order'>) => void;
+  onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order'>) => Promise<string>;
+  onApplyChecklist?: (task: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   onClose: () => void;
   onBack?: () => void;
   onTaskView?: (task: Task) => void;
@@ -97,6 +98,7 @@ export function TaskDetailDialog({
   tasks, 
   onTaskUpdate,
   onTaskCreate, 
+  onApplyChecklist,
   onClose,
   onBack,
   onTaskView,
