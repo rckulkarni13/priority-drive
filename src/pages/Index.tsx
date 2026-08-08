@@ -254,6 +254,11 @@ const Index = () => {
     setViewingDomain(null);
   };
 
+  const handleTaskDelete = async (taskId: string) => {
+    await deleteTask(taskId);
+    setViewingTask(null);
+  };
+
   const handleThemeView = (theme: Theme) => {
     if (viewingTask) {
       setNavigationStack(prev => [...prev, { type: 'task', data: viewingTask }]);
