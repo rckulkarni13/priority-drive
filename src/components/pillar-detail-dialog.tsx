@@ -342,26 +342,7 @@ export function PillarDetailDialog({
               </DropdownMenu>
             </div>
           )}
-          {!isEditing ? (
-            <div className="space-y-6">
-              {/* Description */}
-              <div>
-                <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-                  <Edit className="w-4 h-4" />
-                  Description
-                </h3>
-                {pillar.description ? (
-                  <div className="prose prose-sm max-w-none text-sm text-muted-foreground whitespace-pre-wrap bg-muted/30 rounded-lg p-4">
-                    {pillar.description}
-                  </div>
-                ) : (
-                  <div className="text-sm text-muted-foreground italic bg-muted/30 rounded-lg p-4">
-                    No description provided
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
+          {!isEditing && (
             <div className="space-y-6">
               {/* Description */}
               <div>
