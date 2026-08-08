@@ -713,6 +713,7 @@ const Index = () => {
           themes={filteredThemes}
           tasks={filteredTasks}
           onTaskCreate={createTask}
+          onApplyChecklist={applyChecklistToTask}
           onClose={() => setShowCreateTask('')}
           workspaceId={currentWorkspace.id}
         />
