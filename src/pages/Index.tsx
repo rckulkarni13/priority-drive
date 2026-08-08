@@ -76,6 +76,7 @@ const Index = () => {
     deleteDomain,
     deleteStrategicPillar,
     deleteTheme,
+    deleteTask,
     getTodaysTasks,
     getTodaysPrioritizedTaskIds,
     getThisWeekTasks,
