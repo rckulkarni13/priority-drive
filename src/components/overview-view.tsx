@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { format, isSameDay } from "date-fns";
-import { Task, Theme, Workspace } from "@/types";
+import { Task, Theme, StrategicPillar, Domain, Workspace } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertTriangle, CalendarDays, CalendarClock, Layers } from "lucide-react";
+import { AlertTriangle, CalendarDays, CalendarClock, Layers, Target, Package } from "lucide-react";
 import { categorizeOverviewTasks } from "@/lib/overview-tasks";
 import { getEffectiveStartDate, getEffectiveEndDate } from "@/lib/task-dates";
 import { resolveWorkspaceTerminology } from "@/lib/workspace-terminology";
@@ -13,10 +13,13 @@ import { cn } from "@/lib/utils";
 interface OverviewViewProps {
   tasks: Task[];
   themes: Theme[];
+  strategicPillars: StrategicPillar[];
+  domains: Domain[];
   workspaces: Workspace[];
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
 }
+
 
 const priorityClass: Record<string, string> = {
   critical: "border-destructive text-destructive",
