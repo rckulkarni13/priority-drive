@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { GripVertical, Calendar, Clock, CheckCircle2, RotateCcw, MessageCircle, ChevronDown, ChevronUp, Plus, Edit, Target, Layers, Package } from "lucide-react";
+import { GripVertical, Calendar, Clock, CheckCircle2, RotateCcw, MessageCircle, ChevronDown, ChevronUp, Plus, Edit, Target, Layers, Package, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { TaskComments } from "@/components/task-comments";
@@ -20,6 +20,7 @@ interface TaskCardProps {
   onToggleStatus?: (taskId: string) => void;
   onReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onDelete?: (taskId: string) => void;
   isDragging?: boolean;
   dragHandleProps?: any;
 }
