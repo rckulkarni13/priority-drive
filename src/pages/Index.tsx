@@ -402,6 +402,7 @@ const Index = () => {
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
+              onTaskDelete={handleTaskDelete}
               onTaskReorder={updateTaskOrder}
               emptyMessage="No tasks prioritized for today. Add some priorities to get started!"
             />
