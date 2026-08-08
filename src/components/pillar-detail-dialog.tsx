@@ -301,6 +301,66 @@ export function PillarDetailDialog({
                 />
               </div>
             </Form>
+          ) : null}
+          {isEditing && onApplyChecklist && checklists.length > 0 && (
+            <div className="flex items-center justify-between gap-2 pt-2 border-t">
+              <div>
+                <h3 className="text-sm font-medium">Apply Checklist</h3>
+                <p className="text-xs text-muted-foreground">
+                  Create steps as {terms.theme.plural.toLowerCase()}
+                </p>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="outline">
+                    <ListChecks className="w-4 h-4 mr-1" />
+                    Apply Checklist
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64 bg-popover z-50">
+                  <DropdownMenuLabel>Create steps as {terms.theme.plural.toLowerCase()}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {checklists.map((checklist) => (
+                    <DropdownMenuItem
+                      key={checklist.id}
+                      onClick={() =>
+                        onApplyChecklist(
+                          { id: pillar.id, workspaceId: pillar.workspaceId },
+                          checklist.items.map((item) => item.title)
+                        )
+                      }
+                    >
+                      <div className="flex flex-col">
+                        <span>{checklist.title}</span>
+                        <span className="text-xs text-muted-foreground">
+                          v{checklist.versionNumber} · {checklist.items.length} steps
+                        </span>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
+          {!isEditing ? (
+            <div className="space-y-6">
+              {/* Description */}
+              <div>
+                <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                  <Edit className="w-4 h-4" />
+                  Description
+                </h3>
+                {pillar.description ? (
+                  <div className="prose prose-sm max-w-none text-sm text-muted-foreground whitespace-pre-wrap bg-muted/30 rounded-lg p-4">
+                    {pillar.description}
+                  </div>
+                ) : (
+                  <div className="text-sm text-muted-foreground italic bg-muted/30 rounded-lg p-4">
+                    No description provided
+                  </div>
+                )}
+              </div>
+            </div>
           ) : (
             <div className="space-y-6">
               {/* Description */}
