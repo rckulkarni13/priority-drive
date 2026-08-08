@@ -351,11 +351,14 @@ const Index = () => {
           <OverviewView
             tasks={tasks}
             themes={themes}
+            strategicPillars={strategicPillars}
+            domains={domains}
             workspaces={workspaces}
             onTaskOpen={handleOverviewTaskOpen}
             onTaskToggleStatus={toggleTaskStatus}
           />
         );
+
 
       case 'today':
         return (

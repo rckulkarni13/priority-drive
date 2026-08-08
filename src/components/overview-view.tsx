@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { format, isSameDay } from "date-fns";
-import { Task, Theme, Workspace } from "@/types";
+import { Task, Theme, StrategicPillar, Domain, Workspace } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertTriangle, CalendarDays, CalendarClock, Layers } from "lucide-react";
+import { AlertTriangle, CalendarDays, CalendarClock, Layers, Target, Package } from "lucide-react";
 import { categorizeOverviewTasks } from "@/lib/overview-tasks";
 import { getEffectiveStartDate, getEffectiveEndDate } from "@/lib/task-dates";
 import { resolveWorkspaceTerminology } from "@/lib/workspace-terminology";
@@ -13,10 +13,13 @@ import { cn } from "@/lib/utils";
 interface OverviewViewProps {
   tasks: Task[];
   themes: Theme[];
+  strategicPillars: StrategicPillar[];
+  domains: Domain[];
   workspaces: Workspace[];
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
 }
+
 
 const priorityClass: Record<string, string> = {
   critical: "border-destructive text-destructive",
@@ -39,19 +42,29 @@ function TaskRow({
   task,
   workspace,
   themes,
+  strategicPillars,
+  domains,
   onTaskOpen,
   onTaskToggleStatus,
 }: {
   task: Task;
   workspace?: Workspace;
   themes: Theme[];
+  strategicPillars: StrategicPillar[];
+  domains: Domain[];
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
 }) {
-  const themeLabel = workspace
-    ? resolveWorkspaceTerminology(workspace.type, workspace.tierLabels).theme.singular
-    : "Theme";
+  const terminology = workspace
+    ? resolveWorkspaceTerminology(workspace.type, workspace.tierLabels)
+    : resolveWorkspaceTerminology('work');
   const taskThemes = themes.filter(t => task.themeIds.includes(t.id));
+  const relatedPillars = strategicPillars.filter(pillar =>
+    taskThemes.some(theme => theme.strategicPillarIds.includes(pillar.id))
+  );
+  const relatedDomains = domains.filter(domain =>
+    relatedPillars.some(pillar => pillar.domainIds.includes(domain.id))
+  );
 
   return (
     <div
@@ -89,6 +102,50 @@ function TaskRow({
             </Badge>
           )}
 
+          {relatedDomains.length > 0 ? (
+            relatedDomains.map(domain => (
+              <Badge
+                key={domain.id}
+                variant="outline"
+                className="text-xs border-2"
+                style={{
+                  borderColor: domain.color,
+                  backgroundColor: `${domain.color}15`,
+                  color: domain.color,
+                }}
+              >
+                <Package className="w-3 h-3 mr-1" />
+                {domain.title}
+              </Badge>
+            ))
+          ) : (
+            <Badge variant="outline" className="text-xs text-muted-foreground">
+              No {terminology.domain.singular}
+            </Badge>
+          )}
+
+          {relatedPillars.length > 0 ? (
+            relatedPillars.map(pillar => (
+              <Badge
+                key={pillar.id}
+                variant="outline"
+                className="text-xs border-2"
+                style={{
+                  borderColor: pillar.color,
+                  backgroundColor: `${pillar.color}15`,
+                  color: pillar.color,
+                }}
+              >
+                <Target className="w-3 h-3 mr-1" />
+                {pillar.title}
+              </Badge>
+            ))
+          ) : (
+            <Badge variant="outline" className="text-xs text-muted-foreground">
+              No {terminology.pillar.singular}
+            </Badge>
+          )}
+
           {taskThemes.length > 0 ? (
             taskThemes.map(theme => (
               <Badge
@@ -107,7 +164,7 @@ function TaskRow({
             ))
           ) : (
             <Badge variant="outline" className="text-xs text-muted-foreground">
-              No {themeLabel}
+              No {terminology.theme.singular}
             </Badge>
           )}
 
@@ -128,6 +185,7 @@ function TaskRow({
   );
 }
 
+
 function Section({
   title,
   description,
@@ -136,6 +194,8 @@ function Section({
   tasks,
   workspaces,
   themes,
+  strategicPillars,
+  domains,
   onTaskOpen,
   onTaskToggleStatus,
   emptyMessage,
@@ -147,6 +207,8 @@ function Section({
   tasks: Task[];
   workspaces: Workspace[];
   themes: Theme[];
+  strategicPillars: StrategicPillar[];
+  domains: Domain[];
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
   emptyMessage: string;
@@ -195,6 +257,8 @@ function Section({
                     task={task}
                     workspace={group.workspace}
                     themes={themes}
+                    strategicPillars={strategicPillars}
+                    domains={domains}
                     onTaskOpen={onTaskOpen}
                     onTaskToggleStatus={onTaskToggleStatus}
                   />
@@ -208,9 +272,12 @@ function Section({
   );
 }
 
+
 export function OverviewView({
   tasks,
   themes,
+  strategicPillars,
+  domains,
   workspaces,
   onTaskOpen,
   onTaskToggleStatus,
@@ -234,6 +301,8 @@ export function OverviewView({
         tasks={buckets.overdue}
         workspaces={workspaces}
         themes={themes}
+        strategicPillars={strategicPillars}
+        domains={domains}
         onTaskOpen={onTaskOpen}
         onTaskToggleStatus={onTaskToggleStatus}
         emptyMessage="Nothing overdue."
@@ -247,6 +316,8 @@ export function OverviewView({
         tasks={buckets.today}
         workspaces={workspaces}
         themes={themes}
+        strategicPillars={strategicPillars}
+        domains={domains}
         onTaskOpen={onTaskOpen}
         onTaskToggleStatus={onTaskToggleStatus}
         emptyMessage="Nothing due today."
@@ -260,6 +331,8 @@ export function OverviewView({
         tasks={buckets.upcoming}
         workspaces={workspaces}
         themes={themes}
+        strategicPillars={strategicPillars}
+        domains={domains}
         onTaskOpen={onTaskOpen}
         onTaskToggleStatus={onTaskToggleStatus}
         emptyMessage="Nothing coming up — add a task to get started."
