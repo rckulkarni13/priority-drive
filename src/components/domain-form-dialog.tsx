@@ -18,16 +18,26 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Domain } from "@/types";
 import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
+import { useChecklists } from "@/hooks/use-checklists";
+import { ListChecks } from "lucide-react";
 
 const domainSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   color: z.string().min(1, "Color is required"),
+  checklistId: z.string().optional(),
 });
 
 type DomainFormData = z.infer<typeof domainSchema>;
@@ -36,12 +46,14 @@ interface DomainFormDialogProps {
   children?: React.ReactNode;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
-  onDomainCreate: (domainData: Omit<Domain, "id" | "createdDate">) => void;
+  onDomainCreate: (domainData: Omit<Domain, "id" | "createdDate">) => Promise<string>;
+  onApplyChecklist?: (domain: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   workspaceId: string;
 }
 
-export function DomainFormDialog({ children, defaultOpen = false, onOpenChange, onDomainCreate, workspaceId }: DomainFormDialogProps) {
+export function DomainFormDialog({ children, defaultOpen = false, onOpenChange, onDomainCreate, onApplyChecklist, workspaceId }: DomainFormDialogProps) {
   const [open, setOpen] = useState(defaultOpen);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleOpenChange = (o: boolean) => {
     setOpen(o);
@@ -49,6 +61,8 @@ export function DomainFormDialog({ children, defaultOpen = false, onOpenChange, 
   };
   const terms = useWorkspaceTerms(workspaceId);
   const label = terms.domain.singular;
+  const { checklists } = useChecklists(workspaceId);
+  const hasChecklists = checklists.length > 0;
 
   const form = useForm<DomainFormData>({
     resolver: zodResolver(domainSchema),
@@ -56,18 +70,38 @@ export function DomainFormDialog({ children, defaultOpen = false, onOpenChange, 
       title: "",
       description: "",
       color: "#3b82f6",
+      checklistId: "none",
     },
   });
 
-  const onSubmit = (data: DomainFormData) => {
-    onDomainCreate({
-      title: data.title,
-      description: data.description || "",
-      workspaceId,
-      color: data.color
-    });
-    form.reset();
-    handleOpenChange(false);
+  const onSubmit = async (data: DomainFormData) => {
+    setIsSubmitting(true);
+    try {
+      const domainId = await onDomainCreate({
+        title: data.title,
+        description: data.description || "",
+        workspaceId,
+        color: data.color
+      });
+
+      const selectedChecklist = data.checklistId && data.checklistId !== "none"
+        ? checklists.find((c) => c.id === data.checklistId)
+        : undefined;
+
+      if (selectedChecklist && onApplyChecklist) {
+        await onApplyChecklist(
+          { id: domainId, workspaceId },
+          selectedChecklist.items.map((item) => item.title)
+        );
+      }
+
+      form.reset();
+      handleOpenChange(false);
+    } catch (error) {
+      console.error("Error creating domain:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
