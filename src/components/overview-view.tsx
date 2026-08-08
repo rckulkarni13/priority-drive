@@ -350,6 +350,7 @@ function UpcomingGroups({
                 domains={domains}
                 onTaskOpen={onTaskOpen}
                 onTaskToggleStatus={onTaskToggleStatus}
+                onTaskDelete={onTaskDelete}
               />
             ))}
           </div>
