@@ -488,6 +488,7 @@ const Index = () => {
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
+              onTaskDelete={handleTaskDelete}
               showDateGroups={true}
               emptyMessage="No active tasks found."
             />
