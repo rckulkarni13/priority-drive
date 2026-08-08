@@ -192,6 +192,7 @@ export function CalendarWeekView({
   onPillarCreate,
   onDomainCreate,
   onTaskUpdate,
+  onTaskDelete,
 }: CalendarWeekViewProps) {
   const [currentWeek, setCurrentWeek] = useState(new Date());
   const [activeTask, setActiveTask] = useState<Task | null>(null);
