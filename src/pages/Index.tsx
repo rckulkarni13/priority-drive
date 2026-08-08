@@ -451,6 +451,7 @@ const Index = () => {
               onDomainView={handleDomainView}
               onCreateTheme={handleCreateTheme}
               onCreatePillar={handleCreatePillar}
+              onTaskDelete={handleTaskDelete}
               onDomainDelete={deleteDomain}
               onPillarDelete={deleteStrategicPillar}
               onThemeDelete={deleteTheme}
