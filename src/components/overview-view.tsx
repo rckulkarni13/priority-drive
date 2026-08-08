@@ -194,6 +194,8 @@ function Section({
   tasks,
   workspaces,
   themes,
+  strategicPillars,
+  domains,
   onTaskOpen,
   onTaskToggleStatus,
   emptyMessage,
@@ -205,6 +207,8 @@ function Section({
   tasks: Task[];
   workspaces: Workspace[];
   themes: Theme[];
+  strategicPillars: StrategicPillar[];
+  domains: Domain[];
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
   emptyMessage: string;
@@ -253,6 +257,8 @@ function Section({
                     task={task}
                     workspace={group.workspace}
                     themes={themes}
+                    strategicPillars={strategicPillars}
+                    domains={domains}
                     onTaskOpen={onTaskOpen}
                     onTaskToggleStatus={onTaskToggleStatus}
                   />
@@ -265,6 +271,7 @@ function Section({
     </section>
   );
 }
+
 
 export function OverviewView({
   tasks,
