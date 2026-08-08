@@ -42,7 +42,7 @@ const Index = () => {
   const [viewingTheme, setViewingTheme] = useState<Theme | null>(null);
   const [viewingPillar, setViewingPillar] = useState<StrategicPillar | null>(null);
   const [viewingDomain, setViewingDomain] = useState<Domain | null>(null);
-  const [navigationStack, setNavigationStack] = useState<Array<{type: 'task' | 'theme' | 'pillar' | 'domain', data: any}>>([]);
+  const [navigationStack, setNavigationStack] = useState<Array<{type: 'task', data: Task} | {type: 'theme', data: Theme} | {type: 'pillar', data: StrategicPillar} | {type: 'domain', data: Domain}>>([]);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCreateSubtask, setShowCreateSubtask] = useState<string>('');
