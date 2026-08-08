@@ -17,8 +17,7 @@ import {
   Settings,
   MoreHorizontal,
   LayoutDashboard,
-  Tags,
-  ListChecks
+  Tags
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WorkspaceSwitcher } from "@/components/workspace-switcher";
@@ -34,7 +33,6 @@ interface NavigationProps {
   currentWorkspace: Workspace | null;
   onWorkspaceChange: (workspace: Workspace) => void;
   onRenameLabels: () => void;
-  onOpenChecklists?: () => void;
   todayTasksCount: number;
   completedTasksCount: number;
   allTasksCount: number;
@@ -51,7 +49,6 @@ export function Navigation({
   currentWorkspace,
   onWorkspaceChange,
   onRenameLabels,
-  onOpenChecklists,
   todayTasksCount,
   completedTasksCount,
   allTasksCount,
@@ -228,19 +225,6 @@ export function Navigation({
                 </DropdownMenuItem>
               );
             })}
-            {currentWorkspace && onOpenChecklists && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel>Workspace Tools</DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={onOpenChecklists}
-                  className="flex items-center gap-2 cursor-pointer text-sm"
-                >
-                  <ListChecks className="w-4 h-4 text-teal-600" />
-                  <span className="flex-1">Checklists</span>
-                </DropdownMenuItem>
-              </>
-            )}
           </DropdownMenuContent>
         </DropdownMenu>
 
