@@ -212,6 +212,16 @@ export function TaskCard({
                     Complete
                   </Button>
                 )}
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDelete?.(task.id)}
+                  className="h-6 px-2 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="w-3 h-3 mr-1" />
+                  Delete
+                </Button>
               </div>
             </div>
           </div>
