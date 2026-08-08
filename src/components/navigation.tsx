@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -18,8 +17,7 @@ import {
   Settings,
   MoreHorizontal,
   LayoutDashboard,
-  Tags,
-  Globe
+  Tags
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WorkspaceSwitcher } from "@/components/workspace-switcher";
