@@ -36,6 +36,7 @@ export function TaskGroup({
   onTaskToggleStatus,
   onTaskReopen,
   onCreateSubtask,
+  onTaskDelete,
   showIndented = false
 }: TaskGroupProps) {
   const [isExpanded, setIsExpanded] = useState(true);
