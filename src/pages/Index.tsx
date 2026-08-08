@@ -527,32 +527,6 @@ const Index = () => {
             
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-xs sm:text-sm font-medium text-muted-foreground whitespace-nowrap">Workspace:</span>
-                <WorkspaceSwitcher
-                  workspaces={workspaces}
-                  currentWorkspace={currentWorkspace}
-                  onWorkspaceChange={switchWorkspace}
-                />
-                {currentWorkspace && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="gap-2 h-9 px-2 sm:px-3"
-                        aria-label="Customize workspace labels"
-                        onClick={() => setLabelsDialogOpen(true)}
-                      >
-                        <Tags className="w-4 h-4" />
-                        <span className="hidden sm:inline">Rename labels</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Rename this workspace's tier labels</TooltipContent>
-                  </Tooltip>
-                )}
-              </div>
-              
-              <div className="flex items-center gap-2">
                 {currentWorkspace && (
                   <QuickCreateMenu
                     themes={filteredThemes}
@@ -604,6 +578,10 @@ const Index = () => {
           <Navigation
             currentView={currentView}
             onViewChange={setCurrentView}
+            workspaces={workspaces}
+            currentWorkspace={currentWorkspace}
+            onWorkspaceChange={switchWorkspace}
+            onRenameLabels={() => setLabelsDialogOpen(true)}
             todayTasksCount={todaysTasks.length}
             completedTasksCount={completedTasks.length}
             allTasksCount={allActiveTasks.length}
