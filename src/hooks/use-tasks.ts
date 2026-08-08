@@ -417,12 +417,12 @@ export function useTasks() {
     );
   };
 
-  const createDomain = useCallback(async (domainData: Omit<Domain, "id" | "createdDate">) => {
+  const createDomain = useCallback(async (domainData: Omit<Domain, "id" | "createdDate">): Promise<string> => {
     try {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
 
-      const { error } = await supabase
+      const { data: domain, error } = await supabase
         .from('domains')
         .insert({
           title: domainData.title,
@@ -430,7 +430,9 @@ export function useTasks() {
           user_id: user.user.id,
           workspace_id: domainData.workspaceId,
           color: domainData.color
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
@@ -441,6 +443,8 @@ export function useTasks() {
         title: "Success",
         description: `${terms.domain.singular} created successfully`
       });
+
+      return domain.id;
     } catch (error) {
       console.error('Error creating domain:', error);
       toast({
@@ -448,6 +452,7 @@ export function useTasks() {
         description: "Failed to create domain",
         variant: "destructive"
       });
+      throw error;
     }
   }, [toast]);
 
