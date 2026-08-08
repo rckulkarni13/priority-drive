@@ -106,12 +106,26 @@ function TaskCard({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <p className="font-medium leading-snug break-words text-sm">{task.title}</p>
-          {workspace && (
-            <span className="text-[10px] text-muted-foreground whitespace-nowrap flex items-center gap-1">
-              <span>{workspace.icon}</span>
-              {workspace.name}
-            </span>
-          )}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            {workspace && (
+              <span className="text-[10px] text-muted-foreground whitespace-nowrap flex items-center gap-1">
+                <span>{workspace.icon}</span>
+                {workspace.name}
+              </span>
+            )}
+            {onTaskDelete && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTaskDelete(task.id);
+                }}
+                className="text-muted-foreground hover:text-destructive p-1 rounded-md transition-colors"
+                aria-label="Delete task"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5 mt-2">
