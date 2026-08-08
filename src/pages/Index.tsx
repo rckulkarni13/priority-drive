@@ -241,6 +241,10 @@ const Index = () => {
     setShowCreatePillar(domainId || 'new-pillar');
   };
 
+  const handleCreateDomain = () => {
+    setShowCreateDomain('new-domain');
+  };
+
   const handleTaskView = (task: Task) => {
     if (viewingTask) {
       setNavigationStack(prev => [...prev, { type: 'task', data: viewingTask }]);
