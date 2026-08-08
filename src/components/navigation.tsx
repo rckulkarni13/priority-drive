@@ -31,6 +31,10 @@ type View = 'overview' | 'today' | 'calendar' | 'hierarchy' | 'completed' | 'all
 interface NavigationProps {
   currentView: View;
   onViewChange: (view: View) => void;
+  workspaces: Workspace[];
+  currentWorkspace: Workspace | null;
+  onWorkspaceChange: (workspace: Workspace) => void;
+  onRenameLabels: () => void;
   todayTasksCount: number;
   completedTasksCount: number;
   allTasksCount: number;
@@ -40,9 +44,13 @@ interface NavigationProps {
   overviewAlertCount: number;
 }
 
-export function Navigation({ 
-  currentView, 
-  onViewChange, 
+export function Navigation({
+  currentView,
+  onViewChange,
+  workspaces,
+  currentWorkspace,
+  onWorkspaceChange,
+  onRenameLabels,
   todayTasksCount,
   completedTasksCount,
   allTasksCount,
