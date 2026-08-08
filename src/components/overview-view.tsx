@@ -18,6 +18,7 @@ interface OverviewViewProps {
   workspaces: Workspace[];
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
 }
 
 const priorityClass: Record<string, string> = {
