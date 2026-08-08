@@ -13,7 +13,8 @@ import {
   AlertTriangle,
   RotateCcw,
   Layers,
-  Package
+  Package,
+  Trash2
 } from "lucide-react";
 import { format, isBefore, startOfDay } from "date-fns";
 
@@ -28,6 +29,7 @@ interface PriorityTaskRowProps {
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
 }
 
 export function PriorityTaskRow({
