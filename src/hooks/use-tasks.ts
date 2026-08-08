@@ -205,7 +205,7 @@ export function useTasks() {
     }
   }, [toast]);
 
-  const createTask = useCallback(async (taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">) => {
+  const createTask = useCallback(async (taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">): Promise<string> => {
     try {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
@@ -252,6 +252,8 @@ export function useTasks() {
         title: "Success",
         description: "Task created successfully"
       });
+
+      return task.id;
     } catch (error) {
       console.error('Error creating task:', error);
       toast({
@@ -259,6 +261,7 @@ export function useTasks() {
         description: "Failed to create task",
         variant: "destructive"
       });
+      throw error;
     }
   }, [tasks.length, toast]);
 
