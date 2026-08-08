@@ -239,6 +239,7 @@ function Column({
   domains: Domain[];
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
   emptyMessage: string;
   groupByDate?: boolean;
 }) {
