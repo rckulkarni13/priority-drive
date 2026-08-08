@@ -27,8 +27,8 @@ import { WorkspaceLabelsDialog } from "@/components/workspace-labels-dialog";
 import { Button } from "@/components/ui/button";
 import { QuickCreateMenu } from "@/components/quick-create-menu";
 import { ChecklistsManagerDialog } from "@/components/checklists-manager-dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { CheckSquare2, LogOut, ListChecks, MoreHorizontal } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
+import { CheckSquare2, LogOut } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
@@ -508,23 +508,38 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
-        {/* Header */}
-        <div className="flex flex-col gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center justify-between sm:justify-start">
-              <div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2 sm:gap-3">
-                  <CheckSquare2 className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
-                  Task Manager
-                </h1>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1 hidden sm:block">
-                  Organize your work with strategic precision
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2 sm:gap-3">
-              {currentWorkspace && (
+        {/* Header — single unified row */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-6 sm:mb-8">
+          <div className="flex items-center gap-2 mr-1">
+            <CheckSquare2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+            <span className="text-base sm:text-lg font-semibold text-foreground whitespace-nowrap">
+              Task Manager
+            </span>
+          </div>
+
+          <div className="hidden md:block h-6 w-px bg-border" />
+
+          <div className="flex-1 min-w-0">
+            <Navigation
+              currentView={currentView}
+              onViewChange={setCurrentView}
+              workspaces={workspaces}
+              currentWorkspace={currentWorkspace}
+              onWorkspaceChange={switchWorkspace}
+              onRenameLabels={() => setLabelsDialogOpen(true)}
+              onOpenChecklists={() => setChecklistsOpen(true)}
+              todayTasksCount={todaysTasks.length}
+              completedTasksCount={completedTasks.length}
+              allTasksCount={allActiveTasks.length}
+              domainsCount={filteredDomains.length}
+              pillarsCount={filteredPillars.length}
+              themesCount={filteredThemes.length}
+              overviewAlertCount={overviewAlertCount}
+            />
+          </div>
+
+          <div className="flex items-center gap-2 ml-auto">
+            {currentWorkspace && (
                 <QuickCreateMenu
                   themes={filteredThemes}
                   tasks={filteredTasks}
@@ -541,51 +556,29 @@ const Index = () => {
                   workspaceId={currentWorkspace.id}
                   workspaceType={currentWorkspace.type}
                 />
-              )}
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-9 w-9 p-0"
-                    aria-label="More options"
-                  >
-                    <MoreHorizontal className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {currentWorkspace && (
-                    <DropdownMenuItem onClick={() => setChecklistsOpen(true)}>
-                      <ListChecks className="w-4 h-4 mr-2" />
-                      Checklists
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
+            )}
 
-          <Navigation
-            currentView={currentView}
-            onViewChange={setCurrentView}
-            workspaces={workspaces}
-            currentWorkspace={currentWorkspace}
-            onWorkspaceChange={switchWorkspace}
-            onRenameLabels={() => setLabelsDialogOpen(true)}
-            todayTasksCount={todaysTasks.length}
-            completedTasksCount={completedTasks.length}
-            allTasksCount={allActiveTasks.length}
-            domainsCount={filteredDomains.length}
-            pillarsCount={filteredPillars.length}
-            themesCount={filteredThemes.length}
-            overviewAlertCount={overviewAlertCount}
-          />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="h-9 w-9 rounded-full bg-muted text-foreground/80 text-xs font-semibold flex items-center justify-center border border-border/60 hover:bg-accent transition-colors"
+                  aria-label="Account menu"
+                >
+                  {(user?.email?.[0] ?? "U").toUpperCase()}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 bg-background z-50">
+                <DropdownMenuLabel className="truncate font-normal text-xs text-muted-foreground">
+                  {user?.email}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         {/* Main Content */}
