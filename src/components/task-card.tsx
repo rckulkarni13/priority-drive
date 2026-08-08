@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { GripVertical, Calendar, Clock, CheckCircle2, RotateCcw, MessageCircle, ChevronDown, ChevronUp, Plus, Edit, Target, Layers, Package } from "lucide-react";
+import { GripVertical, Calendar, Clock, CheckCircle2, RotateCcw, MessageCircle, ChevronDown, ChevronUp, Plus, Edit, Target, Layers, Package, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { TaskComments } from "@/components/task-comments";
@@ -20,6 +20,7 @@ interface TaskCardProps {
   onToggleStatus?: (taskId: string) => void;
   onReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onDelete?: (taskId: string) => void;
   isDragging?: boolean;
   dragHandleProps?: any;
 }
@@ -33,6 +34,7 @@ export function TaskCard({
   onToggleStatus, 
   onReopen,
   onCreateSubtask,
+  onDelete,
   isDragging,
   dragHandleProps 
 }: TaskCardProps) {
@@ -210,6 +212,16 @@ export function TaskCard({
                     Complete
                   </Button>
                 )}
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDelete?.(task.id)}
+                  className="h-6 px-2 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="w-3 h-3 mr-1" />
+                  Delete
+                </Button>
               </div>
             </div>
           </div>

@@ -575,6 +575,58 @@ export function useTasks() {
     );
   };
 
+  const deleteTask = useCallback(async (taskId: string) => {
+    try {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const deleteTaskWithRelations = async (id: string) => {
+        // Recursively delete subtasks first
+        const subtasks = tasks.filter(t => t.parentTaskId === id);
+        for (const subtask of subtasks) {
+          await deleteTaskWithRelations(subtask.id);
+        }
+
+        // Delete related comments
+        await supabase
+          .from('comments')
+          .delete()
+          .eq('task_id', id);
+
+        // Delete theme relationships
+        await supabase
+          .from('task_themes')
+          .delete()
+          .eq('task_id', id);
+
+        // Delete the task
+        const { error } = await supabase
+          .from('tasks')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+      };
+
+      await deleteTaskWithRelations(taskId);
+
+      await fetchTasks();
+
+      toast({
+        title: "Success",
+        description: "Task deleted successfully"
+      });
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete task",
+        variant: "destructive"
+      });
+    }
+  }, [tasks, toast]);
+
+
   const createDomain = useCallback(async (domainData: Omit<Domain, "id" | "createdDate">): Promise<string> => {
     try {
       const { data: user } = await supabase.auth.getUser();
@@ -1127,6 +1179,7 @@ export function useTasks() {
     applyChecklistToDomain,
     applyChecklistToPillar,
     applyChecklistToTask,
+    deleteTask,
     updateTask,
     updateTaskOrder,
     createDomain,

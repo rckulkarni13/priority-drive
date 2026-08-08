@@ -3,7 +3,7 @@ import { Task, Theme, StrategicPillar, Domain, WorkspaceType } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, ChevronLeft, ChevronRight, GripVertical } from "lucide-react";
+import { CalendarIcon, ChevronLeft, ChevronRight, GripVertical, Trash2 } from "lucide-react";
 import { QuickCreateMenu } from "./quick-create-menu";
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, addWeeks, subWeeks, isToday, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -45,13 +45,15 @@ function DraggableTaskCard({
   themes,
   strategicPillars,
   domains,
-  onClick 
+  onClick,
+  onDelete,
 }: { 
   task: Task; 
   themes: Theme[];
   strategicPillars: StrategicPillar[];
   domains: Domain[];
   onClick: () => void;
+  onDelete?: () => void;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: task.id,
@@ -106,12 +108,26 @@ function DraggableTaskCard({
           <GripVertical className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground" />
         </div>
         <div className="flex-1 min-w-0 space-y-1 sm:space-y-1.5">
-          <p className={cn(
-            "text-[10px] sm:text-xs font-medium leading-snug line-clamp-2",
-            task.status === 'completed' && "line-through text-muted-foreground"
-          )}>
-            {task.title}
-          </p>
+          <div className="flex items-start justify-between gap-1">
+            <p className={cn(
+              "text-[10px] sm:text-xs font-medium leading-snug line-clamp-2",
+              task.status === 'completed' && "line-through text-muted-foreground"
+            )}>
+              {task.title}
+            </p>
+            {onDelete && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+                className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive p-0.5 flex-shrink-0"
+                aria-label="Delete task"
+              >
+                <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              </button>
+            )}
+          </div>
           
           <div className="flex flex-wrap items-center gap-0.5 sm:gap-1">
             {relatedDomain && (
@@ -170,6 +186,7 @@ interface CalendarWeekViewProps {
   onPillarCreate: (pillarData: any) => Promise<string>;
   onDomainCreate: (domainData: any) => Promise<string>;
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
+  onTaskDelete?: (taskId: string) => void;
 }
 
 
@@ -191,6 +208,7 @@ export function CalendarWeekView({
   onPillarCreate,
   onDomainCreate,
   onTaskUpdate,
+  onTaskDelete,
 }: CalendarWeekViewProps) {
   const [currentWeek, setCurrentWeek] = useState(new Date());
   const [activeTask, setActiveTask] = useState<Task | null>(null);
@@ -355,6 +373,7 @@ export function CalendarWeekView({
                         strategicPillars={strategicPillars}
                         domains={domains}
                         onClick={() => onTaskClick?.(task)}
+                        onDelete={() => onTaskDelete?.(task.id)}
                       />
                     ))}
                   </DroppableDay>

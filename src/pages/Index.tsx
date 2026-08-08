@@ -76,6 +76,7 @@ const Index = () => {
     deleteDomain,
     deleteStrategicPillar,
     deleteTheme,
+    deleteTask,
     getTodaysTasks,
     getTodaysPrioritizedTaskIds,
     getThisWeekTasks,
@@ -253,6 +254,11 @@ const Index = () => {
     setViewingDomain(null);
   };
 
+  const handleTaskDelete = async (taskId: string) => {
+    await deleteTask(taskId);
+    setViewingTask(null);
+  };
+
   const handleThemeView = (theme: Theme) => {
     if (viewingTask) {
       setNavigationStack(prev => [...prev, { type: 'task', data: viewingTask }]);
@@ -363,6 +369,7 @@ const Index = () => {
             workspaces={workspaces}
             onTaskOpen={handleOverviewTaskOpen}
             onTaskToggleStatus={toggleTaskStatus}
+            onTaskDelete={handleTaskDelete}
           />
         );
 
@@ -382,6 +389,7 @@ const Index = () => {
                 onTaskToggleStatus={toggleTaskStatus}
                 onTaskReopen={reopenTask}
                 onCreateSubtask={handleCreateSubtask}
+                onTaskDelete={handleTaskDelete}
               />
             )}
             <SortableTaskList
@@ -395,6 +403,7 @@ const Index = () => {
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
+              onTaskDelete={handleTaskDelete}
               onTaskReorder={updateTaskOrder}
               emptyMessage="No tasks prioritized for today. Add some priorities to get started!"
             />
@@ -421,6 +430,7 @@ const Index = () => {
             onApplyChecklistToDomain={applyChecklistToDomain}
             onApplyChecklistToTask={applyChecklistToTask}
             onTaskUpdate={updateTask}
+            onTaskDelete={handleTaskDelete}
           />
         );
       
@@ -443,6 +453,7 @@ const Index = () => {
               onDomainView={handleDomainView}
               onCreateTheme={handleCreateTheme}
               onCreatePillar={handleCreatePillar}
+              onTaskDelete={handleTaskDelete}
               onDomainDelete={deleteDomain}
               onPillarDelete={deleteStrategicPillar}
               onThemeDelete={deleteTheme}
@@ -461,6 +472,7 @@ const Index = () => {
               onTaskEdit={handleTaskView}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
+              onTaskDelete={handleTaskDelete}
               emptyMessage="No completed tasks yet. Complete some tasks to see them here!"
             />
         );
@@ -478,6 +490,7 @@ const Index = () => {
               onTaskToggleStatus={toggleTaskStatus}
               onTaskReopen={reopenTask}
               onCreateSubtask={handleCreateSubtask}
+              onTaskDelete={handleTaskDelete}
               showDateGroups={true}
               emptyMessage="No active tasks found."
             />
@@ -616,6 +629,7 @@ const Index = () => {
           onTaskView={handleTaskView}
           onThemeView={handleThemeView}
           onApplyChecklist={applyChecklistToTask}
+          onTaskDelete={handleTaskDelete}
           workspaceId={currentWorkspace.id}
         />
       )}

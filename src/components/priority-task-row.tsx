@@ -13,7 +13,8 @@ import {
   AlertTriangle,
   RotateCcw,
   Layers,
-  Package
+  Package,
+  Trash2
 } from "lucide-react";
 import { format, isBefore, startOfDay } from "date-fns";
 
@@ -28,6 +29,7 @@ interface PriorityTaskRowProps {
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
 }
 
 export function PriorityTaskRow({
@@ -41,6 +43,7 @@ export function PriorityTaskRow({
   onTaskToggleStatus,
   onTaskReopen,
   onCreateSubtask,
+  onTaskDelete,
 }: PriorityTaskRowProps) {
   // Find parent task if this is a subtask
   const parentTask = task.parentTaskId 
@@ -244,6 +247,15 @@ export function PriorityTaskRow({
                 className="h-8 w-8 p-0"
               >
                 <Edit className="w-4 h-4" />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onTaskDelete?.(task.id)}
+                className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+              >
+                <Trash2 className="w-4 h-4" />
               </Button>
               
               {task.type === 'task' && (

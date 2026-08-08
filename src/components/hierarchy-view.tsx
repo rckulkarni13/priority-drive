@@ -32,6 +32,7 @@ interface HierarchyViewProps {
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
   onCreateTask?: (themeId?: string) => void;
   onCreateTheme?: (pillarId?: string) => void;
   onCreatePillar?: (domainId?: string) => void;
@@ -55,6 +56,7 @@ export function HierarchyView({
   onTaskToggleStatus, 
   onTaskReopen,
   onCreateSubtask,
+  onTaskDelete,
   onCreateTask,
   onCreateTheme,
   onCreatePillar,
@@ -379,12 +381,13 @@ export function HierarchyView({
                                                          themes={themes}
                                                          strategicPillars={strategicPillars}
                                                          domains={domains}
-                                                         onTaskView={onTaskView}
-                                                         onTaskEdit={onTaskEdit}
-                                                         onTaskToggleStatus={onTaskToggleStatus}
-                                                         onTaskReopen={onTaskReopen}
-                                                         onCreateSubtask={onCreateSubtask}
-                                                       />
+                                                          onTaskView={onTaskView}
+                                                          onTaskEdit={onTaskEdit}
+                                                          onTaskToggleStatus={onTaskToggleStatus}
+                                                          onTaskReopen={onTaskReopen}
+                                                          onCreateSubtask={onCreateSubtask}
+                                                          onTaskDelete={onTaskDelete}
+                                                        />
                                                     </div>
                                                   </div>
                                                   
@@ -401,12 +404,13 @@ export function HierarchyView({
                                                                themes={themes}
                                                                strategicPillars={strategicPillars}
                                                                domains={domains}
-                                                               onTaskView={onTaskView}
-                                                               onTaskEdit={onTaskEdit}
-                                                               onTaskToggleStatus={onTaskToggleStatus}
-                                                               onTaskReopen={onTaskReopen}
-                                                               onCreateSubtask={onCreateSubtask}
-                                                             />
+                                                                onTaskView={onTaskView}
+                                                                onTaskEdit={onTaskEdit}
+                                                                onTaskToggleStatus={onTaskToggleStatus}
+                                                                onTaskReopen={onTaskReopen}
+                                                                onCreateSubtask={onCreateSubtask}
+                                                                onTaskDelete={onTaskDelete}
+                                                              />
                                                           </div>
                                                         </div>
                                                       ))}

@@ -4,7 +4,7 @@ import { Task, Theme, StrategicPillar, Domain, Workspace } from "@/types";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertTriangle, CalendarDays, CalendarClock, Layers, Target, Package } from "lucide-react";
+import { AlertTriangle, CalendarDays, CalendarClock, Layers, Target, Package, Trash2 } from "lucide-react";
 import { categorizeOverviewTasks } from "@/lib/overview-tasks";
 import { getEffectiveStartDate, getEffectiveEndDate } from "@/lib/task-dates";
 import { resolveWorkspaceTerminology } from "@/lib/workspace-terminology";
@@ -18,6 +18,7 @@ interface OverviewViewProps {
   workspaces: Workspace[];
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
 }
 
 const priorityClass: Record<string, string> = {
@@ -56,6 +57,7 @@ function TaskCard({
   domains,
   onTaskOpen,
   onTaskToggleStatus,
+  onTaskDelete,
 }: {
   task: Task;
   workspace?: Workspace;
@@ -64,6 +66,7 @@ function TaskCard({
   domains: Domain[];
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
 }) {
   const terminology = workspace
     ? resolveWorkspaceTerminology(workspace.type, workspace.tierLabels)
@@ -103,12 +106,26 @@ function TaskCard({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <p className="font-medium leading-snug break-words text-sm">{task.title}</p>
-          {workspace && (
-            <span className="text-[10px] text-muted-foreground whitespace-nowrap flex items-center gap-1">
-              <span>{workspace.icon}</span>
-              {workspace.name}
-            </span>
-          )}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            {workspace && (
+              <span className="text-[10px] text-muted-foreground whitespace-nowrap flex items-center gap-1">
+                <span>{workspace.icon}</span>
+                {workspace.name}
+              </span>
+            )}
+            {onTaskDelete && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTaskDelete(task.id);
+                }}
+                className="text-muted-foreground hover:text-destructive p-1 rounded-md transition-colors"
+                aria-label="Delete task"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5 mt-2">
@@ -207,6 +224,7 @@ function Column({
   domains,
   onTaskOpen,
   onTaskToggleStatus,
+  onTaskDelete,
   emptyMessage,
   groupByDate = false,
 }: {
@@ -221,6 +239,7 @@ function Column({
   domains: Domain[];
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
   emptyMessage: string;
   groupByDate?: boolean;
 }) {
@@ -248,7 +267,7 @@ function Column({
       ) : (
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {groupByDate ? (
-            <UpcomingGroups
+          <UpcomingGroups
               tasks={tasks}
               workspaces={workspaces}
               themes={themes}
@@ -256,6 +275,7 @@ function Column({
               domains={domains}
               onTaskOpen={onTaskOpen}
               onTaskToggleStatus={onTaskToggleStatus}
+              onTaskDelete={onTaskDelete}
             />
           ) : (
             tasks.map(task => (
@@ -268,6 +288,7 @@ function Column({
                 domains={domains}
                 onTaskOpen={onTaskOpen}
                 onTaskToggleStatus={onTaskToggleStatus}
+                onTaskDelete={onTaskDelete}
               />
             ))
           )}
@@ -285,6 +306,7 @@ function UpcomingGroups({
   domains,
   onTaskOpen,
   onTaskToggleStatus,
+  onTaskDelete,
 }: {
   tasks: Task[];
   workspaces: Workspace[];
@@ -293,6 +315,7 @@ function UpcomingGroups({
   domains: Domain[];
   onTaskOpen: (task: Task) => void;
   onTaskToggleStatus: (taskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
 }) {
   const today = new Date();
   const groups = useMemo(() => {
@@ -327,6 +350,7 @@ function UpcomingGroups({
                 domains={domains}
                 onTaskOpen={onTaskOpen}
                 onTaskToggleStatus={onTaskToggleStatus}
+                onTaskDelete={onTaskDelete}
               />
             ))}
           </div>

@@ -20,6 +20,7 @@ interface TaskListProps {
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
   showDateGroups?: boolean;
   emptyMessage?: string;
 }
@@ -36,6 +37,7 @@ export function TaskList({
   onTaskToggleStatus, 
   onTaskReopen,
   onCreateSubtask,
+  onTaskDelete,
   showDateGroups = false,
   emptyMessage = "No tasks found"
 }: TaskListProps) {
@@ -155,6 +157,7 @@ export function TaskList({
                       onTaskToggleStatus={onTaskToggleStatus}
                       onTaskReopen={onTaskReopen}
                       onCreateSubtask={onCreateSubtask}
+                      onTaskDelete={onTaskDelete}
                     />
                   ))}
                 </div>
@@ -197,6 +200,7 @@ export function TaskList({
               onTaskToggleStatus={onTaskToggleStatus}
               onTaskReopen={onTaskReopen}
               onCreateSubtask={onCreateSubtask}
+              onTaskDelete={onTaskDelete}
             />
           ))}
         </div>

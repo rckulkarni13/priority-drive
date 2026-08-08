@@ -34,6 +34,7 @@ interface SortableTaskItemProps {
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
 }
 
 function SortableTaskItem({
@@ -47,6 +48,7 @@ function SortableTaskItem({
   onTaskToggleStatus,
   onTaskReopen,
   onCreateSubtask,
+  onTaskDelete,
 }: SortableTaskItemProps) {
   const {
     attributes,
@@ -86,6 +88,7 @@ function SortableTaskItem({
             onTaskToggleStatus={onTaskToggleStatus}
             onTaskReopen={onTaskReopen}
             onCreateSubtask={onCreateSubtask}
+            onTaskDelete={onTaskDelete}
           />
         </div>
       </div>
@@ -105,6 +108,7 @@ interface SortableTaskListProps {
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
   onTaskReorder?: (taskOrders: { id: string; order: number }[]) => void;
   emptyMessage?: string;
 }
@@ -121,6 +125,7 @@ export function SortableTaskList({
   onTaskToggleStatus,
   onTaskReopen,
   onCreateSubtask,
+  onTaskDelete,
   onTaskReorder,
   emptyMessage = "No tasks found",
 }: SortableTaskListProps) {
@@ -186,6 +191,7 @@ export function SortableTaskList({
                   onTaskToggleStatus={onTaskToggleStatus}
                   onTaskReopen={onTaskReopen}
                   onCreateSubtask={onCreateSubtask}
+                  onTaskDelete={onTaskDelete}
                 />
               ))}
             </div>

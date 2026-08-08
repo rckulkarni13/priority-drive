@@ -46,7 +46,8 @@ import {
   Calendar as CalendarDays,
   Plus,
   List,
-  ListChecks
+  ListChecks,
+  Trash2
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -57,6 +58,17 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { TaskComments } from "@/components/task-comments";
 import { SubtaskFormDialog } from "@/components/subtask-form-dialog";
 import { useChecklists } from "@/hooks/use-checklists";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -86,6 +98,7 @@ interface TaskDetailDialogProps {
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
   onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order'>) => Promise<string>;
   onApplyChecklist?: (task: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
+  onTaskDelete?: (taskId: string) => void | Promise<void>;
   onClose: () => void;
   onBack?: () => void;
   onTaskView?: (task: Task) => void;
@@ -100,6 +113,7 @@ export function TaskDetailDialog({
   onTaskUpdate,
   onTaskCreate, 
   onApplyChecklist,
+  onTaskDelete,
   onClose,
   onBack,
   onTaskView,
@@ -266,14 +280,49 @@ export function TaskDetailDialog({
                   </Button>
                 </>
               ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsEditing(true)}
-                >
-                  <Edit className="w-4 h-4 mr-1" />
-                  Edit
-                </Button>
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    <Edit className="w-4 h-4 mr-1" />
+                    Edit
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        Delete
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete task?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete the task and any subtasks. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => {
+                            if (task?.id) {
+                              onTaskDelete?.(task.id);
+                            }
+                          }}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </>
               )}
             </div>
           </div>

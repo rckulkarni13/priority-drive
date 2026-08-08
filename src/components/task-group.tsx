@@ -20,6 +20,7 @@ interface TaskGroupProps {
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
   showIndented?: boolean;
 }
 
@@ -35,6 +36,7 @@ export function TaskGroup({
   onTaskToggleStatus,
   onTaskReopen,
   onCreateSubtask,
+  onTaskDelete,
   showIndented = false
 }: TaskGroupProps) {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -57,6 +59,7 @@ export function TaskGroup({
               onToggleStatus={onTaskToggleStatus}
               onReopen={onTaskReopen}
               onCreateSubtask={onCreateSubtask}
+              onDelete={onTaskDelete}
             />
             
             {/* Task type and subtask indicator */}
@@ -116,6 +119,7 @@ export function TaskGroup({
                       onToggleStatus={onTaskToggleStatus}
                       onReopen={onTaskReopen}
                       onCreateSubtask={onCreateSubtask}
+                      onDelete={onTaskDelete}
                     />
                     {/* Enhanced subtask indicator with better highlighting */}
                     <div className="absolute top-2 left-2">
@@ -148,6 +152,7 @@ export function TaskGroup({
             onToggleStatus={onTaskToggleStatus}
             onReopen={onTaskReopen}
             onCreateSubtask={onCreateSubtask}
+            onDelete={onTaskDelete}
           />
           {/* Standalone task indicator */}
           <div className="absolute top-2 left-2">
@@ -179,6 +184,7 @@ interface OrganizedTaskListProps {
   onTaskToggleStatus?: (taskId: string) => void;
   onTaskReopen?: (taskId: string) => void;
   onCreateSubtask?: (parentTaskId: string) => void;
+  onTaskDelete?: (taskId: string) => void;
 }
 
 export function OrganizedTaskList({
@@ -191,7 +197,8 @@ export function OrganizedTaskList({
   onTaskEdit,
   onTaskToggleStatus,
   onTaskReopen,
-  onCreateSubtask
+  onCreateSubtask,
+  onTaskDelete
 }: OrganizedTaskListProps) {
   // Organize tasks into parent-child groups
   const organizeTasksWithContext = (taskList: Task[]) => {
@@ -254,6 +261,7 @@ export function OrganizedTaskList({
           onTaskToggleStatus={onTaskToggleStatus}
           onTaskReopen={onTaskReopen}
           onCreateSubtask={onCreateSubtask}
+          onTaskDelete={onTaskDelete}
         />
       ))}
 
@@ -274,6 +282,7 @@ export function OrganizedTaskList({
               onToggleStatus={onTaskToggleStatus}
               onReopen={onTaskReopen}
               onCreateSubtask={onCreateSubtask}
+              onDelete={onTaskDelete}
             />
             <div className="absolute top-2 left-2 flex items-center gap-1">
               <Badge 
@@ -308,6 +317,7 @@ export function OrganizedTaskList({
           onTaskToggleStatus={onTaskToggleStatus}
           onTaskReopen={onTaskReopen}
           onCreateSubtask={onCreateSubtask}
+          onTaskDelete={onTaskDelete}
         />
       ))}
     </div>
