@@ -34,6 +34,7 @@ export function TaskCard({
   onToggleStatus, 
   onReopen,
   onCreateSubtask,
+  onDelete,
   isDragging,
   dragHandleProps 
 }: TaskCardProps) {
