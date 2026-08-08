@@ -30,11 +30,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, X } from "lucide-react";
+import { CalendarIcon, X, ListChecks } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Task, Priority, Theme } from "@/types";
 import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
+import { useChecklists } from "@/hooks/use-checklists";
 
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -45,6 +46,7 @@ const taskSchema = z.object({
   priority: z.enum(["critical", "high", "medium", "low"]),
   themeIds: z.array(z.string()).optional(),
   parentTaskId: z.string().optional(),
+  checklistId: z.string().optional(),
 });
 
 type TaskFormData = z.infer<typeof taskSchema>;
@@ -57,16 +59,20 @@ interface TaskFormDialogProps {
   tasks: Task[];
   onTaskCreate: (
     taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">
-  ) => void;
+  ) => Promise<string>;
+  onApplyChecklist?: (task: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   defaultParentTaskId?: string;
   defaultThemeId?: string;
   defaultType?: 'task' | 'subtask';
   workspaceId: string;
 }
 
-export function TaskFormDialog({ children, defaultOpen = false, onOpenChange, themes, tasks, onTaskCreate, defaultParentTaskId, defaultThemeId, defaultType = 'task', workspaceId }: TaskFormDialogProps) {
+export function TaskFormDialog({ children, defaultOpen = false, onOpenChange, themes, tasks, onTaskCreate, onApplyChecklist, defaultParentTaskId, defaultThemeId, defaultType = 'task', workspaceId }: TaskFormDialogProps) {
   const themeLabel = useWorkspaceTerms(workspaceId).theme.singular;
   const [open, setOpen] = useState(defaultOpen);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { checklists } = useChecklists(workspaceId);
+  const hasChecklists = checklists.length > 0;
 
   const handleOpenChange = (o: boolean) => {
     setOpen(o);
@@ -81,23 +87,43 @@ export function TaskFormDialog({ children, defaultOpen = false, onOpenChange, th
       priority: "medium",
       themeIds: defaultThemeId ? [defaultThemeId] : [],
       parentTaskId: defaultParentTaskId || undefined,
+      checklistId: "none",
     },
   });
 
-  const onSubmit = (data: TaskFormData) => {
-    onTaskCreate({
-      title: data.title,
-      description: data.description || "",
-      dueDate: data.dueDate,
-      prioritizedDate: data.prioritizedDate,
-      prioritizedEndDate: data.prioritizedEndDate,
-      priority: data.priority,
-      themeIds: data.themeIds || [],
-      parentTaskId: data.parentTaskId === "none" ? undefined : data.parentTaskId,
-      workspaceId,
-    });
-    form.reset();
-    handleOpenChange(false);
+  const onSubmit = async (data: TaskFormData) => {
+    setIsSubmitting(true);
+    try {
+      const taskId = await onTaskCreate({
+        title: data.title,
+        description: data.description || "",
+        dueDate: data.dueDate,
+        prioritizedDate: data.prioritizedDate,
+        prioritizedEndDate: data.prioritizedEndDate,
+        priority: data.priority,
+        themeIds: data.themeIds || [],
+        parentTaskId: data.parentTaskId === "none" ? undefined : data.parentTaskId,
+        workspaceId,
+      });
+
+      const selectedChecklist = data.checklistId && data.checklistId !== "none"
+        ? checklists.find((c) => c.id === data.checklistId)
+        : undefined;
+
+      if (selectedChecklist && onApplyChecklist) {
+        await onApplyChecklist(
+          { id: taskId, workspaceId },
+          selectedChecklist.items.map((item) => item.title)
+        );
+      }
+
+      form.reset();
+      handleOpenChange(false);
+    } catch (error) {
+      console.error("Error creating task:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -399,6 +425,37 @@ export function TaskFormDialog({ children, defaultOpen = false, onOpenChange, th
             </div>
             </div>
 
+            {hasChecklists && (
+              <FormField
+                control={form.control}
+                name="checklistId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <ListChecks className="w-4 h-4" />
+                      Apply Checklist (Optional)
+                    </FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a checklist to create its subtasks..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {checklists.map((checklist) => (
+                          <SelectItem key={checklist.id} value={checklist.id}>
+                            {checklist.title} ({checklist.items.length} steps)
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             <div className="flex justify-end gap-3">
               <Button
                 type="button"
@@ -407,9 +464,9 @@ export function TaskFormDialog({ children, defaultOpen = false, onOpenChange, th
               >
                 Cancel
               </Button>
-            <Button type="submit">
-              Create {defaultType === 'subtask' || form.watch('parentTaskId') ? 'Subtask' : 'Task'}
-            </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Creating..." : `Create ${defaultType === 'subtask' || form.watch('parentTaskId') ? 'Subtask' : 'Task'}`}
+              </Button>
             </div>
           </form>
         </Form>

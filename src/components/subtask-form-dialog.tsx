@@ -9,7 +9,8 @@ interface SubtaskFormDialogProps {
   tasks: Task[];
   parentTaskId: string;
   defaultThemeId?: string;
-  onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order'>) => void;
+  onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order'>) => Promise<string>;
+  onApplyChecklist?: (task: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   workspaceId: string;
 }
 
@@ -22,6 +23,7 @@ export function SubtaskFormDialog({
   parentTaskId, 
   defaultThemeId,
   onTaskCreate,
+  onApplyChecklist,
   workspaceId
 }: SubtaskFormDialogProps) {
   return (
@@ -31,6 +33,7 @@ export function SubtaskFormDialog({
       themes={themes}
       tasks={tasks}
       onTaskCreate={onTaskCreate}
+      onApplyChecklist={onApplyChecklist}
       defaultParentTaskId={parentTaskId}
       defaultThemeId={defaultThemeId}
       defaultType="subtask"

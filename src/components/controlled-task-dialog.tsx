@@ -6,7 +6,8 @@ interface ControlledTaskDialogProps {
   themeId?: string;
   themes: Theme[];
   tasks: Task[];
-  onTaskCreate: (taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">) => void;
+  onTaskCreate: (taskData: Omit<Task, "id" | "createdDate" | "status" | "type" | "order">) => Promise<string>;
+  onApplyChecklist?: (task: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   onClose: () => void;
   workspaceId: string;
 }
@@ -17,6 +18,7 @@ export function ControlledTaskDialog({
   themes,
   tasks,
   onTaskCreate,
+  onApplyChecklist,
   onClose,
   workspaceId
 }: ControlledTaskDialogProps) {
@@ -30,10 +32,8 @@ export function ControlledTaskDialog({
       themes={themes}
       tasks={tasks}
       defaultThemeId={themeId}
-      onTaskCreate={(taskData) => {
-        onTaskCreate(taskData);
-        onClose();
-      }}
+      onTaskCreate={onTaskCreate}
+      onApplyChecklist={onApplyChecklist}
       workspaceId={workspaceId}
     />
   );

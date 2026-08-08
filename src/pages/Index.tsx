@@ -20,6 +20,7 @@ import { ControlledSubtaskDialog } from "@/components/controlled-subtask-dialog"
 import { ControlledTaskDialog } from "@/components/controlled-task-dialog";
 import { ControlledThemeDialog } from "@/components/controlled-theme-dialog";
 import { ControlledPillarDialog } from "@/components/controlled-pillar-dialog";
+import { ControlledDomainDialog } from "@/components/controlled-domain-dialog";
 import { useTasks } from "@/hooks/use-tasks";
 import { useWorkspaces } from "@/hooks/use-workspaces";
 import { WorkspaceSwitcher } from "@/components/workspace-switcher";
@@ -50,6 +51,7 @@ const Index = () => {
   const [showCreateTask, setShowCreateTask] = useState<string>('');
   const [showCreateTheme, setShowCreateTheme] = useState<string>('');
   const [showCreatePillar, setShowCreatePillar] = useState<string>('');
+  const [showCreateDomain, setShowCreateDomain] = useState<string>('');
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -62,6 +64,9 @@ const Index = () => {
     reopenTask,
     createTask,
     applyChecklistToTheme,
+    applyChecklistToPillar,
+    applyChecklistToDomain,
+    applyChecklistToTask,
     updateTask,
     updateTaskOrder,
     createDomain,
@@ -236,6 +241,10 @@ const Index = () => {
     setShowCreatePillar(domainId || 'new-pillar');
   };
 
+  const handleCreateDomain = () => {
+    setShowCreateDomain('new-domain');
+  };
+
   const handleTaskView = (task: Task) => {
     if (viewingTask) {
       setNavigationStack(prev => [...prev, { type: 'task', data: viewingTask }]);
@@ -407,9 +416,12 @@ const Index = () => {
             onTaskClick={handleTaskView}
             onTaskCreate={createTask}
             onThemeCreate={createTheme}
-            onApplyChecklist={applyChecklistToTheme}
+            onApplyChecklistToTheme={applyChecklistToTheme}
             onPillarCreate={createStrategicPillar}
+            onApplyChecklistToPillar={applyChecklistToPillar}
             onDomainCreate={createDomain}
+            onApplyChecklistToDomain={applyChecklistToDomain}
+            onApplyChecklistToTask={applyChecklistToTask}
             onTaskUpdate={updateTask}
           />
         );
@@ -549,9 +561,12 @@ const Index = () => {
                     domains={filteredDomains}
                     onTaskCreate={createTask}
                     onThemeCreate={createTheme}
-                    onApplyChecklist={applyChecklistToTheme}
+                    onApplyChecklistToTheme={applyChecklistToTheme}
                     onPillarCreate={createStrategicPillar}
+                    onApplyChecklistToPillar={applyChecklistToPillar}
                     onDomainCreate={createDomain}
+                    onApplyChecklistToDomain={applyChecklistToDomain}
+                    onApplyChecklistToTask={applyChecklistToTask}
                     workspaceId={currentWorkspace.id}
                     workspaceType={currentWorkspace.type}
                   />
@@ -698,6 +713,7 @@ const Index = () => {
           themes={filteredThemes}
           tasks={filteredTasks}
           onTaskCreate={createTask}
+          onApplyChecklist={applyChecklistToTask}
           onClose={() => setShowCreateTask('')}
           workspaceId={currentWorkspace.id}
         />
@@ -723,12 +739,22 @@ const Index = () => {
           domainId={showCreatePillar && showCreatePillar !== 'new-pillar' ? showCreatePillar : undefined}
           domains={filteredDomains}
           onPillarCreate={createStrategicPillar}
+          onApplyChecklist={applyChecklistToPillar}
           onClose={() => setShowCreatePillar('')}
           workspaceId={currentWorkspace.id}
         />
       )}
 
-      {/* Customize Labels Dialog */}
+      {/* Create Domain Dialog */}
+      {currentWorkspace && (
+        <ControlledDomainDialog
+          isOpen={!!showCreateDomain && showCreateDomain !== ''}
+          onDomainCreate={createDomain}
+          onApplyChecklist={applyChecklistToDomain}
+          onClose={() => setShowCreateDomain('')}
+          workspaceId={currentWorkspace.id}
+        />
+      )}
       {currentWorkspace && (
         <WorkspaceLabelsDialog
           workspace={currentWorkspace}

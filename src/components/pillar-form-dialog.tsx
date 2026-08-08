@@ -30,6 +30,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { StrategicPillar, Domain } from "@/types";
 import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
+import { useChecklists } from "@/hooks/use-checklists";
+import { ListChecks } from "lucide-react";
 
 const pillarSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -37,6 +39,7 @@ const pillarSchema = z.object({
   targetTimeFrame: z.string().min(1, "Target timeframe is required"),
   domainIds: z.array(z.string()).min(1, "Please select at least one"),
   color: z.string().min(1, "Color is required"),
+  checklistId: z.string().optional(),
 });
 
 type PillarFormData = z.infer<typeof pillarSchema>;
@@ -47,12 +50,14 @@ interface PillarFormDialogProps {
   onOpenChange?: (open: boolean) => void;
   domains: Domain[];
   defaultDomainId?: string;
-  onPillarCreate: (pillarData: Omit<StrategicPillar, "id" | "createdDate">) => void;
+  onPillarCreate: (pillarData: Omit<StrategicPillar, "id" | "createdDate">) => Promise<string>;
+  onApplyChecklist?: (pillar: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   workspaceId: string;
 }
 
-export function PillarFormDialog({ children, defaultOpen = false, onOpenChange, domains, defaultDomainId, onPillarCreate, workspaceId }: PillarFormDialogProps) {
+export function PillarFormDialog({ children, defaultOpen = false, onOpenChange, domains, defaultDomainId, onPillarCreate, onApplyChecklist, workspaceId }: PillarFormDialogProps) {
   const [open, setOpen] = useState(defaultOpen);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleOpenChange = (o: boolean) => {
     setOpen(o);
@@ -62,6 +67,8 @@ export function PillarFormDialog({ children, defaultOpen = false, onOpenChange, 
   const label = terms.pillar.singular;
   const domainLabel = terms.domain;
   const themeLabel = terms.theme;
+  const { checklists } = useChecklists(workspaceId);
+  const hasChecklists = checklists.length > 0;
 
   const form = useForm<PillarFormData>({
     resolver: zodResolver(pillarSchema),
@@ -71,20 +78,40 @@ export function PillarFormDialog({ children, defaultOpen = false, onOpenChange, 
       targetTimeFrame: "",
       domainIds: defaultDomainId ? [defaultDomainId] : [],
       color: "#8b5cf6",
+      checklistId: "none",
     },
   });
 
-  const onSubmit = (data: PillarFormData) => {
-    onPillarCreate({
-      title: data.title,
-      description: data.description || "",
-      targetTimeFrame: data.targetTimeFrame,
-      domainIds: data.domainIds,
-      workspaceId,
-      color: data.color
-    });
-    form.reset();
-    handleOpenChange(false);
+  const onSubmit = async (data: PillarFormData) => {
+    setIsSubmitting(true);
+    try {
+      const pillarId = await onPillarCreate({
+        title: data.title,
+        description: data.description || "",
+        targetTimeFrame: data.targetTimeFrame,
+        domainIds: data.domainIds,
+        workspaceId,
+        color: data.color
+      });
+
+      const selectedChecklist = data.checklistId && data.checklistId !== "none"
+        ? checklists.find((c) => c.id === data.checklistId)
+        : undefined;
+
+      if (selectedChecklist && onApplyChecklist) {
+        await onApplyChecklist(
+          { id: pillarId, workspaceId },
+          selectedChecklist.items.map((item) => item.title)
+        );
+      }
+
+      form.reset();
+      handleOpenChange(false);
+    } catch (error) {
+      console.error("Error creating pillar:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -200,6 +227,37 @@ export function PillarFormDialog({ children, defaultOpen = false, onOpenChange, 
               )}
             />
 
+            {hasChecklists && (
+              <FormField
+                control={form.control}
+                name="checklistId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <ListChecks className="w-4 h-4" />
+                      Apply Checklist (Optional)
+                    </FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a checklist to create its children..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {checklists.map((checklist) => (
+                          <SelectItem key={checklist.id} value={checklist.id}>
+                            {checklist.title} ({checklist.items.length} steps)
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             <div className="flex justify-end gap-3">
               <Button
                 type="button"
@@ -208,7 +266,9 @@ export function PillarFormDialog({ children, defaultOpen = false, onOpenChange, 
               >
                 Cancel
               </Button>
-              <Button type="submit">Create {label}</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Creating..." : `Create ${label}`}
+              </Button>
             </div>
           </form>
         </Form>

@@ -161,13 +161,17 @@ interface CalendarWeekViewProps {
   workspaceId: string;
   workspaceType: WorkspaceType;
   onTaskClick?: (task: Task) => void;
-  onTaskCreate: (taskData: any) => void;
+  onTaskCreate: (taskData: any) => Promise<string>;
   onThemeCreate: (themeData: any) => Promise<string>;
-  onApplyChecklist?: (theme: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
-  onPillarCreate: (pillarData: any) => void;
-  onDomainCreate: (domainData: any) => void;
+  onApplyChecklistToTheme?: (theme: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
+  onApplyChecklistToPillar?: (pillar: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
+  onApplyChecklistToDomain?: (domain: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
+  onApplyChecklistToTask?: (task: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
+  onPillarCreate: (pillarData: any) => Promise<string>;
+  onDomainCreate: (domainData: any) => Promise<string>;
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
 }
+
 
 export function CalendarWeekView({
   tasks,
@@ -180,7 +184,10 @@ export function CalendarWeekView({
   onTaskClick,
   onTaskCreate,
   onThemeCreate,
-  onApplyChecklist,
+  onApplyChecklistToTheme,
+  onApplyChecklistToPillar,
+  onApplyChecklistToDomain,
+  onApplyChecklistToTask,
   onPillarCreate,
   onDomainCreate,
   onTaskUpdate,
@@ -289,7 +296,10 @@ export function CalendarWeekView({
               domains={domains}
               onTaskCreate={onTaskCreate}
               onThemeCreate={onThemeCreate}
-              onApplyChecklist={onApplyChecklist}
+              onApplyChecklistToTheme={onApplyChecklistToTheme}
+              onApplyChecklistToPillar={onApplyChecklistToPillar}
+              onApplyChecklistToDomain={onApplyChecklistToDomain}
+              onApplyChecklistToTask={onApplyChecklistToTask}
               onPillarCreate={onPillarCreate}
               onDomainCreate={onDomainCreate}
               workspaceId={workspaceId}
