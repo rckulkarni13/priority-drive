@@ -324,6 +324,164 @@ export function useTasks() {
     }
   }, [tasks, toast]);
 
+  // Applying a checklist to a domain creates one strategic pillar per step,
+  // linked to that domain.
+  const applyChecklistToDomain = useCallback(async (
+    domain: { id: string; workspaceId: string },
+    itemTitles: string[]
+  ) => {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
+
+      const titles = itemTitles.map(t => t.trim()).filter(Boolean);
+      if (titles.length === 0) return;
+
+      const baseTime = Date.now();
+
+      const { data: created, error } = await supabase
+        .from('strategic_pillars')
+        .insert(titles.map((title, index) => ({
+          title,
+          description: '',
+          target_timeframe: '',
+          created_date: new Date(baseTime + index * 1000).toISOString(),
+          user_id: user.user.id,
+          workspace_id: domain.workspaceId,
+          color: '#8b5cf6'
+        })))
+        .select();
+
+      if (error) throw error;
+
+      if (created && created.length > 0) {
+        const { error: domainError } = await supabase
+          .from('pillar_domains')
+          .insert(created.map(pillar => ({ pillar_id: pillar.id, domain_id: domain.id })));
+        if (domainError) throw domainError;
+      }
+
+      await fetchStrategicPillars();
+
+      const terms = await getTerms(domain.workspaceId);
+      toast({
+        title: "Success",
+        description: `Created ${titles.length} ${terms.pillar.plural.toLowerCase()} from checklist`
+      });
+    } catch (error) {
+      console.error('Error applying checklist to domain:', error);
+      toast({
+        title: "Error",
+        description: "Failed to apply checklist",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
+
+  // Applying a checklist to a pillar creates one theme per step,
+  // linked to that pillar.
+  const applyChecklistToPillar = useCallback(async (
+    pillar: { id: string; workspaceId: string },
+    itemTitles: string[]
+  ) => {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
+
+      const titles = itemTitles.map(t => t.trim()).filter(Boolean);
+      if (titles.length === 0) return;
+
+      const baseTime = Date.now();
+
+      const { data: created, error } = await supabase
+        .from('themes')
+        .insert(titles.map((title, index) => ({
+          title,
+          description: '',
+          created_date: new Date(baseTime + index * 1000).toISOString(),
+          user_id: user.user.id,
+          workspace_id: pillar.workspaceId,
+          color: '#06b6d4'
+        })))
+        .select();
+
+      if (error) throw error;
+
+      if (created && created.length > 0) {
+        const { error: pillarError } = await supabase
+          .from('theme_pillars')
+          .insert(created.map(theme => ({ theme_id: theme.id, pillar_id: pillar.id })));
+        if (pillarError) throw pillarError;
+      }
+
+      await fetchThemes();
+
+      const terms = await getTerms(pillar.workspaceId);
+      toast({
+        title: "Success",
+        description: `Created ${titles.length} ${terms.theme.plural.toLowerCase()} from checklist`
+      });
+    } catch (error) {
+      console.error('Error applying checklist to pillar:', error);
+      toast({
+        title: "Error",
+        description: "Failed to apply checklist",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
+
+  // Applying a checklist to a task creates one subtask per checklist step,
+  // linked to that task.
+  const applyChecklistToTask = useCallback(async (
+    task: { id: string; workspaceId: string },
+    itemTitles: string[]
+  ) => {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
+
+      const titles = itemTitles.map(t => t.trim()).filter(Boolean);
+      if (titles.length === 0) return;
+
+      const startOrder = Math.max(...tasks.map(t => t.order || 0), 0) + 1;
+      const baseTime = Date.now();
+
+      const { error } = await supabase
+        .from('tasks')
+        .insert(titles.map((title, index) => ({
+          title,
+          description: '',
+          created_date: new Date(baseTime + index * 1000).toISOString(),
+          due_date: null,
+          prioritized_date: null,
+          prioritized_end_date: null,
+          priority: 'medium' as Priority,
+          type: 'subtask' as const,
+          parent_task_id: task.id,
+          task_order: startOrder + index,
+          user_id: user.user.id,
+          workspace_id: task.workspaceId
+        })));
+
+      if (error) throw error;
+
+      await fetchTasks();
+
+      toast({
+        title: "Success",
+        description: `Created ${titles.length} subtasks from checklist`
+      });
+    } catch (error) {
+      console.error('Error applying checklist to task:', error);
+      toast({
+        title: "Error",
+        description: "Failed to apply checklist",
+        variant: "destructive"
+      });
+    }
+  }, [tasks, toast]);
+
   const updateTask = useCallback(async (taskId: string, updates: Partial<Task>) => {
     try {
       const updateData: any = {
