@@ -708,6 +708,7 @@ export function TaskDetailDialog({
                       parentTaskId={task.id}
                       defaultThemeId={task.themeIds?.[0]}
                       onTaskCreate={onTaskCreate}
+                      onApplyChecklist={onApplyChecklist}
                       workspaceId={workspaceId}
                     >
                       <Button size="sm" variant="outline">
