@@ -614,7 +614,7 @@ export function useTasks() {
     }
   }, [toast]);
 
-  const createStrategicPillar = useCallback(async (pillarData: Omit<StrategicPillar, "id" | "createdDate">) => {
+  const createStrategicPillar = useCallback(async (pillarData: Omit<StrategicPillar, "id" | "createdDate">): Promise<string> => {
     try {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
@@ -655,6 +655,8 @@ export function useTasks() {
         title: "Success",
         description: `${terms.pillar.singular} created successfully`
       });
+
+      return pillar.id;
     } catch (error) {
       console.error('Error creating strategic pillar:', error);
       toast({
@@ -662,6 +664,7 @@ export function useTasks() {
         description: "Failed to create strategic pillar",
         variant: "destructive"
       });
+      throw error;
     }
   }, [toast]);
 
