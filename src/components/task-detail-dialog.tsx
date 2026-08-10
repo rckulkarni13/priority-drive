@@ -195,11 +195,11 @@ export function TaskDetailDialog({
         <DialogHeader className="sr-only">
           <DialogTitle>Task Details</DialogTitle>
         </DialogHeader>
-        <div className="p-6 border-b bg-background/50">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 space-y-3">
+        <div className="p-6 pr-14 border-b bg-background/50">
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex-1 space-y-3 min-w-0">
               {/* Back button and type */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 {onBack && (
                   <Button
                     variant="ghost"
@@ -260,7 +260,7 @@ export function TaskDetailDialog({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 flex-shrink-0">
               {isEditing ? (
                 <>
                   <Button
