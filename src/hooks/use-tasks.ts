@@ -135,6 +135,7 @@ export function useTasks() {
       parentTaskId: task.parent_task_id || undefined,
       themeIds: task.task_themes?.map((tt: any) => tt.theme_id) || [],
       order: task.task_order,
+      onRadar: task.on_radar ?? false,
       prioritizedDays: [],
       workspaceId: task.workspace_id
     }));
