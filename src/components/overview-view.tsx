@@ -244,6 +244,9 @@ function Column({
   groupByDate?: boolean;
 }) {
   const toneColor = getWorkspaceColor(tone);
+  const splitRadar = tone === "today";
+  const doingTasks = splitRadar ? tasks.filter(t => !t.onRadar) : tasks;
+  const radarTasks = splitRadar ? tasks.filter(t => t.onRadar) : [];
 
   return (
     <div className="flex flex-col bg-muted/50 rounded-2xl border border-border overflow-hidden h-full">
