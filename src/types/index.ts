@@ -61,6 +61,8 @@ export interface Task {
   parentTaskId?: string;
   themeIds: string[];
   order: number;
+  /** true = below the line ("On the Radar"), false = above the line ("Doing Today") */
+  onRadar?: boolean;
   prioritizedDays?: Date[];
   workspaceId: string;
 }

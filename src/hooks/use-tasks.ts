@@ -135,6 +135,7 @@ export function useTasks() {
       parentTaskId: task.parent_task_id || undefined,
       themeIds: task.task_themes?.map((tt: any) => tt.theme_id) || [],
       order: task.task_order,
+      onRadar: task.on_radar ?? false,
       prioritizedDays: [],
       workspaceId: task.workspace_id
     }));
@@ -988,6 +989,31 @@ export function useTasks() {
     }
   }, [toast, themes]);
 
+  const setTaskRadar = useCallback(async (updatesList: { id: string; onRadar: boolean }[]) => {
+    if (updatesList.length === 0) return;
+    setTasks(prevTasks =>
+      prevTasks.map(task => {
+        const match = updatesList.find(u => u.id === task.id);
+        return match ? { ...task, onRadar: match.onRadar } : task;
+      })
+    );
+
+    try {
+      await Promise.all(
+        updatesList.map(({ id, onRadar }) =>
+          supabase.from('tasks').update({ on_radar: onRadar }).eq('id', id)
+        )
+      );
+    } catch (error) {
+      console.error('Error updating radar state:', error);
+      toast({
+        title: "Error",
+        description: "Failed to move task",
+        variant: "destructive"
+      });
+    }
+  }, [toast]);
+
   const updateTaskOrder = useCallback(async (taskOrders: { id: string; order: number }[]) => {
     try {
       // Update each task's order in the database
@@ -1182,6 +1208,7 @@ export function useTasks() {
     deleteTask,
     updateTask,
     updateTaskOrder,
+    setTaskRadar,
     createDomain,
     updateDomain,
     createStrategicPillar,
