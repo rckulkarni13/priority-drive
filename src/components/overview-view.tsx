@@ -281,19 +281,47 @@ function Column({
               onTaskDelete={onTaskDelete}
             />
           ) : (
-            tasks.map(task => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                workspace={workspaces.find(w => w.id === task.workspaceId)}
-                themes={themes}
-                strategicPillars={strategicPillars}
-                domains={domains}
-                onTaskOpen={onTaskOpen}
-                onTaskToggleStatus={onTaskToggleStatus}
-                onTaskDelete={onTaskDelete}
-              />
-            ))
+            <>
+              {doingTasks.map(task => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  workspace={workspaces.find(w => w.id === task.workspaceId)}
+                  themes={themes}
+                  strategicPillars={strategicPillars}
+                  domains={domains}
+                  onTaskOpen={onTaskOpen}
+                  onTaskToggleStatus={onTaskToggleStatus}
+                  onTaskDelete={onTaskDelete}
+                />
+              ))}
+
+              {splitRadar && radarTasks.length > 0 && (
+                <>
+                  <div className="flex items-center gap-2 pt-1">
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      On the Radar
+                    </span>
+                    <div className="h-px flex-1 bg-border" />
+                  </div>
+                  {radarTasks.map(task => (
+                    <div key={task.id} className="opacity-70">
+                      <TaskCard
+                        task={task}
+                        workspace={workspaces.find(w => w.id === task.workspaceId)}
+                        themes={themes}
+                        strategicPillars={strategicPillars}
+                        domains={domains}
+                        onTaskOpen={onTaskOpen}
+                        onTaskToggleStatus={onTaskToggleStatus}
+                        onTaskDelete={onTaskDelete}
+                      />
+                    </div>
+                  ))}
+                </>
+              )}
+            </>
           )}
         </div>
       )}
