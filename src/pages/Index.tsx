@@ -67,6 +67,7 @@ const Index = () => {
     applyChecklistToTask,
     updateTask,
     updateTaskOrder,
+    setTaskRadar,
     createDomain,
     updateDomain,
     createStrategicPillar,
@@ -393,7 +394,7 @@ const Index = () => {
               />
             )}
             <SortableTaskList
-              title="Today's Priorities"
+              title="Doing Today"
               tasks={todayOnlyTasks}
               allTasks={filteredTasks}
               themes={filteredThemes}
@@ -405,6 +406,8 @@ const Index = () => {
               onCreateSubtask={handleCreateSubtask}
               onTaskDelete={handleTaskDelete}
               onTaskReorder={updateTaskOrder}
+              onTaskRadarChange={setTaskRadar}
+              showRadarLine
               emptyMessage="No tasks prioritized for today. Add some priorities to get started!"
             />
           </div>
