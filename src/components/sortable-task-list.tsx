@@ -21,7 +21,7 @@ import { Task, Theme, StrategicPillar, Domain } from "@/types";
 import { PriorityTaskRow } from "./priority-task-row";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { GripVertical } from "lucide-react";
+import { GripVertical, Radar } from "lucide-react";
 
 interface SortableTaskItemProps {
   task: Task;
@@ -277,10 +277,15 @@ export function SortableTaskList({
         >
           <SortableContext items={items} strategy={verticalListSortingStrategy}>
             <div className="space-y-2">
-              {doingTasks.map(renderTask)}
-              {showRadarLine && <RadarLine count={radarTasks.length} />}
-              {(showRadarLine ? radarTasks : []).map(renderTask)}
-              {!showRadarLine && tasks.map(renderTask)}
+              {showRadarLine ? (
+                <>
+                  {doingTasks.map(renderTask)}
+                  <RadarLine count={radarTasks.length} />
+                  {radarTasks.map(renderTask)}
+                </>
+              ) : (
+                tasks.map(renderTask)
+              )}
             </div>
           </SortableContext>
         </DndContext>
