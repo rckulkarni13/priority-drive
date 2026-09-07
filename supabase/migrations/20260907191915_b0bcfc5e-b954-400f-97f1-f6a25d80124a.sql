@@ -1,0 +1,1 @@
+ALTER TABLE public.tasks ADD COLUMN on_radar boolean NOT NULL DEFAULT false;

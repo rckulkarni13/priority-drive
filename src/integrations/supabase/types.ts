@@ -280,6 +280,7 @@ export type Database = {
           description: string | null
           due_date: string | null
           id: string
+          on_radar: boolean
           parent_task_id: string | null
           prioritized_date: string | null
           prioritized_end_date: string | null
@@ -296,6 +297,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          on_radar?: boolean
           parent_task_id?: string | null
           prioritized_date?: string | null
           prioritized_end_date?: string | null
@@ -312,6 +314,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          on_radar?: boolean
           parent_task_id?: string | null
           prioritized_date?: string | null
           prioritized_end_date?: string | null
