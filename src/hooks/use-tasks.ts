@@ -1208,6 +1208,7 @@ export function useTasks() {
     deleteTask,
     updateTask,
     updateTaskOrder,
+    setTaskRadar,
     createDomain,
     updateDomain,
     createStrategicPillar,
