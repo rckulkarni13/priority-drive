@@ -285,6 +285,8 @@ export type Database = {
           prioritized_date: string | null
           prioritized_end_date: string | null
           priority: Database["public"]["Enums"]["priority"]
+          recurrence_anchor_date: string | null
+          recurrence_rule: Json | null
           status: Database["public"]["Enums"]["status"]
           task_order: number
           title: string
@@ -302,6 +304,8 @@ export type Database = {
           prioritized_date?: string | null
           prioritized_end_date?: string | null
           priority: Database["public"]["Enums"]["priority"]
+          recurrence_anchor_date?: string | null
+          recurrence_rule?: Json | null
           status?: Database["public"]["Enums"]["status"]
           task_order?: number
           title: string
@@ -319,6 +323,8 @@ export type Database = {
           prioritized_date?: string | null
           prioritized_end_date?: string | null
           priority?: Database["public"]["Enums"]["priority"]
+          recurrence_anchor_date?: string | null
+          recurrence_rule?: Json | null
           status?: Database["public"]["Enums"]["status"]
           task_order?: number
           title?: string
