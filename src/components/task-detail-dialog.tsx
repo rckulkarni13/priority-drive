@@ -201,7 +201,7 @@ export function TaskDetailDialog({
 
   return (
     <Dialog open={!!task} onOpenChange={() => onClose()}>
-      <DialogContent className="sm:max-w-[900px] max-h-[95vh] p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[900px] max-h-[95vh] p-0 overflow-hidden flex flex-col gap-0">
         <DialogHeader className="sr-only">
           <DialogTitle>Task Details</DialogTitle>
         </DialogHeader>
