@@ -57,11 +57,12 @@ function nthWeekdayOfMonth(year: number, month: number, weekday: number, week: 1
  * `anchor` is the original start of the series (used for interval maths).
  */
 export function nextOccurrence(rule: RecurrenceRule, from: Date, anchor?: Date): Date {
-  const interval = Math.max(1, Math.floor(rule.interval || 1));
+  const effectiveRule: RecurrenceRule = rule.freq === 'biweekly' ? { ...rule, freq: 'weekly', interval: 2 } : rule;
+  const interval = Math.max(1, Math.floor(effectiveRule.interval || 1));
   const base = dateOnly(from);
   const start = anchor ? dateOnly(anchor) : base;
 
-  switch (rule.freq) {
+  switch (effectiveRule.freq) {
     case 'daily': {
       if (interval === 1) return addDays(base, 1);
       const elapsed = daysBetween(start, base);
@@ -133,6 +134,11 @@ export function describeRecurrence(rule: RecurrenceRule): string {
   switch (rule.freq) {
     case 'daily':
       return n === 1 ? 'Every day' : `Every ${n} days`;
+    case 'biweekly': {
+      const days = (rule.weekdays || []).slice().sort((a, b) => a - b).map((d) => WEEKDAY_NAMES[d]);
+      const list = days.length ? days.join(', ') : 'week';
+      return days.length ? `Every 2 weeks on ${list}` : 'Every 2 weeks';
+    }
     case 'weekly': {
       const days = (rule.weekdays || []).slice().sort((a, b) => a - b).map((d) => WEEKDAY_NAMES[d]);
       const list = days.length ? days.join(', ') : 'week';
