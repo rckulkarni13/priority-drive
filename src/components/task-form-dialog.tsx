@@ -133,7 +133,7 @@ export function TaskFormDialog({ children, defaultOpen = false, onOpenChange, th
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       {children ? <DialogTrigger asChild>{children}</DialogTrigger> : null}
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
         <DialogTitle>
           Create New {defaultType === 'subtask' || form.watch('parentTaskId') ? 'Subtask' : 'Task'}
