@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { describeRecurrence } from "@/lib/recurrence";
 import { Separator } from "@/components/ui/separator";
 import { 
   CalendarIcon, 
@@ -47,7 +48,9 @@ import {
   Plus,
   List,
   ListChecks,
-  Trash2
+  Trash2,
+  Repeat,
+  SkipForward
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
