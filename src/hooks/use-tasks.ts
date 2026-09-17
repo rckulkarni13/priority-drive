@@ -330,7 +330,7 @@ export function useTasks() {
           task_order: baseOrder,
           user_id: user.user.id,
           workspace_id: taskData.workspaceId,
-          recurrence_rule: taskData.recurrence ?? null,
+          recurrence_rule: (taskData.recurrence ?? null) as any,
           recurrence_anchor_date: taskData.recurrence
             ? (taskData.prioritizedDate || taskData.dueDate || new Date()).toISOString()
             : null
