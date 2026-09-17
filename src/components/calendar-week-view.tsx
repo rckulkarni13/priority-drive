@@ -114,6 +114,7 @@ function DraggableTaskCard({
               task.status === 'completed' && "line-through text-muted-foreground"
             )}>
               {task.title}
+              {task.recurrence && <Repeat className="inline w-2.5 h-2.5 ml-1 text-muted-foreground" />}
             </p>
             {onDelete && (
               <button

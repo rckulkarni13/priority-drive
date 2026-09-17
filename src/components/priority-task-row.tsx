@@ -148,6 +148,14 @@ export function PriorityTaskRow({
                 <h3 className={`font-medium ${isCompleted ? 'line-through' : ''}`}>
                   {task.title}
                 </h3>
+
+                {task.recurrence && (
+                  <Badge variant="outline" className="text-xs gap-1">
+                    <Repeat className="w-3 h-3" />
+                    {describeRecurrence(task.recurrence)}
+                  </Badge>
+                )}
+                
                 
                 {/* Related items badges inline */}
                 {relatedDomains.length > 0 && relatedDomains.map(domain => (

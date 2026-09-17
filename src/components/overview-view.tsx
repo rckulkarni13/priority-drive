@@ -4,7 +4,8 @@ import { Task, Theme, StrategicPillar, Domain, Workspace } from "@/types";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertTriangle, CalendarDays, CalendarClock, Layers, Target, Package, Trash2 } from "lucide-react";
+import { AlertTriangle, CalendarDays, CalendarClock, Layers, Target, Package, Trash2, Repeat } from "lucide-react";
+import { describeRecurrence } from "@/lib/recurrence";
 import { categorizeOverviewTasks } from "@/lib/overview-tasks";
 import { getEffectiveStartDate, getEffectiveEndDate } from "@/lib/task-dates";
 import { resolveWorkspaceTerminology } from "@/lib/workspace-terminology";
@@ -105,7 +106,15 @@ function TaskCard({
 
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <p className="font-medium leading-snug break-words text-sm">{task.title}</p>
+          <p className="font-medium leading-snug break-words text-sm">
+            {task.title}
+            {task.recurrence && (
+              <span className="ml-2 inline-flex items-center gap-1 text-[10px] text-muted-foreground align-middle">
+                <Repeat className="w-3 h-3" />
+                {describeRecurrence(task.recurrence)}
+              </span>
+            )}
+          </p>
           <div className="flex items-center gap-1.5 flex-shrink-0">
             {workspace && (
               <span className="text-[10px] text-muted-foreground whitespace-nowrap flex items-center gap-1">
