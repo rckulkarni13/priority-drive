@@ -329,7 +329,11 @@ export function useTasks() {
           parent_task_id: taskData.parentTaskId,
           task_order: baseOrder,
           user_id: user.user.id,
-          workspace_id: taskData.workspaceId
+          workspace_id: taskData.workspaceId,
+          recurrence_rule: taskData.recurrence ?? null,
+          recurrence_anchor_date: taskData.recurrence
+            ? (taskData.prioritizedDate || taskData.dueDate || new Date()).toISOString()
+            : null
         })
         .select()
         .single();
@@ -608,6 +612,12 @@ export function useTasks() {
       }
       if ('parentTaskId' in updates) {
         updateData.parent_task_id = updates.parentTaskId ?? null;
+      }
+      if ('recurrence' in updates) {
+        updateData.recurrence_rule = updates.recurrence ?? null;
+        updateData.recurrence_anchor_date = updates.recurrence
+          ? ((('prioritizedDate' in updates ? updates.prioritizedDate : undefined) || updates.dueDate || new Date()).toISOString())
+          : null;
       }
 
       // Remove undefined values
@@ -1312,6 +1322,7 @@ export function useTasks() {
     updateTask,
     updateTaskOrder,
     setTaskRadar,
+    skipOccurrence,
     createDomain,
     updateDomain,
     createStrategicPillar,
