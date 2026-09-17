@@ -29,7 +29,8 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
-import { describeRecurrence } from "@/lib/recurrence";
+import { describeRecurrence, RecurrenceRule } from "@/lib/recurrence";
+import { RecurrencePicker } from "@/components/recurrence-picker";
 import { Separator } from "@/components/ui/separator";
 import { 
   CalendarIcon, 
@@ -90,6 +91,7 @@ const taskSchema = z.object({
   priority: z.enum(["critical", "high", "medium", "low"]),
   themeIds: z.array(z.string()).min(0, "Theme selection is optional"),
   parentTaskId: z.string().optional(),
+  recurrence: z.any().optional(),
 });
 
 type TaskFormData = z.infer<typeof taskSchema>;
@@ -138,6 +140,7 @@ export function TaskDetailDialog({
       priority: "medium",
       themeIds: [],
       parentTaskId: undefined,
+      recurrence: undefined,
     },
    });
  
@@ -159,6 +162,7 @@ export function TaskDetailDialog({
         priority: task.priority,
         themeIds: defaultThemeIds,
         parentTaskId: task.parentTaskId || undefined,
+        recurrence: task.recurrence,
       });
     }
   }, [task, form, tasks]);
@@ -182,6 +186,7 @@ export function TaskDetailDialog({
       priority: data.priority,
       themeIds: data.themeIds,
       parentTaskId: data.parentTaskId === "none" ? undefined : data.parentTaskId,
+      recurrence: (data.recurrence as RecurrenceRule | undefined) ?? undefined,
     };
     
     onTaskUpdate(task.id, updates);
@@ -804,6 +809,21 @@ export function TaskDetailDialog({
                           )}
                         />
                       </div>
+
+                      <FormField
+                        control={form.control}
+                        name="recurrence"
+                        render={({ field }) => (
+                          <FormItem>
+                            <RecurrencePicker
+                              value={field.value as RecurrenceRule | undefined}
+                              onChange={field.onChange}
+                              referenceDate={watchedPrioritizedDate || watchedDueDate}
+                            />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </form>
                   </Form>
                 )}
