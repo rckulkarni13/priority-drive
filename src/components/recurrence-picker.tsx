@@ -34,6 +34,8 @@ export function RecurrencePicker({ value, onChange, referenceDate }: RecurrenceP
         return onChange({ freq: 'daily', interval: 1 });
       case 'weekly':
         return onChange({ freq: 'weekly', interval: 1, weekdays: [ref.getDay()] });
+      case 'biweekly':
+        return onChange({ freq: 'biweekly', interval: 2, weekdays: [ref.getDay()] });
       case 'monthly_date':
         return onChange({ freq: 'monthly_date', interval: 1, monthDay: ref.getDate() });
       case 'monthly_weekday':
@@ -77,6 +79,7 @@ export function RecurrencePicker({ value, onChange, referenceDate }: RecurrenceP
           <SelectItem value="none">Does not repeat</SelectItem>
           <SelectItem value="daily">Daily</SelectItem>
           <SelectItem value="weekly">Weekly on chosen days</SelectItem>
+          <SelectItem value="biweekly">Bi-weekly on chosen days</SelectItem>
           <SelectItem value="monthly_date">Monthly on a date</SelectItem>
           <SelectItem value="monthly_weekday">Monthly on a weekday</SelectItem>
         </SelectContent>
