@@ -162,6 +162,7 @@ export function TaskDetailDialog({
         priority: task.priority,
         themeIds: defaultThemeIds,
         parentTaskId: task.parentTaskId || undefined,
+        recurrence: task.recurrence,
       });
     }
   }, [task, form, tasks]);
@@ -185,6 +186,7 @@ export function TaskDetailDialog({
       priority: data.priority,
       themeIds: data.themeIds,
       parentTaskId: data.parentTaskId === "none" ? undefined : data.parentTaskId,
+      recurrence: (data.recurrence as RecurrenceRule | undefined) ?? undefined,
     };
     
     onTaskUpdate(task.id, updates);
