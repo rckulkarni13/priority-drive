@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { describeRecurrence } from "@/lib/recurrence";
 import { Separator } from "@/components/ui/separator";
 import { 
   CalendarIcon, 
@@ -47,7 +48,9 @@ import {
   Plus,
   List,
   ListChecks,
-  Trash2
+  Trash2,
+  Repeat,
+  SkipForward
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -99,6 +102,7 @@ interface TaskDetailDialogProps {
   onTaskCreate: (taskData: Omit<Task, 'id' | 'createdDate' | 'order'>) => Promise<string>;
   onApplyChecklist?: (task: { id: string; workspaceId: string }, itemTitles: string[]) => void | Promise<void>;
   onTaskDelete?: (taskId: string) => void | Promise<void>;
+  onSkipOccurrence?: (taskId: string) => void | Promise<void>;
   onClose: () => void;
   onBack?: () => void;
   onTaskView?: (task: Task) => void;
@@ -114,6 +118,7 @@ export function TaskDetailDialog({
   onTaskCreate, 
   onApplyChecklist,
   onTaskDelete,
+  onSkipOccurrence,
   onClose,
   onBack,
   onTaskView,
@@ -244,6 +249,16 @@ export function TaskDetailDialog({
                 <h1 className="text-xl font-semibold leading-tight">{task.title}</h1>
               )}
 
+              {/* Repeat schedule */}
+              {task.recurrence && (
+                <div className="mt-2 flex items-center gap-2">
+                  <Badge variant="outline" className="gap-1">
+                    <Repeat className="w-3 h-3" />
+                    {describeRecurrence(task.recurrence)}
+                  </Badge>
+                </div>
+              )}
+
               {/* Parent task reference */}
               {parentTask && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -289,6 +304,16 @@ export function TaskDetailDialog({
                     <Edit className="w-4 h-4 mr-1" />
                     Edit
                   </Button>
+                  {task.recurrence && onSkipOccurrence && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onSkipOccurrence(task.id)}
+                    >
+                      <SkipForward className="w-4 h-4 mr-1" />
+                      Skip this occurrence
+                    </Button>
+                  )}
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button

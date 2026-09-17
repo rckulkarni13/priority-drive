@@ -5,7 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { GripVertical, Calendar, Clock, CheckCircle2, RotateCcw, MessageCircle, ChevronDown, ChevronUp, Plus, Edit, Target, Layers, Package, Trash2 } from "lucide-react";
+import { GripVertical, Calendar, Clock, CheckCircle2, RotateCcw, MessageCircle, ChevronDown, ChevronUp, Plus, Edit, Target, Layers, Package, Trash2, Repeat } from "lucide-react";
+import { describeRecurrence } from "@/lib/recurrence";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { TaskComments } from "@/components/task-comments";
@@ -79,6 +80,14 @@ export function TaskCard({
                   )}>
                     {task.title}
                   </h3>
+
+                  {task.recurrence && (
+                    <Badge variant="outline" className="text-xs gap-1">
+                      <Repeat className="w-3 h-3" />
+                      {describeRecurrence(task.recurrence)}
+                    </Badge>
+                  )}
+                  
                   
                   {/* Related items badges inline */}
                   {relatedDomains.length > 0 && relatedDomains.map(domain => (

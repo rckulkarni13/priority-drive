@@ -34,6 +34,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Task, Theme } from "@/types";
 import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
+import { RecurrencePicker } from "@/components/recurrence-picker";
+import { RecurrenceRule } from "@/lib/recurrence";
 
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -44,6 +46,7 @@ const taskSchema = z.object({
   priority: z.enum(["critical", "high", "medium", "low"]),
   themeIds: z.array(z.string()).optional(),
   parentTaskId: z.string().optional(),
+  recurrence: z.any().optional(),
 });
 
 type TaskFormData = z.infer<typeof taskSchema>;
@@ -90,6 +93,7 @@ export function EditTaskDialog({
         priority: task.priority,
         themeIds: task.themeIds,
         parentTaskId: task.parentTaskId || undefined,
+        recurrence: task.recurrence,
       });
     }
   }, [task, form]);
@@ -114,6 +118,7 @@ export function EditTaskDialog({
       priority: data.priority,
       themeIds: data.themeIds,
       parentTaskId: data.parentTaskId === "none" ? undefined : data.parentTaskId,
+      recurrence: (data.recurrence as RecurrenceRule | undefined) ?? undefined,
     };
     
     onTaskUpdate(task.id, updates);
@@ -424,6 +429,21 @@ export function EditTaskDialog({
                       </Button>
                     )}
                   </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="recurrence"
+              render={({ field }) => (
+                <FormItem>
+                  <RecurrencePicker
+                    value={field.value as RecurrenceRule | undefined}
+                    onChange={field.onChange}
+                    referenceDate={watchedPrioritizedDate || watchedDueDate}
+                  />
                   <FormMessage />
                 </FormItem>
               )}

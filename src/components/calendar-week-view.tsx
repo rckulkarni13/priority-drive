@@ -3,7 +3,7 @@ import { Task, Theme, StrategicPillar, Domain, WorkspaceType } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, ChevronLeft, ChevronRight, GripVertical, Trash2 } from "lucide-react";
+import { CalendarIcon, ChevronLeft, ChevronRight, GripVertical, Trash2, Repeat } from "lucide-react";
 import { QuickCreateMenu } from "./quick-create-menu";
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, addWeeks, subWeeks, isToday, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -114,6 +114,7 @@ function DraggableTaskCard({
               task.status === 'completed' && "line-through text-muted-foreground"
             )}>
               {task.title}
+              {task.recurrence && <Repeat className="inline w-2.5 h-2.5 ml-1 text-muted-foreground" />}
             </p>
             {onDelete && (
               <button

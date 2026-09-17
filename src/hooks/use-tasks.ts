@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Task, Domain, StrategicPillar, Theme, Priority, Status, TaskType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { isTaskOverdue } from '@/lib/task-dates';
+import { RecurrenceRule, nextOccurrence, daysBetween } from '@/lib/recurrence';
 import { getWorkspaceTerminology, parseTierLabels, resolveWorkspaceTerminology } from '@/lib/workspace-terminology';
 import { WorkspaceType } from '@/types';
 
@@ -137,11 +138,107 @@ export function useTasks() {
       order: task.task_order,
       onRadar: task.on_radar ?? false,
       prioritizedDays: [],
-      workspaceId: task.workspace_id
+      workspaceId: task.workspace_id,
+      recurrence: (task as any).recurrence_rule
+        ? ((task as any).recurrence_rule as RecurrenceRule)
+        : undefined,
+      recurrenceAnchorDate: (task as any).recurrence_anchor_date
+        ? new Date((task as any).recurrence_anchor_date)
+        : undefined,
     }));
 
     setTasks(formattedTasks);
   };
+
+  /**
+   * For a repeating task, compute the shifted dates for its next occurrence.
+   * The priority start date (falling back to the due date) drives the schedule;
+   * the other dates keep the same offset in days.
+   */
+  const computeNextOccurrenceDates = useCallback((task: Task) => {
+    if (!task.recurrence) return null;
+    const driver = task.prioritizedDate || task.dueDate || new Date();
+    const today = new Date();
+    const from = driver > today ? driver : today;
+    const next = nextOccurrence(task.recurrence, from, task.recurrenceAnchorDate || driver);
+    const delta = daysBetween(driver, next);
+    if (delta === 0) return null;
+
+    const shift = (d?: Date) => {
+      if (!d) return undefined;
+      const c = new Date(d);
+      c.setDate(c.getDate() + delta);
+      return c;
+    };
+
+    return {
+      prioritizedDate: shift(task.prioritizedDate),
+      prioritizedEndDate: shift(task.prioritizedEndDate),
+      dueDate: shift(task.dueDate),
+      next,
+    };
+  }, []);
+
+  /** Move a repeating task to its next occurrence (used on completion and on skip). */
+  const advanceRecurringTask = useCallback(async (task: Task, message: string) => {
+    const shifted = computeNextOccurrenceDates(task);
+    if (!shifted) return false;
+
+    const { error } = await supabase
+      .from('tasks')
+      .update({
+        status: 'open',
+        prioritized_date: shifted.prioritizedDate?.toISOString() ?? null,
+        prioritized_end_date: shifted.prioritizedEndDate?.toISOString() ?? null,
+        due_date: shifted.dueDate?.toISOString() ?? null,
+      })
+      .eq('id', task.id);
+
+    if (error) throw error;
+
+    // Reset the subtasks of the series so the next run starts fresh.
+    const subtaskIds = tasks.filter(t => t.parentTaskId === task.id).map(t => t.id);
+    if (subtaskIds.length > 0) {
+      await supabase.from('tasks').update({ status: 'open' }).in('id', subtaskIds);
+    }
+
+    setTasks(prev =>
+      prev.map(t => {
+        if (t.id === task.id) {
+          return {
+            ...t,
+            status: 'open' as Status,
+            prioritizedDate: shifted.prioritizedDate,
+            prioritizedEndDate: shifted.prioritizedEndDate,
+            dueDate: shifted.dueDate,
+          };
+        }
+        if (subtaskIds.includes(t.id)) return { ...t, status: 'open' as Status };
+        return t;
+      })
+    );
+
+    toast({
+      title: "Success",
+      description: `${message} — next on ${shifted.next.toLocaleDateString()}`
+    });
+    return true;
+  }, [computeNextOccurrenceDates, tasks, toast]);
+
+  const skipOccurrence = useCallback(async (taskId: string) => {
+    try {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task?.recurrence) return;
+      await advanceRecurringTask(task, "Occurrence skipped");
+    } catch (error) {
+      console.error('Error skipping occurrence:', error);
+      toast({
+        title: "Error",
+        description: "Failed to skip this occurrence",
+        variant: "destructive"
+      });
+    }
+  }, [tasks, advanceRecurringTask, toast]);
 
   const toggleTaskStatus = useCallback(async (taskId: string) => {
     try {
@@ -149,7 +246,13 @@ export function useTasks() {
       if (!task) return;
 
       const newStatus = task.status === 'completed' ? 'open' : 'completed';
-      
+
+      // Repeating tasks never close: they jump to their next occurrence.
+      if (newStatus === 'completed' && task.recurrence) {
+        const advanced = await advanceRecurringTask(task, "Task completed");
+        if (advanced) return;
+      }
+
       const { error } = await supabase
         .from('tasks')
         .update({ status: newStatus })
@@ -175,7 +278,7 @@ export function useTasks() {
         variant: "destructive"
       });
     }
-  }, [tasks, toast]);
+  }, [tasks, toast, advanceRecurringTask]);
 
   const reopenTask = useCallback(async (taskId: string) => {
     try {
@@ -226,7 +329,11 @@ export function useTasks() {
           parent_task_id: taskData.parentTaskId,
           task_order: baseOrder,
           user_id: user.user.id,
-          workspace_id: taskData.workspaceId
+          workspace_id: taskData.workspaceId,
+          recurrence_rule: (taskData.recurrence ?? null) as any,
+          recurrence_anchor_date: taskData.recurrence
+            ? (taskData.prioritizedDate || taskData.dueDate || new Date()).toISOString()
+            : null
         })
         .select()
         .single();
@@ -505,6 +612,12 @@ export function useTasks() {
       }
       if ('parentTaskId' in updates) {
         updateData.parent_task_id = updates.parentTaskId ?? null;
+      }
+      if ('recurrence' in updates) {
+        updateData.recurrence_rule = updates.recurrence ?? null;
+        updateData.recurrence_anchor_date = updates.recurrence
+          ? ((('prioritizedDate' in updates ? updates.prioritizedDate : undefined) || updates.dueDate || new Date()).toISOString())
+          : null;
       }
 
       // Remove undefined values
@@ -1209,6 +1322,7 @@ export function useTasks() {
     updateTask,
     updateTaskOrder,
     setTaskRadar,
+    skipOccurrence,
     createDomain,
     updateDomain,
     createStrategicPillar,

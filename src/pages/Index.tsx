@@ -59,6 +59,7 @@ const Index = () => {
     strategicPillars,
     themes,
     toggleTaskStatus,
+    skipOccurrence,
     reopenTask,
     createTask,
     applyChecklistToTheme,
@@ -633,6 +634,7 @@ const Index = () => {
           onThemeView={handleThemeView}
           onApplyChecklist={applyChecklistToTask}
           onTaskDelete={handleTaskDelete}
+          onSkipOccurrence={skipOccurrence}
           workspaceId={currentWorkspace.id}
         />
       )}

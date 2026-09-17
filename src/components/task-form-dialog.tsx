@@ -34,6 +34,8 @@ import { CalendarIcon, X, ListChecks } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Task, Priority, Theme } from "@/types";
+import { RecurrencePicker } from "@/components/recurrence-picker";
+import { RecurrenceRule } from "@/lib/recurrence";
 import { useWorkspaceTerms } from "@/hooks/use-workspace-terms";
 import { useChecklists } from "@/hooks/use-checklists";
 
@@ -47,6 +49,7 @@ const taskSchema = z.object({
   themeIds: z.array(z.string()).optional(),
   parentTaskId: z.string().optional(),
   checklistId: z.string().optional(),
+  recurrence: z.any().optional(),
 });
 
 type TaskFormData = z.infer<typeof taskSchema>;
@@ -104,6 +107,7 @@ export function TaskFormDialog({ children, defaultOpen = false, onOpenChange, th
         themeIds: data.themeIds || [],
         parentTaskId: data.parentTaskId === "none" ? undefined : data.parentTaskId,
         workspaceId,
+        recurrence: (data.recurrence as RecurrenceRule | undefined) ?? undefined,
       });
 
       const selectedChecklist = data.checklistId && data.checklistId !== "none"
@@ -424,6 +428,21 @@ export function TaskFormDialog({ children, defaultOpen = false, onOpenChange, th
               />
             </div>
             </div>
+
+            <FormField
+              control={form.control}
+              name="recurrence"
+              render={({ field }) => (
+                <FormItem>
+                  <RecurrencePicker
+                    value={field.value as RecurrenceRule | undefined}
+                    onChange={field.onChange}
+                    referenceDate={form.watch('prioritizedDate') || form.watch('dueDate')}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {hasChecklists && (
               <FormField
