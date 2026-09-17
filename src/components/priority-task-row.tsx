@@ -14,7 +14,7 @@ import {
   RotateCcw,
   Layers,
   Package,
-  Trash2
+  Trash2,
   Repeat,
 } from "lucide-react";
 import { describeRecurrence } from "@/lib/recurrence";
