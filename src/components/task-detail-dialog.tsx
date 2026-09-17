@@ -809,6 +809,21 @@ export function TaskDetailDialog({
                           )}
                         />
                       </div>
+
+                      <FormField
+                        control={form.control}
+                        name="recurrence"
+                        render={({ field }) => (
+                          <FormItem>
+                            <RecurrencePicker
+                              value={field.value as RecurrenceRule | undefined}
+                              onChange={field.onChange}
+                              referenceDate={watchedPrioritizedDate || watchedDueDate}
+                            />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </form>
                   </Form>
                 )}
