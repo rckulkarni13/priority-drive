@@ -5,7 +5,7 @@
  * (or skipped) its dates jump to the next occurrence and it stays open.
  */
 
-export type RecurrenceFreq = 'daily' | 'weekly' | 'monthly_date' | 'monthly_weekday';
+export type RecurrenceFreq = 'daily' | 'weekly' | 'biweekly' | 'monthly_date' | 'monthly_weekday';
 
 export interface RecurrenceRule {
   freq: RecurrenceFreq;

@@ -58,9 +58,9 @@ export function RecurrencePicker({ value, onChange, referenceDate }: RecurrenceP
     patch({ weekdays: next.length ? next : [day] });
   };
 
-  const isWeeks = mode === 'weekly';
+  const isWeeks = mode === 'weekly' || mode === 'biweekly';
   const isMonthly = mode === 'monthly_date' || mode === 'monthly_weekday';
-  const unit = mode === 'daily' ? 'day(s)' : isWeeks ? 'week(s)' : 'month(s)';
+  const unit = mode === 'daily' ? 'day(s)' : mode === 'weekly' ? 'week(s)' : 'month(s)';
 
   return (
     <div className="space-y-3 rounded-lg border border-border p-4">
