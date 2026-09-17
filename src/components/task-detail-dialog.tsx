@@ -29,7 +29,8 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
-import { describeRecurrence } from "@/lib/recurrence";
+import { describeRecurrence, RecurrenceRule } from "@/lib/recurrence";
+import { RecurrencePicker } from "@/components/recurrence-picker";
 import { Separator } from "@/components/ui/separator";
 import { 
   CalendarIcon, 
