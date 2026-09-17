@@ -1,4 +1,7 @@
 import type { TierLabelOverrides } from "@/lib/workspace-terminology";
+import type { RecurrenceRule } from "@/lib/recurrence";
+
+export type { RecurrenceRule };
 
 export type Priority = 'critical' | 'high' | 'medium' | 'low';
 export type Status = 'open' | 'hold' | 'completed';
@@ -65,6 +68,10 @@ export interface Task {
   onRadar?: boolean;
   prioritizedDays?: Date[];
   workspaceId: string;
+  /** Repeat schedule; undefined = does not repeat. */
+  recurrence?: RecurrenceRule;
+  /** First occurrence of the series, used for interval maths. */
+  recurrenceAnchorDate?: Date;
 }
 
 export interface Comment {
