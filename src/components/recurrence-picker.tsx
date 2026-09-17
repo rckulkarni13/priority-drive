@@ -87,18 +87,20 @@ export function RecurrencePicker({ value, onChange, referenceDate }: RecurrenceP
 
       {value && (
         <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Every</span>
-            <Input
-              type="number"
-              min={1}
-              max={99}
-              value={value.interval}
-              onChange={(e) => patch({ interval: Math.max(1, Number(e.target.value) || 1) })}
-              className="w-20"
-            />
-            <span className="text-sm text-muted-foreground">{unit}</span>
-          </div>
+          {mode !== 'biweekly' && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Every</span>
+              <Input
+                type="number"
+                min={1}
+                max={99}
+                value={value.interval}
+                onChange={(e) => patch({ interval: Math.max(1, Number(e.target.value) || 1) })}
+                className="w-20"
+              />
+              <span className="text-sm text-muted-foreground">{unit}</span>
+            </div>
+          )}
 
           {isWeeks && (
             <div className="flex gap-1">
