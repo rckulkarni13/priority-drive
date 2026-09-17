@@ -15,7 +15,9 @@ import {
   Layers,
   Package,
   Trash2
+  Repeat,
 } from "lucide-react";
+import { describeRecurrence } from "@/lib/recurrence";
 import { format, isBefore, startOfDay } from "date-fns";
 
 interface PriorityTaskRowProps {
