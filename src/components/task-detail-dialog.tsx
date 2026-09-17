@@ -91,6 +91,7 @@ const taskSchema = z.object({
   priority: z.enum(["critical", "high", "medium", "low"]),
   themeIds: z.array(z.string()).min(0, "Theme selection is optional"),
   parentTaskId: z.string().optional(),
+  recurrence: z.any().optional(),
 });
 
 type TaskFormData = z.infer<typeof taskSchema>;
@@ -139,6 +140,7 @@ export function TaskDetailDialog({
       priority: "medium",
       themeIds: [],
       parentTaskId: undefined,
+      recurrence: undefined,
     },
    });
  
