@@ -34,6 +34,8 @@ export function RecurrencePicker({ value, onChange, referenceDate }: RecurrenceP
         return onChange({ freq: 'daily', interval: 1 });
       case 'weekly':
         return onChange({ freq: 'weekly', interval: 1, weekdays: [ref.getDay()] });
+      case 'biweekly':
+        return onChange({ freq: 'biweekly', interval: 2, weekdays: [ref.getDay()] });
       case 'monthly_date':
         return onChange({ freq: 'monthly_date', interval: 1, monthDay: ref.getDate() });
       case 'monthly_weekday':
@@ -58,9 +60,9 @@ export function RecurrencePicker({ value, onChange, referenceDate }: RecurrenceP
     patch({ weekdays: next.length ? next : [day] });
   };
 
-  const isWeeks = mode === 'weekly';
+  const isWeeks = mode === 'weekly' || mode === 'biweekly';
   const isMonthly = mode === 'monthly_date' || mode === 'monthly_weekday';
-  const unit = mode === 'daily' ? 'day(s)' : isWeeks ? 'week(s)' : 'month(s)';
+  const unit = mode === 'daily' ? 'day(s)' : mode === 'weekly' ? 'week(s)' : 'month(s)';
 
   return (
     <div className="space-y-3 rounded-lg border border-border p-4">
@@ -77,6 +79,7 @@ export function RecurrencePicker({ value, onChange, referenceDate }: RecurrenceP
           <SelectItem value="none">Does not repeat</SelectItem>
           <SelectItem value="daily">Daily</SelectItem>
           <SelectItem value="weekly">Weekly on chosen days</SelectItem>
+          <SelectItem value="biweekly">Bi-weekly on chosen days</SelectItem>
           <SelectItem value="monthly_date">Monthly on a date</SelectItem>
           <SelectItem value="monthly_weekday">Monthly on a weekday</SelectItem>
         </SelectContent>
@@ -84,18 +87,20 @@ export function RecurrencePicker({ value, onChange, referenceDate }: RecurrenceP
 
       {value && (
         <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Every</span>
-            <Input
-              type="number"
-              min={1}
-              max={99}
-              value={value.interval}
-              onChange={(e) => patch({ interval: Math.max(1, Number(e.target.value) || 1) })}
-              className="w-20"
-            />
-            <span className="text-sm text-muted-foreground">{unit}</span>
-          </div>
+          {mode !== 'biweekly' && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Every</span>
+              <Input
+                type="number"
+                min={1}
+                max={99}
+                value={value.interval}
+                onChange={(e) => patch({ interval: Math.max(1, Number(e.target.value) || 1) })}
+                className="w-20"
+              />
+              <span className="text-sm text-muted-foreground">{unit}</span>
+            </div>
+          )}
 
           {isWeeks && (
             <div className="flex gap-1">
